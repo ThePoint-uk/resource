@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Companies House Portfolio — Drill-down mockup</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css" />
+<style>
+  :root{
+    --color-background-primary:#ffffff; --color-background-secondary:#f4f6f8; --color-background-tertiary:#eef1f5;
+    --color-background-info:#eff5fc; --color-background-success:#f0faf2; --color-background-danger:#fdf2f1; --color-background-warning:#fdf6e9;
+    --color-text-primary:#1f2733; --color-text-secondary:#5b6b7d; --color-text-tertiary:#9aa4ae;
+    --color-text-info:#2c5fa8; --color-text-success:#1f7a34; --color-text-danger:#c0392b; --color-text-warning:#9c640c;
+    --color-border-tertiary:rgba(0,0,0,0.12); --color-border-secondary:rgba(0,0,0,0.22);
+    --border-radius-md:8px; --border-radius-lg:12px;
+    --font-sans:'Segoe UI','Segoe UI Web (West European)',-apple-system,BlinkMacSystemFont,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:#f3f2f1;font-family:var(--font-sans);color:var(--color-text-primary);}
+  .wrap{max-width:760px;margin:0 auto;padding:18px;}
+  input{font-family:var(--font-sans);font-size:14px;height:38px;border:1px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:0 12px;width:100%;}
+  a{text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="wrap"><div id="app2"></div></div>
+<script>
+(function(){
+  var fmt=function(n){return new Intl.NumberFormat('en-GB').format(n);};
+  var money=function(n){return '£'+new Intl.NumberFormat('en-GB').format(Math.round(n));};
+  var esc=function(s){return String(s).replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch];});};
+
+  var people={
+    p1:{name:'Margaret A. Whitfield',role:'Director',dob:'Mar 1968',nat:'British',occ:'Company director',appts:[
+      {co:'c1',role:'Director',appointed:'12 Jan 2015',status:'active'},
+      {co:'c3',role:'Director',appointed:'04 Jun 2019',status:'active'},
+      {co:'c5',role:'Director',appointed:'21 Sep 2012',resigned:'30 Nov 2021',status:'resigned'}]},
+    p2:{name:'David R. Okonkwo',role:'Director',dob:'Aug 1975',nat:'British',occ:'Chartered surveyor',appts:[
+      {co:'c1',role:'Director',appointed:'12 Jan 2015',status:'active'},
+      {co:'c2',role:'Director',appointed:'18 Mar 2017',status:'active'}]},
+    p3:{name:'Sarah Lindqvist',role:'Director',dob:'Dec 1981',nat:'Swedish',occ:'Finance director',appts:[
+      {co:'c1',role:'Director',appointed:'03 Apr 2020',status:'active'}]},
+    p4:{name:'Northgate Nominees Ltd',role:'Corporate secretary',dob:'—',nat:'—',occ:'—',appts:[
+      {co:'c1',role:'Secretary',appointed:'12 Jan 2015',status:'active'},
+      {co:'c4',role:'Secretary',appointed:'09 Feb 2016',status:'active'}]},
+    p5:{name:'James P. Hollis',role:'Director',dob:'Jul 1963',nat:'British',occ:'Property developer',appts:[
+      {co:'c2',role:'Director',appointed:'18 Mar 2017',status:'active'},
+      {co:'c5',role:'Director',appointed:'01 Jan 2010',status:'active'}]}
+  };
+
+  var companies=[
+    {id:'c1',no:'09384721',name:'Riverside Wharf Developments Ltd',status:'active',type:'Private limited',
+      inc:'12 Jan 2015',sic:'68100 — Buying & selling of own real estate',addr:'4 Kingsway, London WC2B 6AN',
+      accDue:'30 Sep 2026',confDue:'26 Jan 2027',overdue:false,officers:['p1','p2','p3','p4'],
+      pscs:[{name:'Whitfield Family Holdings Ltd',kind:'Corporate entity',notified:'06 Apr 2016',nat:'England',control:['Ownership of shares — 75%+','Voting rights — 75%+','Right to appoint/remove directors']},
+            {name:'Margaret A. Whitfield',kind:'Individual',notified:'06 Apr 2016',nat:'British',control:['Ownership of shares — 25-50% (indirect)']}],
+      charges:[{created:'14 Feb 2019',lender:'Shawbrook Bank Plc',status:'outstanding',amount:4200000},
+               {created:'02 Aug 2016',lender:'Lloyds Bank Plc',status:'satisfied',amount:1800000}],
+      filings:[{date:'26 Jan 2026',cat:'confirmation',type:'CS01',desc:'Confirmation statement made 12 Jan 2026'},
+               {date:'18 Sep 2025',cat:'accounts',type:'AA',desc:'Group of companies accounts to 31 Mar 2025'},
+               {date:'03 Apr 2025',cat:'officers',type:'AP01',desc:'Appointment of director Sarah Lindqvist'},
+               {date:'14 Feb 2019',cat:'mortgage',type:'MR01',desc:'Registration of a charge — Shawbrook Bank Plc'}]},
+    {id:'c2',no:'10551892',name:'Hollis Estates (Southwark) Ltd',status:'active',type:'Private limited',
+      inc:'18 Mar 2017',sic:'41100 — Development of building projects',addr:'4 Kingsway, London WC2B 6AN',
+      accDue:'18 Dec 2025',confDue:'01 Apr 2026',overdue:true,officers:['p2','p5'],
+      pscs:[{name:'James P. Hollis',kind:'Individual',notified:'18 Mar 2017',nat:'British',control:['Ownership of shares — 50-75%','Voting rights — 50-75%']}],
+      charges:[{created:'22 Jun 2021',lender:'OakNorth Bank Plc',status:'outstanding',amount:6750000}],
+      filings:[{date:'05 Mar 2025',cat:'confirmation',type:'CS01',desc:'Confirmation statement made 18 Mar 2024'},
+               {date:'22 Jun 2021',cat:'mortgage',type:'MR01',desc:'Registration of a charge — OakNorth Bank Plc'}]},
+    {id:'c3',no:'07729104',name:'Whitfield Family Holdings Ltd',status:'active',type:'Private limited',
+      inc:'04 Jun 2011',sic:'64209 — Activities of other holding companies',addr:'12 Cheapside, London EC2V 6DN',
+      accDue:'04 Mar 2026',confDue:'18 Jun 2026',overdue:false,officers:['p1'],
+      pscs:[{name:'Margaret A. Whitfield',kind:'Individual',notified:'06 Apr 2016',nat:'British',control:['Ownership of shares — 75%+','Voting rights — 75%+']}],
+      charges:[],filings:[{date:'18 Jun 2025',cat:'confirmation',type:'CS01',desc:'Confirmation statement made 04 Jun 2025'},
+               {date:'28 Feb 2025',cat:'accounts',type:'AA',desc:'Total exemption full accounts to 30 Jun 2024'}]},
+    {id:'c4',no:'11240663',name:'Kingsway Nominee Services Ltd',status:'dormant',type:'Private limited',
+      inc:'09 Feb 2016',sic:'82990 — Other business support',addr:'12 Cheapside, London EC2V 6DN',
+      accDue:'31 May 2026',confDue:'23 Feb 2026',overdue:false,officers:['p4'],
+      pscs:[{name:'Whitfield Family Holdings Ltd',kind:'Corporate entity',notified:'09 Feb 2016',nat:'England',control:['Ownership of shares — 75%+']}],charges:[],
+      filings:[{date:'23 Feb 2025',cat:'confirmation',type:'CS01',desc:'Confirmation statement made 09 Feb 2025'},
+               {date:'10 Nov 2024',cat:'accounts',type:'AA',desc:'Dormant company accounts to 28 Feb 2024'}]},
+    {id:'c5',no:'06913357',name:'Meridian Land & Build Ltd',status:'dissolved',type:'Private limited',
+      inc:'01 Jan 2010',sic:'41100 — Development of building projects',addr:'8 Finch Lane, Manchester M2 7AB',
+      accDue:'—',confDue:'—',overdue:false,officers:['p5'],pscs:[],
+      charges:[{created:'15 Mar 2014',lender:'Barclays Bank Plc',status:'satisfied',amount:2300000}],
+      filings:[{date:'14 Aug 2022',cat:'gazette',type:'DISS',desc:'Final Gazette — dissolved via voluntary strike-off'},
+               {date:'09 May 2022',cat:'gazette',type:'GAZ1',desc:'First Gazette notice for voluntary strike-off'}]}
+  ];
+  var coById={}; companies.forEach(function(c){coById[c.id]=c;});
+
+  var ownership={
+    c1:[{name:'Whitfield Family Holdings Ltd',kind:'corporate',pct:'75%+',linkCo:'c3'},
+        {name:'Margaret A. Whitfield',kind:'individual',pct:'25-50%'}],
+    c2:[{name:'James P. Hollis',kind:'individual',pct:'50-75%',ubo:true}],
+    c3:[{name:'Margaret A. Whitfield',kind:'individual',pct:'75%+',ubo:true}],
+    c4:[{name:'Whitfield Family Holdings Ltd',kind:'corporate',pct:'75%+',linkCo:'c3'}],
+    c5:[]
+  };
+
+  var statusColor=function(s){
+    if(s==='active') return ['var(--color-background-success)','var(--color-text-success)'];
+    if(s==='dissolved') return ['var(--color-background-danger)','var(--color-text-danger)'];
+    return ['var(--color-background-secondary)','var(--color-text-secondary)'];
+  };
+  var catIcon={confirmation:'ti-clipboard-check',accounts:'ti-file-invoice',officers:'ti-user-plus',mortgage:'ti-building-bank',gazette:'ti-news'};
+  var state={view:'dashboard',co:null,tab:'overview',person:null,q:''};
+  var setHTML=function(el,html){el.innerHTML=html;};
+
+  function pill(t,bg,fg){return '<span style="display:inline-block;background:'+bg+';color:'+fg+';font-size:12px;padding:3px 10px;border-radius:999px;white-space:nowrap;">'+t+'</span>';}
+  function metric(l,v,s){return '<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:0.85rem 1rem;"><div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:6px;">'+l+'</div><div style="font-size:18px;font-weight:500;color:var(--color-text-primary);line-height:1.2;">'+v+'</div>'+(s?'<div style="font-size:12px;color:var(--color-text-tertiary);margin-top:3px;">'+s+'</div>':'')+'</div>';}
+  function initials(n){var p=n.replace(/[^A-Za-z ]/g,'').trim().split(/\s+/);return ((p[0]||'?')[0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase();}
+  function avatar(n){return '<div style="width:34px;height:34px;flex:0 0 34px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;">'+initials(n)+'</div>';}
+  function breadcrumb(parts){var h='<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px;color:var(--color-text-secondary);margin-bottom:14px;">';parts.forEach(function(p,i){if(i>0)h+='<i class="ti ti-chevron-right" style="font-size:14px;"></i>';if(p.action)h+='<a data-act="'+p.action+'" style="cursor:pointer;color:var(--color-text-info);">'+p.label+'</a>';else h+='<span style="color:var(--color-text-primary);">'+p.label+'</span>';});return h+'</div>';}
+
+  function renderDashboard(){
+    var active=companies.filter(function(c){return c.status==='active';}).length;
+    var chargeTotal=companies.reduce(function(a,c){return a+c.charges.filter(function(x){return x.status==='outstanding';}).reduce(function(s,x){return s+x.amount;},0);},0);
+    var q=state.q.toLowerCase();
+    var rows=companies.filter(function(c){return !q||c.name.toLowerCase().indexOf(q)>=0||c.no.indexOf(q)>=0;});
+    var h='<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:16px;"><div style="font-size:22px;font-weight:600;color:var(--color-text-primary);">Companies House portfolio</div><div style="font-size:13px;color:var(--color-text-secondary);">'+companies.length+' companies tracked</div></div>';
+    h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:16px;">'+metric('Total companies',fmt(companies.length))+metric('Active',fmt(active))+metric('Dissolved / dormant',fmt(companies.length-active))+metric('Outstanding charges',money(chargeTotal))+'</div>';
+    h+='<div style="position:relative;margin-bottom:12px;"><i class="ti ti-search" style="position:absolute;left:12px;top:11px;font-size:16px;color:var(--color-text-tertiary);"></i><input id="q2" placeholder="Search name or company number…" value="'+esc(state.q)+'" style="padding-left:34px;" /></div>';
+    h+='<div style="background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;">';
+    rows.forEach(function(c,i){var sc=statusColor(c.status);
+      h+='<div class="corow" data-co="'+c.id+'" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;'+(i?'border-top:1px solid var(--color-border-tertiary);':'')+'"><div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);">'+c.name+'</div><div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;">No. '+c.no+' · inc. '+c.inc+'</div></div><div style="text-align:right;font-size:12px;color:var(--color-text-secondary);">'+c.officers.length+' people · '+c.pscs.length+' PSC</div>'+pill(c.status,sc[0],sc[1])+(c.overdue?' '+pill('accounts overdue','var(--color-background-danger)','var(--color-text-danger)'):'')+'<i class="ti ti-chevron-right" style="font-size:18px;color:var(--color-text-tertiary);"></i></div>';});
+    if(!rows.length)h+='<div style="padding:24px;text-align:center;color:var(--color-text-tertiary);font-size:13px;">No companies match “'+esc(state.q)+'”.</div>';
+    return h+'</div>';
+  }
+
+  function tabBar(c){
+    var tabs=[['overview','Overview','ti-building'],['ownership','Ownership tree','ti-sitemap'],['people','People ('+c.officers.length+')','ti-users'],['psc','PSC ('+c.pscs.length+')','ti-shield-half'],['filings','Filings ('+c.filings.length+')','ti-file-stack'],['charges','Charges ('+c.charges.length+')','ti-building-bank']];
+    var h='<div style="display:flex;gap:4px;border-bottom:1px solid var(--color-border-tertiary);margin-bottom:16px;overflow-x:auto;">';
+    tabs.forEach(function(t){var on=state.tab===t[0];h+='<a data-tab="'+t[0]+'" style="cursor:pointer;padding:9px 13px;font-size:13px;white-space:nowrap;border-bottom:2px solid '+(on?'var(--color-text-info)':'transparent')+';color:'+(on?'var(--color-text-info)':'var(--color-text-secondary)')+';font-weight:'+(on?'500':'400')+';"><i class="ti '+t[2]+'" style="font-size:15px;vertical-align:-2px;margin-right:5px;"></i>'+t[1]+'</a>';});
+    return h+'</div>';
+  }
+
+  function tabOverview(c){
+    var h='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px;">'+metric('Company type',c.type)+metric('Incorporated',c.inc)+metric('Accounts due',c.accDue,c.overdue?'Overdue':'On time')+metric('Confirmation due',c.confDue)+metric('People',fmt(c.officers.length))+metric('Outstanding charges',money(c.charges.filter(function(x){return x.status==='outstanding';}).reduce(function(s,x){return s+x.amount;},0)))+'</div>';
+    h+='<div style="background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;"><table style="width:100%;font-size:13px;border-collapse:collapse;"><tr><td style="color:var(--color-text-secondary);padding:6px 0;width:42%;"><i class="ti ti-map-pin" style="font-size:15px;vertical-align:-2px;margin-right:6px;"></i>Registered office</td><td style="padding:6px 0;color:var(--color-text-primary);">'+c.addr+'</td></tr><tr><td style="color:var(--color-text-secondary);padding:6px 0;"><i class="ti ti-briefcase" style="font-size:15px;vertical-align:-2px;margin-right:6px;"></i>Nature of business (SIC)</td><td style="padding:6px 0;color:var(--color-text-primary);">'+c.sic+'</td></tr></table></div>';
+    return h;
+  }
+
+  function treeNode(label, sub, opts){
+    opts=opts||{};
+    var icon=opts.icon||'ti-building', iconBg=opts.iconBg||'var(--color-background-secondary)', iconFg=opts.iconFg||'var(--color-text-secondary)';
+    var clickable=opts.linkCo?' class="corow" data-co="'+opts.linkCo+'" ':' ';
+    var cursor=opts.linkCo?'cursor:pointer;':'';
+    return '<div'+clickable+'style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);'+cursor+'">'
+      +'<div style="width:30px;height:30px;flex:0 0 30px;border-radius:6px;background:'+iconBg+';color:'+iconFg+';display:flex;align-items:center;justify-content:center;"><i class="ti '+icon+'" style="font-size:17px;"></i></div>'
+      +'<div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:500;color:var(--color-text-primary);">'+label+'</div><div style="font-size:12px;color:var(--color-text-secondary);margin-top:1px;">'+sub+'</div></div>'
+      +(opts.badge||'')
+      +(opts.linkCo?'<i class="ti ti-chevron-right" style="font-size:16px;color:var(--color-text-tertiary);"></i>':'')+'</div>';
+  }
+
+  function buildTree(coId, depth, seen){
+    var owners=ownership[coId]||[];
+    if(!owners.length) return '<div style="margin-left:'+(depth*22)+'px;font-size:12px;color:var(--color-text-tertiary);padding:6px 0 6px 16px;border-left:2px solid var(--color-border-tertiary);">No PSC / ownership recorded</div>';
+    var h='';
+    owners.forEach(function(o){
+      var connector=depth>0?'border-left:2px solid var(--color-border-secondary);margin-left:'+((depth-1)*22+15)+'px;padding-left:16px;':'';
+      var wrap='<div style="position:relative;'+connector+'padding-top:8px;">';
+      if(o.kind==='corporate'){
+        var badge=pill(o.pct,'var(--color-background-info)','var(--color-text-info)');
+        h+=wrap+treeNode(o.name,'Corporate PSC · controls '+o.pct,{icon:'ti-building-skyscraper',iconBg:'var(--color-background-info)',iconFg:'var(--color-text-info)',badge:badge,linkCo:o.linkCo})+'</div>';
+        if(o.linkCo && seen.indexOf(o.linkCo)<0){ seen.push(o.linkCo); h+=buildTree(o.linkCo, depth+1, seen); }
+      } else {
+        var ubo=o.ubo;
+        var badge2=ubo?pill('Ultimate owner','var(--color-background-success)','var(--color-text-success)'):pill(o.pct,'var(--color-background-secondary)','var(--color-text-secondary)');
+        h+=wrap+treeNode(o.name,(ubo?'Individual · ultimate beneficial owner · ':'Individual · ')+'controls '+o.pct,{icon:ubo?'ti-user-check':'ti-user',iconBg:ubo?'var(--color-background-success)':'var(--color-background-secondary)',iconFg:ubo?'var(--color-text-success)':'var(--color-text-secondary)',badge:badge2})+'</div>';
+      }
+    });
+    return h;
+  }
+
+  function tabOwnership(c){
+    var h='<div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px;"><i class="ti ti-info-circle" style="font-size:14px;vertical-align:-2px;"></i> Ownership flows upward: each corporate PSC is expanded until an individual ultimate beneficial owner is reached. Click any company in the chain to jump to it.</div>';
+    h+=treeNode(c.name,'Subject company · no. '+c.no,{icon:'ti-target',iconBg:'var(--color-background-secondary)',iconFg:'var(--color-text-primary)'});
+    h+='<div style="margin:2px 0 0 14px;border-left:2px dashed var(--color-border-secondary);padding-left:2px;"></div>';
+    h+=buildTree(c.id,1,[c.id]);
+    return h;
+  }
+
+  function tabPeople(c){
+    var h='<div style="background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;">';
+    c.officers.forEach(function(pid,i){var p=people[pid];
+      h+='<div class="prow" data-person="'+pid+'" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;'+(i?'border-top:1px solid var(--color-border-tertiary);':'')+'">'+avatar(p.name)+'<div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);">'+p.name+'</div><div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;">'+p.role+' · '+p.nat+(p.occ!=='—'?' · '+p.occ:'')+'</div></div><div style="text-align:right;font-size:12px;color:var(--color-text-tertiary);">'+p.appts.length+' appointment'+(p.appts.length>1?'s':'')+'</div><i class="ti ti-chevron-right" style="font-size:18px;color:var(--color-text-tertiary);"></i></div>';});
+    return h+'</div><div style="font-size:12px;color:var(--color-text-tertiary);margin-top:8px;"><i class="ti ti-info-circle" style="font-size:14px;vertical-align:-2px;"></i> Click a person to drill into their appointments across the portfolio.</div>';
+  }
+  function tabPsc(c){
+    if(!c.pscs.length)return '<div style="padding:28px;text-align:center;color:var(--color-text-tertiary);font-size:13px;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);">No persons with significant control recorded.</div>';
+    var h='';c.pscs.forEach(function(p){h+='<div style="background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:10px;"><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">'+avatar(p.name)+'<div><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);">'+p.name+'</div><div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;">'+p.kind+' · notified '+p.notified+' · '+p.nat+'</div></div></div><div style="display:flex;flex-wrap:wrap;gap:6px;">';p.control.forEach(function(ctrl){h+=pill(ctrl,'var(--color-background-info)','var(--color-text-info)');});h+='</div></div>';});return h;
+  }
+  function tabFilings(c){
+    var h='<div style="background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;">';
+    c.filings.forEach(function(f,i){h+='<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 16px;'+(i?'border-top:1px solid var(--color-border-tertiary);':'')+'"><i class="ti '+(catIcon[f.cat]||'ti-file')+'" style="font-size:18px;color:var(--color-text-secondary);margin-top:1px;"></i><div style="flex:1;min-width:0;"><div style="font-size:13px;color:var(--color-text-primary);">'+f.desc+'</div><div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;">'+f.date+' · '+f.cat+'</div></div>'+pill(f.type,'var(--color-background-secondary)','var(--color-text-secondary)')+'</div>';});return h+'</div>';
+  }
+  function tabCharges(c){
+    if(!c.charges.length)return '<div style="padding:28px;text-align:center;color:var(--color-text-tertiary);font-size:13px;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);">No charges registered against this company.</div>';
+    var h='<div style="background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;">';
+    c.charges.forEach(function(ch,i){var sat=ch.status==='satisfied';h+='<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;'+(i?'border-top:1px solid var(--color-border-tertiary);':'')+'"><i class="ti ti-building-bank" style="font-size:18px;color:var(--color-text-secondary);"></i><div style="flex:1;min-width:0;"><div style="font-size:13px;font-weight:500;color:var(--color-text-primary);">'+ch.lender+'</div><div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;">Created '+ch.created+' · '+money(ch.amount)+'</div></div>'+pill(ch.status,sat?'var(--color-background-success)':'var(--color-background-warning)',sat?'var(--color-text-success)':'var(--color-text-warning)')+'</div>';});return h+'</div>';
+  }
+
+  function renderCompany(){
+    var c=coById[state.co];var sc=statusColor(c.status);
+    var h=breadcrumb([{label:'Portfolio',action:'home'},{label:c.name}]);
+    h+='<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;"><div style="flex:1;min-width:0;"><div style="font-size:20px;font-weight:600;color:var(--color-text-primary);">'+c.name+'</div><div style="font-size:13px;color:var(--color-text-secondary);margin-top:3px;">Company no. '+c.no+' · '+c.type+'</div></div>'+pill(c.status,sc[0],sc[1])+(c.overdue?' '+pill('accounts overdue','var(--color-background-danger)','var(--color-text-danger)'):'')+'</div>';
+    h+=tabBar(c);
+    h+=state.tab==='overview'?tabOverview(c):state.tab==='ownership'?tabOwnership(c):state.tab==='people'?tabPeople(c):state.tab==='psc'?tabPsc(c):state.tab==='filings'?tabFilings(c):tabCharges(c);
+    return h;
+  }
+  function renderPerson(){
+    var p=people[state.person];var fromCo=coById[state.co];
+    var h=breadcrumb([{label:'Portfolio',action:'home'},{label:fromCo.name,action:'co'},{label:p.name}]);
+    h+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">'+avatar(p.name)+'<div><div style="font-size:20px;font-weight:600;color:var(--color-text-primary);">'+p.name+'</div><div style="font-size:13px;color:var(--color-text-secondary);margin-top:2px;">'+p.role+(p.dob!=='—'?' · born '+p.dob:'')+' · '+p.nat+(p.occ!=='—'?' · '+p.occ:'')+'</div></div></div>';
+    h+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:16px 0;">'+metric('Total appointments',fmt(p.appts.length))+metric('Active',fmt(p.appts.filter(function(a){return a.status==='active';}).length))+metric('Resigned',fmt(p.appts.filter(function(a){return a.status==='resigned';}).length))+'</div>';
+    h+='<div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;">Appointments across the portfolio</div>';
+    h+='<div style="background:var(--color-background-primary);border:1px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;">';
+    p.appts.forEach(function(a,i){var co=coById[a.co];var act=a.status==='active';h+='<div class="corow" data-co="'+a.co+'" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;'+(i?'border-top:1px solid var(--color-border-tertiary);':'')+'"><div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);">'+co.name+'</div><div style="font-size:12px;color:var(--color-text-secondary);margin-top:2px;">'+a.role+' · appointed '+a.appointed+(a.resigned?' · resigned '+a.resigned:'')+'</div></div>'+pill(a.status,act?'var(--color-background-success)':'var(--color-background-secondary)',act?'var(--color-text-success)':'var(--color-text-secondary)')+'<i class="ti ti-chevron-right" style="font-size:18px;color:var(--color-text-tertiary);"></i></div>';});
+    return h+'</div>';
+  }
+
+  function render(){
+    var root=document.getElementById('app2');
+    setHTML(root, state.view==='dashboard'?renderDashboard():state.view==='company'?renderCompany():renderPerson());
+    var q=document.getElementById('q2');
+    if(q)q.addEventListener('input',function(e){state.q=e.target.value;var pos=e.target.selectionStart;render();var nq=document.getElementById('q2');if(nq){nq.focus();nq.setSelectionRange(pos,pos);}});
+    root.querySelectorAll('.corow').forEach(function(el){if(el.getAttribute('data-co'))el.addEventListener('click',function(){state.co=el.getAttribute('data-co');state.view='company';state.tab='overview';render();window.scrollTo(0,0);});});
+    root.querySelectorAll('.prow').forEach(function(el){el.addEventListener('click',function(){state.person=el.getAttribute('data-person');state.view='person';render();window.scrollTo(0,0);});});
+    root.querySelectorAll('[data-tab]').forEach(function(el){el.addEventListener('click',function(){state.tab=el.getAttribute('data-tab');render();});});
+    root.querySelectorAll('[data-act]').forEach(function(el){el.addEventListener('click',function(){var a=el.getAttribute('data-act');if(a==='home'){state.view='dashboard';}else if(a==='co'){state.view='company';state.tab='ownership';}render();window.scrollTo(0,0);});});
+  }
+  render();
+})();
+</script>
+</body>
+</html>
