@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QualityHub — QMS Solution Mockup</title>
+<style>
+  :root{
+    --brand:#115EA3; --brand-hover:#0F548C; --brand-2:#0F6CBD; --brand-tint:#EBF3FC;
+    --ink:#242424; --ink-2:#424242; --ink-3:#616161; --ink-4:#808080;
+    --stroke:#E1E1E1; --stroke-2:#EDEDED; --bg:#F5F5F5; --surface:#FFFFFF; --surface-2:#FAFAFA;
+    --ok:#0E700E; --ok-bg:#E7F4E7; --warn:#9A5B00; --warn-bg:#FFF4CE; --danger:#B10E1C; --danger-bg:#FDE7E9;
+    --info:#115EA3; --info-bg:#EBF3FC; --neutral:#5C5C5C; --neutral-bg:#F0F0F0; --purple:#5B3D9E; --purple-bg:#F3EEFB;
+    --radius:6px; --radius-lg:10px; --shadow:0 1.6px 3.6px rgba(0,0,0,.10),0 .3px .9px rgba(0,0,0,.07);
+    --rail:250px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:"Segoe UI","Segoe UI Web (West European)",-apple-system,BlinkMacSystemFont,Roboto,"Helvetica Neue",sans-serif;
+    color:var(--ink);background:var(--bg);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer}
+  a{color:var(--brand);text-decoration:none}
+
+  .app{display:grid;grid-template-columns:var(--rail) 1fr;grid-template-rows:48px 1fr;height:100vh;grid-template-areas:"brand topbar" "rail main"}
+  .topbrand{grid-area:brand;background:var(--brand);color:#fff;display:flex;align-items:center;gap:10px;padding:0 16px;font-weight:600;letter-spacing:.2px}
+  .topbrand .logo{width:24px;height:24px;border-radius:5px;background:linear-gradient(135deg,#fff,#cfe4fb);display:grid;place-items:center;color:var(--brand);font-weight:800;font-size:14px}
+  .topbar{grid-area:topbar;background:var(--brand);color:#fff;display:flex;align-items:center;gap:14px;padding:0 16px 0 8px}
+  .topbar .search{flex:1;max-width:520px;margin:0 auto 0 8px;position:relative}
+  .topbar .search input{width:100%;height:30px;border:none;border-radius:var(--radius);padding:0 12px 0 32px;font-size:13px;background:#fff;color:var(--ink)}
+  .topbar .search svg{position:absolute;left:9px;top:7px;opacity:.55}
+  .topbar .spacer{flex:1}
+  .topbar .iconbtn{width:32px;height:32px;border-radius:var(--radius);border:none;background:transparent;color:#fff;display:grid;place-items:center}
+  .topbar .iconbtn:hover{background:rgba(255,255,255,.16)}
+  .topbar .avatar{width:30px;height:30px;border-radius:50%;background:#fff;color:var(--brand);font-weight:700;display:grid;place-items:center;font-size:12px}
+  .archtoggle{display:flex;align-items:center;gap:7px;font-size:12px;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);padding:5px 10px;border-radius:14px;white-space:nowrap}
+  .archtoggle.on{background:#fff;color:var(--brand);border-color:#fff}
+
+  .rail{grid-area:rail;background:var(--surface);border-right:1px solid var(--stroke);overflow-y:auto;padding:8px 0}
+  .rail .group{padding:14px 16px 4px;font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-4);font-weight:600}
+  .navitem{display:flex;align-items:center;gap:11px;padding:8px 16px;color:var(--ink-2);border-left:3px solid transparent;font-size:13.5px}
+  .navitem:hover{background:var(--surface-2)}
+  .navitem.active{background:var(--brand-tint);border-left-color:var(--brand);color:var(--brand);font-weight:600}
+  .navitem .ic{width:18px;display:grid;place-items:center;opacity:.85}
+  .navitem .badge{margin-left:auto;background:var(--danger-bg);color:var(--danger);border-radius:10px;font-size:11px;font-weight:700;padding:1px 7px}
+  .navitem.active .badge{background:#fff}
+
+  .main{grid-area:main;overflow-y:auto}
+  .pagehead{background:var(--surface);border-bottom:1px solid var(--stroke);padding:16px 28px 0}
+  .breadcrumb{font-size:12.5px;color:var(--ink-3);margin-bottom:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .breadcrumb a{color:var(--ink-3)} .breadcrumb a:hover{color:var(--brand)} .breadcrumb .sep{opacity:.5}
+  .pagehead h1{margin:2px 0;font-size:22px;font-weight:600;letter-spacing:-.2px}
+  .pagehead .sub{color:var(--ink-3);font-size:13px;margin-bottom:14px}
+  .cmdbar{display:flex;gap:8px;flex-wrap:wrap}
+  .content{padding:22px 28px 60px}
+
+  .btn{height:32px;padding:0 14px;border-radius:var(--radius);border:1px solid var(--stroke);background:var(--surface);color:var(--ink);font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:7px}
+  .btn:hover{background:var(--surface-2)}
+  .btn.primary{background:var(--brand);border-color:var(--brand);color:#fff} .btn.primary:hover{background:var(--brand-hover)}
+
+  .grid{display:grid;gap:16px}
+  .kpis{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+  .card{background:var(--surface);border:1px solid var(--stroke);border-radius:var(--radius-lg);box-shadow:var(--shadow)}
+  .kpi{padding:16px 18px}
+  .kpi .label{font-size:12.5px;color:var(--ink-3);display:flex;align-items:center;gap:8px}
+  .kpi .num{font-size:30px;font-weight:600;margin-top:6px;line-height:1}
+  .kpi .delta{font-size:12px;margin-top:7px;color:var(--ink-3)}
+  .kpi .delta.up{color:var(--danger)} .kpi .delta.down{color:var(--ok)} .kpi .delta.flat{color:var(--ink-4)}
+  .kpi .ring{width:38px;height:38px;float:right;margin-top:-2px}
+
+  .section{margin-top:22px}
+  .section h2{font-size:15px;font-weight:600;margin:0 0 12px;display:flex;align-items:center;gap:9px}
+  .section h2 .count{font-size:12px;color:var(--ink-4);font-weight:500}
+  .two-col{grid-template-columns:1.4fr 1fr;align-items:start}
+  @media(max-width:980px){.two-col{grid-template-columns:1fr}}
+
+  .attn{border:1px solid var(--stroke);border-radius:var(--radius-lg);overflow:hidden}
+  .attn .row{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--stroke-2);background:var(--surface);cursor:pointer}
+  .attn .row:last-child{border-bottom:none} .attn .row:hover{background:var(--surface-2)}
+  .attn .dot{width:9px;height:9px;border-radius:50%;flex:none}
+  .attn .ttl{font-weight:600;font-size:13.5px} .attn .meta{color:var(--ink-3);font-size:12.5px}
+  .attn .when{margin-left:auto;font-weight:600;font-size:12.5px;white-space:nowrap}
+
+  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .field{position:relative}
+  .field input,.field select{height:32px;border:1px solid var(--stroke);border-radius:var(--radius);background:var(--surface);font-size:13px;padding:0 10px;color:var(--ink)}
+  .field.search input{padding-left:30px;width:260px}
+  .field.search svg{position:absolute;left:8px;top:8px;opacity:.5}
+  .field select{padding-right:26px;cursor:pointer}
+  .muted-count{margin-left:auto;color:var(--ink-4);font-size:12.5px}
+  table{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid var(--stroke);border-radius:var(--radius-lg);overflow:hidden}
+  thead th{text-align:left;font-size:12px;color:var(--ink-3);font-weight:600;padding:10px 14px;background:var(--surface-2);border-bottom:1px solid var(--stroke);user-select:none;cursor:pointer;white-space:nowrap}
+  thead th .arrow{font-size:10px;margin-left:4px;opacity:.6}
+  tbody td{padding:11px 14px;border-bottom:1px solid var(--stroke-2);font-size:13.5px;vertical-align:middle}
+  tbody tr:last-child td{border-bottom:none} tbody tr{cursor:pointer} tbody tr:hover{background:var(--brand-tint)}
+  td .id{font-variant-numeric:tabular-nums;color:var(--ink-3);font-size:12.5px}
+  td .strong{font-weight:600} td .sub{color:var(--ink-4);font-size:12px}
+
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:11px;white-space:nowrap}
+  .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .pill.ok{color:var(--ok);background:var(--ok-bg)} .pill.warn{color:var(--warn);background:var(--warn-bg)}
+  .pill.danger{color:var(--danger);background:var(--danger-bg)} .pill.info{color:var(--info);background:var(--info-bg)} .pill.neutral{color:var(--neutral);background:var(--neutral-bg)}
+  .prio{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:4px}
+  .prio.high{color:var(--danger);background:var(--danger-bg)} .prio.med{color:var(--warn);background:var(--warn-bg)} .prio.low{color:var(--neutral);background:var(--neutral-bg)}
+
+  .empty{padding:48px 20px;text-align:center;color:var(--ink-4)}
+  .empty .big{font-size:15px;color:var(--ink-3);font-weight:600;margin-bottom:4px}
+
+  .detail{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
+  @media(max-width:980px){.detail{grid-template-columns:1fr}}
+  .panel{background:var(--surface);border:1px solid var(--stroke);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:18px 20px;margin-bottom:16px}
+  .panel h3{margin:0 0 14px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .kv{display:grid;grid-template-columns:140px 1fr;gap:8px 14px;font-size:13.5px}
+  .kv dt{color:var(--ink-3)} .kv dd{margin:0;font-weight:500}
+  .descbox{font-size:13.5px;color:var(--ink-2);line-height:1.6;white-space:pre-wrap}
+
+  .timeline{position:relative;padding-left:6px}
+  .tl{position:relative;padding:0 0 18px 26px;border-left:2px solid var(--stroke);margin-left:5px}
+  .tl:last-child{border-left-color:transparent;padding-bottom:0}
+  .tl .node{position:absolute;left:-8px;top:1px;width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--brand)}
+  .tl.done .node{background:var(--brand);border-color:var(--brand)} .tl.future .node{border-color:var(--stroke)}
+  .tl .t{font-weight:600;font-size:13px} .tl .d{color:var(--ink-3);font-size:12px;margin-top:1px} .tl .who{color:var(--ink-4);font-size:12px}
+
+  .step{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid var(--stroke-2)}
+  .step:last-child{border-bottom:none}
+  .step .chk{width:18px;height:18px;border-radius:4px;border:2px solid var(--stroke);flex:none;margin-top:1px;display:grid;place-items:center;color:#fff;font-size:11px}
+  .step.done .chk{background:var(--ok);border-color:var(--ok)} .step.active .chk{border-color:var(--brand)}
+  .step .body .t{font-weight:600;font-size:13.5px} .step .body .m{color:var(--ink-3);font-size:12.5px;margin-top:2px}
+  .step .when{margin-left:auto;color:var(--ink-4);font-size:12px;white-space:nowrap}
+
+  .progress{height:8px;border-radius:5px;background:var(--stroke-2);overflow:hidden} .progress>span{display:block;height:100%;border-radius:5px;background:var(--brand)}
+  .linkrec{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--stroke-2);font-size:13px}
+  .linkrec:last-child{border-bottom:none}
+  .linkrec .tag{font-size:11px;font-weight:700;color:var(--ink-4);background:var(--neutral-bg);border-radius:4px;padding:1px 6px}
+
+  .statrow{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+  .stat{padding:15px 18px} .stat .l{font-size:12px;color:var(--ink-3)} .stat .v{font-size:26px;font-weight:600;margin-top:4px} .stat .s{font-size:12px;color:var(--ink-4);margin-top:3px}
+  .charts{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+  .chartcard{padding:16px 18px} .chartcard h3{margin:0 0 14px;font-size:14px;font-weight:600}
+  .donutwrap{display:flex;align-items:center;gap:18px}
+  .legend2{display:flex;flex-direction:column;gap:7px;font-size:12.5px}
+  .legend2 span{display:flex;align-items:center;gap:7px} .legend2 i{width:10px;height:10px;border-radius:3px}
+
+  .complibgrid{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+  .complib{padding:18px 20px;border-top:3px solid var(--purple)}
+  .complib .nm{font-size:15px;font-weight:700;font-family:"Cascadia Code",Consolas,monospace;color:var(--purple)}
+  .complib .ty{font-size:11.5px;color:var(--ink-4);margin:3px 0 10px}
+  .complib .ds{font-size:13px;color:var(--ink-2);line-height:1.5;margin-bottom:12px}
+  .complib .io{font-size:12px;border-top:1px solid var(--stroke-2);padding-top:9px;margin-top:9px}
+  .complib .io b{color:var(--ink-3);font-weight:600}
+  .complib .used{font-size:11.5px;color:var(--ink-4);margin-top:9px}
+
+  .arch-note{display:none}
+  body.show-arch .arch-note{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;background:#FFF8E1;color:#7A5200;border:1px dashed #E0B23B;border-radius:5px;padding:2px 8px;margin:6px 6px 0 0;vertical-align:middle}
+  body.show-arch .arch-note.flow{background:#EEF6FF;color:#0A4A86;border-color:#7FB1E0}
+  body.show-arch .arch-note.pcf{background:var(--purple-bg);color:var(--purple);border-color:#B79BE0}
+  body.show-arch .arch-block{display:block !important}
+  .arch-block{display:none}
+  .arch-banner{display:none}
+  body.show-arch .arch-banner{display:block;background:#FFF8E1;border:1px solid #E0B23B;border-radius:var(--radius);padding:11px 14px;margin-bottom:16px;font-size:12.5px;color:#5C4200}
+  body.show-arch .arch-banner b{color:#3d2c00}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;margin-top:10px}
+  .legend span{display:inline-flex;align-items:center;gap:5px} .legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+  .footnote{margin-top:36px;padding-top:14px;border-top:1px solid var(--stroke);color:var(--ink-4);font-size:11.5px;max-width:780px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbrand"><div class="logo">Q</div><span>QualityHub</span></div>
+  <div class="topbar">
+    <div class="search">
+      <svg width="14" height="14" viewBox="0 0 16 16"><circle cx="7" cy="7" r="5" stroke="#888" stroke-width="1.6" fill="none"/><path d="M11 11l3 3" stroke="#888" stroke-width="1.6"/></svg>
+      <input placeholder="Search across the QMS…  (mockup)"/>
+    </div>
+    <span class="spacer"></span>
+    <button class="archtoggle" id="archBtn" title="Reveal which SharePoint list, Power Automate flow or PCF component backs each surface">
+      <svg width="13" height="13" viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
+      Architecture notes
+    </button>
+    <button class="iconbtn" title="Notifications"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2a3 3 0 0 0-3 3c0 4-1.5 5-1.5 5h9S11 9 11 5a3 3 0 0 0-3-3Z" stroke="#fff" stroke-width="1.3" fill="none"/><path d="M6.5 13a1.5 1.5 0 0 0 3 0" stroke="#fff" stroke-width="1.3"/></svg></button>
+    <div class="avatar">LH</div>
+  </div>
+  <nav class="rail" id="rail"></nav>
+  <main class="main" id="main"></main>
+</div>
+
+<script>
+const TODAY = new Date('2026-06-27');
+const fmt = d => (d==='—'||!d) ? '—' : new Date(d).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+const daysFrom = d => Math.round((new Date(d)-TODAY)/86400000);
+const rel = d => { if(d==='—'||!d) return '—'; const n=daysFrom(d); if(n<0) return `${-n}d overdue`; if(n===0) return 'Today'; if(n<=21) return `in ${n}d`; return fmt(d); };
+
+/* ---------------- Sample data (UK-contextualised, illustrative) ---------------- */
+const DATA = {
+  documents:[
+    {id:'SOP-0042',title:'Batch Record Review & Release',type:'SOP',ver:'4.0',status:'Effective',owner:'A. Bruun',dept:'Manufacturing',eff:'2025-09-01',review:'2026-09-01'},
+    {id:'SOP-0118',title:'Supplier Qualification & Re-evaluation',type:'SOP',ver:'2.1',status:'In Review',owner:'M. Hereman',dept:'Procurement',eff:'2024-11-15',review:'2026-05-30'},
+    {id:'WI-0231',title:'Cleanroom Gowning — Grade C',type:'Work Instruction',ver:'1.3',status:'Effective',owner:'S. Okafor',dept:'Manufacturing',eff:'2025-06-10',review:'2026-06-10'},
+    {id:'POL-0007',title:'Data Integrity Policy (ALCOA+)',type:'Policy',ver:'3.0',status:'Effective',owner:'K. Christensen',dept:'Quality',eff:'2025-02-01',review:'2027-02-01'},
+    {id:'SOP-0205',title:'CAPA Management',type:'SOP',ver:'5.2',status:'Draft',owner:'A. Garcia',dept:'Quality',eff:'—',review:'—'},
+    {id:'FORM-0099',title:'Deviation Report Form',type:'Form',ver:'2.0',status:'Effective',owner:'A. Garcia',dept:'Quality',eff:'2025-01-20',review:'2026-07-04'},
+    {id:'SOP-0061',title:'Equipment Calibration Programme',type:'SOP',ver:'3.4',status:'Effective',owner:'R. Patel',dept:'Engineering',eff:'2024-12-01',review:'2026-06-15'},
+    {id:'SOP-0150',title:'Internal Audit Procedure',type:'SOP',ver:'2.0',status:'Pending Approval',owner:'K. Christensen',dept:'Quality',eff:'—',review:'—'},
+    {id:'WI-0188',title:'Visual Inspection of Vials',type:'Work Instruction',ver:'1.0',status:'Effective',owner:'S. Okafor',dept:'QC',eff:'2025-03-12',review:'2026-09-12'},
+    {id:'SOP-0033',title:'Complaint Handling & Vigilance',type:'SOP',ver:'4.1',status:'Effective',owner:'A. Garcia',dept:'Quality',eff:'2025-04-01',review:'2026-08-01'},
+    {id:'POL-0012',title:'Training & Competency Policy',type:'Policy',ver:'2.2',status:'Effective',owner:'H. Nair',dept:'HR',eff:'2025-05-05',review:'2027-05-05'},
+    {id:'SOP-0177',title:'Change Control Procedure',type:'SOP',ver:'3.0',status:'Effective',owner:'K. Christensen',dept:'Quality',eff:'2025-07-01',review:'2026-07-12'},
+  ],
+  capa:[
+    {id:'CAPA-2026-014',title:'Recurring fill-weight variation on Line 3',source:'Deviation',prio:'High',owner:'A. Garcia',due:'2026-06-20',status:'Action in Progress',stage:3},
+    {id:'CAPA-2026-019',title:'Late supplier CoA for API lot 22B',source:'Complaint',prio:'Medium',owner:'M. Hereman',due:'2026-07-10',status:'Investigation',stage:2},
+    {id:'CAPA-2026-021',title:'Audit finding — gowning log gaps',source:'Internal Audit',prio:'High',owner:'S. Okafor',due:'2026-07-02',status:'Action in Progress',stage:3},
+    {id:'CAPA-2026-009',title:'Calibration overdue on balance BAL-07',source:'Deviation',prio:'Medium',owner:'R. Patel',due:'2026-05-30',status:'Effectiveness Check',stage:4},
+    {id:'CAPA-2026-023',title:'Mislabelled retain samples',source:'Nonconformance',prio:'Low',owner:'A. Garcia',due:'2026-08-15',status:'Open',stage:1},
+    {id:'CAPA-2026-006',title:'Repeat OOS on dissolution method',source:'OOS',prio:'High',owner:'S. Okafor',due:'2026-06-30',status:'Investigation',stage:2},
+    {id:'CAPA-2025-188',title:'Document not retrieved at point of use',source:'Internal Audit',prio:'Low',owner:'K. Christensen',due:'2026-04-18',status:'Closed',stage:5},
+  ],
+  ncr:[
+    {id:'NCR-2026-058',title:'Vial crimp height out of tolerance',area:'Packaging',sev:'Major',raised:'2026-06-18',owner:'S. Okafor',status:'Under Investigation',capa:'CAPA-2026-014'},
+    {id:'NCR-2026-061',title:'Temperature excursion — cold store 2',area:'Warehouse',sev:'Critical',raised:'2026-06-22',owner:'R. Patel',status:'Containment',capa:''},
+    {id:'NCR-2026-052',title:'Incorrect label version on FORM-0099',area:'Quality',sev:'Minor',raised:'2026-06-09',owner:'A. Garcia',status:'Disposition',capa:''},
+    {id:'NCR-2026-047',title:'Missing second-person verification',area:'Manufacturing',sev:'Major',raised:'2026-05-28',owner:'A. Bruun',status:'Closed',capa:'CAPA-2026-021'},
+    {id:'NCR-2026-063',title:'Supplier delivered uncertified gloves',area:'Procurement',sev:'Minor',raised:'2026-06-24',owner:'M. Hereman',status:'Open',capa:''},
+  ],
+  change:[
+    {id:'CHG-2026-031',title:'Revise batch record review steps (SOP-0042)',type:'Major',status:'Approval',requestor:'A. Bruun',area:'Manufacturing',target:'2026-07-15'},
+    {id:'CHG-2026-028',title:'Add in-process weight check on Line 3',type:'Major',status:'Implementation',requestor:'A. Garcia',area:'Manufacturing',target:'2026-07-05'},
+    {id:'CHG-2026-036',title:'Revise cold-store 2 alarm setpoint',type:'Emergency',status:'Approval',requestor:'R. Patel',area:'Warehouse',target:'2026-06-29'},
+    {id:'CHG-2026-034',title:'Replace analytical balance BAL-07',type:'Minor',status:'Assessment',requestor:'R. Patel',area:'Engineering',target:'2026-08-01'},
+    {id:'CHG-2026-025',title:'Add secondary glove supplier',type:'Major',status:'Closed',requestor:'M. Hereman',area:'Procurement',target:'2026-05-20'},
+    {id:'CHG-2026-022',title:'Update Grade C gowning instruction',type:'Minor',status:'Closed',requestor:'S. Okafor',area:'Manufacturing',target:'2026-04-30'},
+  ],
+  audits:[
+    {id:'AUD-2026-04',title:'Internal audit — Manufacturing & Packaging',type:'Internal',scope:'Production',lead:'K. Christensen',date:'2026-07-08',status:'Scheduled',findings:0},
+    {id:'AUD-2026-03',title:'Supplier audit — Helix Pharma Ltd',type:'Supplier',scope:'API supplier',lead:'M. Hereman',date:'2026-06-12',status:'Report Due',findings:3},
+    {id:'AUD-2026-02',title:'Internal audit — Document Control',type:'Internal',scope:'Quality systems',lead:'A. Garcia',date:'2026-05-20',status:'Closed',findings:2},
+    {id:'AUD-2026-05',title:'MHRA inspection readiness review',type:'Regulatory',scope:'Site-wide',lead:'K. Christensen',date:'2026-09-15',status:'Planned',findings:0},
+    {id:'AUD-2026-01',title:'Internal audit — Laboratory (QC)',type:'Internal',scope:'QC lab',lead:'S. Okafor',date:'2026-03-04',status:'Closed',findings:1},
+  ],
+  training:[
+    {id:'TRN-1042',employee:'S. Okafor',course:'SOP-0205 CAPA Management v5.2',due:'2026-06-22',status:'Overdue',score:'—'},
+    {id:'TRN-1051',employee:'A. Bruun',course:'SOP-0042 Batch Record Review v4.0',due:'2026-07-10',status:'Assigned',score:'—'},
+    {id:'TRN-1033',employee:'R. Patel',course:'SOP-0061 Calibration Programme v3.4',due:'2026-06-15',status:'Overdue',score:'—'},
+    {id:'TRN-1028',employee:'A. Garcia',course:'POL-0007 Data Integrity v3.0',due:'2026-05-30',status:'Completed',score:'92%'},
+    {id:'TRN-1060',employee:'H. Nair',course:'POL-0012 Training Policy v2.2',due:'2026-07-20',status:'Assigned',score:'—'},
+    {id:'TRN-1019',employee:'S. Okafor',course:'WI-0188 Visual Inspection v1.0',due:'2026-06-01',status:'Completed',score:'88%'},
+    {id:'TRN-1066',employee:'M. Hereman',course:'SOP-0118 Supplier Qualification v2.1',due:'2026-07-12',status:'Assigned',score:'—'},
+  ],
+  complaints:[
+    {id:'CMP-2026-017',title:'Particulate observed in vial',customer:'Mercia NHS Trust',product:'BioVax-20',batch:'B2206-114',sev:'Critical',status:'Investigation',reportable:'Under review'},
+    {id:'CMP-2026-015',title:'Damaged outer packaging on receipt',customer:'Caledonia Pharmacy',product:'BioVax-20',batch:'B2205-098',sev:'Minor',status:'Closed',reportable:'No'},
+    {id:'CMP-2026-019',title:'Label legibility complaint',customer:'Severn Health Ltd',product:'ImmunoPlus',batch:'I2206-031',sev:'Minor',status:'Open',reportable:'No'},
+    {id:'CMP-2026-013',title:'Suspected reduced potency',customer:'Pennine Care Trust',product:'ImmunoPlus',batch:'I2204-077',sev:'Major',status:'Investigation',reportable:'Yes'},
+    {id:'CMP-2026-011',title:'Cold-chain breach reported by courier',customer:'Mercia NHS Trust',product:'BioVax-20',batch:'B2205-102',sev:'Major',status:'Closed',reportable:'Yes'},
+  ],
+  suppliers:[
+    {id:'SUP-014',name:'Helix Pharma Ltd',category:'Critical',status:'Approved',scope:'Active pharmaceutical ingredient',lastAudit:'2026-06-12',reEval:'2026-07-20'},
+    {id:'SUP-022',name:'Caledonia Glass Co',category:'Major',status:'Approved',scope:'Glass vials & containers',lastAudit:'2025-11-04',reEval:'2026-11-04'},
+    {id:'SUP-031',name:'Pennine Cold Logistics',category:'Major',status:'Conditional',scope:'Cold-chain distribution',lastAudit:'2026-02-18',reEval:'2026-08-18'},
+    {id:'SUP-009',name:'Albion Labels Ltd',category:'Minor',status:'Approved',scope:'Primary & secondary labels',lastAudit:'2025-09-30',reEval:'2026-09-30'},
+    {id:'SUP-040',name:'Tyne Sterile Services',category:'Critical',status:'Suspended',scope:'Contract sterilisation',lastAudit:'2026-01-15',reEval:'2026-06-15'},
+    {id:'SUP-027',name:'Mercia Glove Supplies',category:'Minor',status:'Approved',scope:'Cleanroom consumables',lastAudit:'2026-03-22',reEval:'2027-03-22'},
+  ],
+  equipment:[
+    {id:'BAL-07',name:'Analytical balance',category:'Balance',status:'Overdue',lastCal:'2025-12-30',nextCal:'2026-05-30',crit:'High'},
+    {id:'CS-02',name:'Cold store 2',category:'Storage',status:'Quarantined',lastCal:'2026-01-10',nextCal:'2026-07-10',crit:'High'},
+    {id:'FILL-03',name:'Line 3 filling machine',category:'Production',status:'In service',lastCal:'2026-04-02',nextCal:'2026-10-02',crit:'High'},
+    {id:'AUT-02',name:'Autoclave',category:'Sterilisation',status:'In service',lastCal:'2026-03-15',nextCal:'2026-09-15',crit:'High'},
+    {id:'HPLC-03',name:'HPLC system',category:'Laboratory',status:'In service',lastCal:'2026-05-20',nextCal:'2026-11-20',crit:'Medium'},
+    {id:'PH-05',name:'pH meter',category:'Laboratory',status:'Out of service',lastCal:'2026-02-01',nextCal:'2026-08-01',crit:'Low'},
+  ],
+  risk:[
+    {id:'RSK-019',title:'Fill-weight variability on Line 3',cat:'Process',sev:4,prob:4,owner:'A. Garcia',review:'2026-07-02'},
+    {id:'RSK-022',title:'Cold-chain temperature excursion',cat:'Process',sev:5,prob:3,owner:'R. Patel',review:'2026-06-30'},
+    {id:'RSK-014',title:'Single-source API supplier',cat:'Compliance',sev:4,prob:2,owner:'M. Hereman',review:'2026-09-01'},
+    {id:'RSK-008',title:'Data integrity — manual transcription',cat:'Compliance',sev:5,prob:2,owner:'K. Christensen',review:'2026-08-15'},
+    {id:'RSK-025',title:'Dissolution method robustness (humidity)',cat:'Product',sev:3,prob:3,owner:'S. Okafor',review:'2026-07-30'},
+    {id:'RSK-011',title:'Operator competency gaps',cat:'Process',sev:3,prob:2,owner:'H. Nair',review:'2026-10-10'},
+  ],
+  design:[
+    {id:'DSN-101',product:'AutoInjector Mk II',type:'Input',ref:'Single-handed use requirement',status:'Approved',owner:'K. Christensen'},
+    {id:'DSN-112',product:'AutoInjector Mk II',type:'Input',ref:'Dose accuracy ±5%',status:'Approved',owner:'A. Garcia'},
+    {id:'DSN-118',product:'AutoInjector Mk II',type:'Output',ref:'Needle-guard mechanism spec',status:'In progress',owner:'R. Patel'},
+    {id:'DSN-124',product:'AutoInjector Mk II',type:'V&V',ref:'Activation-force verification',status:'In progress',owner:'S. Okafor'},
+    {id:'DSN-127',product:'AutoInjector Mk II',type:'V&V',ref:'Biocompatibility validation',status:'Draft',owner:'S. Okafor'},
+    {id:'DSN-130',product:'AutoInjector Mk II',type:'Review',ref:'Design review — gate 2',status:'Approved',owner:'K. Christensen'},
+  ],
+};
+const TRAINING_PCT = 87;
+
+/* ---------------- Status helpers ---------------- */
+const docStatus = s => ({'Effective':'ok','In Review':'warn','Draft':'neutral','Pending Approval':'info','Retired':'neutral'}[s]||'neutral');
+const capaStatus = s => ({'Open':'neutral','Investigation':'info','Action in Progress':'warn','Effectiveness Check':'info','Closed':'ok'}[s]||'neutral');
+const ncrSev = s => ({'Critical':'danger','Major':'warn','Minor':'neutral'}[s]||'neutral');
+const ncrStatus = s => ({'Open':'neutral','Containment':'danger','Under Investigation':'warn','Disposition':'info','Closed':'ok'}[s]||'neutral');
+const audStatus = s => ({'Scheduled':'info','Planned':'neutral','Report Due':'warn','In Progress':'warn','Closed':'ok'}[s]||'neutral');
+const audType = t => ({'Regulatory':'danger','Supplier':'info','Internal':'neutral'}[t]||'neutral');
+const changeStatus = s => ({'Draft':'neutral','Assessment':'info','Approval':'warn','Implementation':'warn','Closed':'ok'}[s]||'neutral');
+const changeType = t => ({'Emergency':'danger','Major':'warn','Minor':'neutral'}[t]||'neutral');
+const trainStatus = s => ({'Assigned':'info','Completed':'ok','Overdue':'danger'}[s]||'neutral');
+const compStatus = s => ({'Open':'neutral','Investigation':'warn','Disposition':'info','Closed':'ok'}[s]||'neutral');
+const reportablePill = r => ({'Yes':'warn','Under review':'info','No':'neutral'}[r]||'neutral');
+const supStatus = s => ({'Approved':'ok','Conditional':'warn','Suspended':'danger'}[s]||'neutral');
+const equipStatus = s => ({'In service':'ok','Out of service':'neutral','Overdue':'danger','Quarantined':'danger'}[s]||'neutral');
+const designStatus = s => ({'Draft':'neutral','In progress':'warn','Approved':'ok','Verified':'ok'}[s]||'neutral');
+const designType = t => ({'Input':'info','Output':'info','Review':'neutral','V&V':'warn'}[t]||'neutral');
+const catPill = c => ({'Process':'info','Product':'neutral','Compliance':'warn'}[c]||'neutral');
+const prioCls = p => ({'High':'high','Medium':'med','Low':'low','Critical':'high','Major':'med','Minor':'low'}[p]||'low');
+const reviewState = d => { if(d==='—'||!d) return null; const n=daysFrom(d); if(n<0) return 'danger'; if(n<=30) return 'warn'; return 'ok'; };
+const dueState = (d,closed) => { if(closed) return 'ok'; const n=daysFrom(d); if(n<0) return 'danger'; if(n<=14) return 'warn'; return 'neutral'; };
+const rpn = r => r.sev*r.prob; const rpnBand = n => n>=15?'high':n>=8?'med':'low';
+
+/* render helpers */
+const pill=(cls,txt)=>`<span class="pill ${cls}">${txt}</span>`;
+const prioTag=(cls,txt)=>`<span class="prio ${cls}">${txt}</span>`;
+const idCell=(t,id,sub)=>`<div class="strong">${t}</div><div class="id">${id}${sub?` · ${sub}`:''}</div>`;
+const archNote=(cls,txt)=>`<span class="arch-note ${cls}">${txt}</span>`;
+const SP=t=>archNote('',`▤ SharePoint — ${t}`);
+const FLOW=t=>archNote('flow',`⚙ Power Automate — ${t}`);
+const PCF=t=>archNote('pcf',`▦ ${t}`);
+function el(html){const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstChild;}
+function ring(pct,color){const r=15,c=2*Math.PI*r,off=c*(1-pct/100);return `<svg class="ring" viewBox="0 0 38 38"><circle cx="19" cy="19" r="${r}" fill="none" stroke="#EDEDED" stroke-width="4"/><circle cx="19" cy="19" r="${r}" fill="none" stroke="${color}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 19 19)"/></svg>`;}
+function bars(items){const max=Math.max(...items.map(d=>d.v),1);return items.map(d=>`<div style="margin-bottom:11px"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span>${d.l}</span><span style="color:var(--ink-4)">${d.v}${d.suffix||''}</span></div><div class="progress"><span style="width:${d.v/max*100}%;background:${d.c||'var(--brand)'}"></span></div></div>`).join('');}
+function lineChart(values,color){const w=320,h=130,pad=10;const max=Math.max(...values),min=Math.min(...values),rng=(max-min)||1;const pts=values.map((v,i)=>[pad+i*(w-2*pad)/(values.length-1),h-pad-(v-min)/rng*(h-2*pad)]);const d=pts.map((p,i)=>`${i?'L':'M'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(' ');const area=`${d} L${pts[pts.length-1][0].toFixed(1)} ${h-pad} L${pts[0][0].toFixed(1)} ${h-pad} Z`;return `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:140px">${[.25,.5,.75].map(f=>`<line x1="${pad}" x2="${w-pad}" y1="${pad+f*(h-2*pad)}" y2="${pad+f*(h-2*pad)}" stroke="#EDEDED"/>`).join('')}<path d="${area}" fill="${color}1f"/><path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.6" fill="${color}"/>`).join('')}</svg>`;}
+function donut(pct,color,label){const r=42,c=2*Math.PI*r,off=c*(1-pct/100);return `<svg viewBox="0 0 110 110" style="width:130px;height:130px"><circle cx="55" cy="55" r="${r}" fill="none" stroke="#EDEDED" stroke-width="12"/><circle cx="55" cy="55" r="${r}" fill="none" stroke="${color}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 55 55)"/><text x="55" y="52" text-anchor="middle" font-size="22" font-weight="700" fill="#242424">${pct}%</text><text x="55" y="70" text-anchor="middle" font-size="9.5" fill="#616161">${label||''}</text></svg>`;}
+
+/* ---------------- Navigation ---------------- */
+const ICONS={
+  home:'<path d="M2 7l6-5 6 5v7H2V7Z" stroke="currentColor" stroke-width="1.4" fill="none"/>',
+  doc:'<path d="M4 2h5l3 3v9H4V2Z" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M9 2v3h3" stroke="currentColor" stroke-width="1.4"/>',
+  capa:'<circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M5.5 8.5l1.7 1.7L11 6.5" stroke="currentColor" stroke-width="1.5" fill="none"/>',
+  ncr:'<path d="M8 2l6 11H2L8 2Z" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M8 6.5v3.5M8 11.5v.5" stroke="currentColor" stroke-width="1.4"/>',
+  change:'<path d="M3 8a5 5 0 0 1 8.5-3.5M13 8a5 5 0 0 1-8.5 3.5" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M11 2v3H8M5 14v-3h3" stroke="currentColor" stroke-width="1.4" fill="none"/>',
+  audit:'<rect x="3" y="2" width="10" height="12" rx="1.2" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M5.5 6h5M5.5 9h5M5.5 11.5h3" stroke="currentColor" stroke-width="1.3"/>',
+  train:'<path d="M8 3l6 3-6 3-6-3 6-3Z" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M4 7.5V11c0 .8 1.8 1.8 4 1.8s4-1 4-1.8V7.5" stroke="currentColor" stroke-width="1.4" fill="none"/>',
+  comp:'<path d="M3 4h10v7H6l-3 2.5V4Z" stroke="currentColor" stroke-width="1.4" fill="none"/>',
+  supp:'<rect x="2.5" y="5" width="11" height="7" rx="1" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M6 5V3.5h4V5" stroke="currentColor" stroke-width="1.4"/>',
+  equip:'<circle cx="8" cy="8" r="2.3" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M8 2.5v2M8 11.5v2M2.5 8h2M11.5 8h2M4 4l1.4 1.4M10.6 10.6 12 12M12 4l-1.4 1.4M5.4 10.6 4 12" stroke="currentColor" stroke-width="1.2"/>',
+  risk:'<path d="M8 2.5 13.5 13H2.5L8 2.5Z" stroke="currentColor" stroke-width="1.4" fill="none"/><circle cx="8" cy="10.5" r=".6" fill="currentColor"/><path d="M8 6v3" stroke="currentColor" stroke-width="1.4"/>',
+  design:'<path d="M3 11 11 3l2 2-8 8H3v-2Z" stroke="currentColor" stroke-width="1.4" fill="none"/>',
+  chart:'<path d="M3 13V3M3 13h10" stroke="currentColor" stroke-width="1.4"/><rect x="5" y="8" width="2" height="3" fill="currentColor"/><rect x="8.5" y="5.5" width="2" height="5.5" fill="currentColor"/>',
+  cube:'<path d="M8 2l5 3v6l-5 3-5-3V5l5-3Z" stroke="currentColor" stroke-width="1.3" fill="none"/><path d="M8 8l5-3M8 8v6M8 8L3 5" stroke="currentColor" stroke-width="1.3"/>',
+};
+const NAV=[
+  {group:'Overview',items:[{id:'dashboard',label:'Dashboard',icon:'home'}]},
+  {group:'Core processes',items:[
+    {id:'documents',label:'Document Control',icon:'doc'},
+    {id:'capa',label:'CAPA',icon:'capa',badge:DATA.capa.filter(c=>c.status!=='Closed').length},
+    {id:'ncr',label:'Nonconformance',icon:'ncr',badge:DATA.ncr.filter(n=>n.status!=='Closed').length},
+    {id:'change',label:'Change Control',icon:'change'},
+    {id:'audits',label:'Audits',icon:'audit'},
+    {id:'training',label:'Training',icon:'train',badge:DATA.training.filter(t=>t.status==='Overdue').length},
+  ]},
+  {group:'Supporting',items:[
+    {id:'complaints',label:'Complaints & Vigilance',icon:'comp'},
+    {id:'suppliers',label:'Suppliers',icon:'supp'},
+    {id:'equipment',label:'Equipment & Calibration',icon:'equip'},
+    {id:'risk',label:'Risk Management',icon:'risk'},
+    {id:'design',label:'Design Control',icon:'design'},
+  ]},
+  {group:'Insight',items:[{id:'reporting',label:'Reporting & Analytics',icon:'chart'}]},
+  {group:'Solution architecture',items:[{id:'components',label:'PCF Component Library',icon:'cube'}]},
+];
+
+/* ---------------- State + chrome ---------------- */
+let state={route:'dashboard',id:null,q:'',filters:{},sort:{col:null,dir:1}};
+function renderNav(){
+  const r=document.getElementById('rail');r.innerHTML='';
+  NAV.forEach(g=>{
+    r.appendChild(el(`<div class="group">${g.group}</div>`));
+    g.items.forEach(it=>{
+      const active=state.route===it.id?'active':'';
+      const badge=it.badge?`<span class="badge">${it.badge}</span>`:'';
+      r.appendChild(el(`<div class="navitem ${active}" data-nav="${it.id}"><span class="ic"><svg width="16" height="16" viewBox="0 0 16 16">${ICONS[it.icon]||''}</svg></span><span>${it.label}</span>${badge}</div>`));
+    });
+  });
+}
+function head(crumbs,title,sub,cmds){
+  const cb=crumbs.map((c,i)=>(c.nav?`<a data-nav="${c.nav}">${c.t}</a>`:`<span>${c.t}</span>`)+(i<crumbs.length-1?'<span class="sep">›</span>':'')).join('');
+  const cmd=(cmds||[]).map(c=>`<button class="btn ${c.cls||''}">${c.icon?`<span>${c.icon}</span>`:''}${c.t}</button>`).join('');
+  return `<div class="pagehead"><div class="breadcrumb">${cb}</div><h1>${title}</h1>${sub?`<div class="sub">${sub}</div>`:''}<div class="cmdbar">${cmd}</div></div>`;
+}
+
+/* ---------------- Generic list engine (mirrors QmsRecordGrid) ---------------- */
+function sortRows(rows,cols){const s=state.sort;if(!s.col)return rows;const col=cols.find(c=>c.key===s.col);if(!col)return rows;return [...rows].sort((a,b)=>{let va=col.sortVal?col.sortVal(a):a[col.key],vb=col.sortVal?col.sortVal(b):b[col.key];if(va<vb)return -1*s.dir;if(va>vb)return 1*s.dir;return 0;});}
+function tableHTML(rows,cols,openRoute){
+  if(rows.length===0)return `<div class="empty"><div class="big">Nothing to show</div>No records match your filters. Clear the search or filters to see everything.</div>`;
+  const th=cols.map(c=>`<th data-sort="${c.key}">${c.label}${state.sort.col===c.key?`<span class="arrow">${state.sort.dir>0?'▲':'▼'}</span>`:''}</th>`).join('');
+  const body=rows.map(rw=>`<tr data-open="${openRoute}" data-id="${rw.id}">${cols.map(c=>`<td>${c.render(rw)}</td>`).join('')}</tr>`).join('');
+  return `<table><thead><tr>${th}</tr></thead><tbody>${body}</tbody></table>`;
+}
+function renderList(id){
+  const m=MODULES[id];
+  const f=state.filters[id]||{};
+  const q=(state.q||'').toLowerCase();
+  let rows=m.data.filter(r=>{
+    for(const flt of m.filters){const v=f[flt.key]||'all';if(v!=='all'&&String(flt.value(r))!==v)return false;}
+    if(q){const hay=m.search.map(k=>r[k]).join(' ').toLowerCase();if(!hay.includes(q))return false;}
+    return true;
+  });
+  rows=sortRows(rows,m.columns);
+  const toolbar=`<div class="toolbar">
+    <div class="field search"><svg width="14" height="14" viewBox="0 0 16 16"><circle cx="7" cy="7" r="5" stroke="#888" stroke-width="1.6" fill="none"/><path d="M11 11l3 3" stroke="#888" stroke-width="1.6"/></svg><input id="listSearch" placeholder="${m.searchPh||'Search…'}" value="${state.q}"/></div>
+    ${m.filters.map(flt=>{const cur=f[flt.key]||'all';const opts=['all',...(flt.opts||[...new Set(m.data.map(flt.value))])];return `<div class="field"><select id="flt_${flt.key}">${opts.map(o=>`<option value="${o}" ${o===cur?'selected':''}>${o==='all'?flt.allLabel:o}</option>`).join('')}</select></div>`;}).join('')}
+    <span class="muted-count">${rows.length} of ${m.data.length}</span>
+  </div>`;
+  return head([{t:m.title}],m.h1,m.sub,m.cmds)+`<div class="content">${m.chips||''}<div class="arch-block" style="height:8px"></div>${toolbar}${tableHTML(rows,m.columns,id)}</div>`;
+}
+
+/* ---------------- Module registry ---------------- */
+const MODULES={
+  documents:{
+    title:'Document Control',h1:'Controlled Documents',sub:'SOPs, policies, work instructions and forms under version and review control',
+    cmds:[{t:'New document',cls:'primary',icon:'＋'},{t:'Import'},{t:'Periodic review'}],
+    chips:SP('document library "Controlled Documents" · versioning + content approval')+FLOW('review-due reminders & approval routing')+PCF('QmsRecordGrid (PCF) — JSON in / OnChange out'),
+    data:DATA.documents,search:['title','id','owner','dept','type'],searchPh:'Search title, ID, owner…',
+    filters:[{key:'status',allLabel:'All statuses',value:r=>r.status},{key:'type',allLabel:'All types',value:r=>r.type}],
+    columns:[
+      {key:'id',label:'Document',sortVal:r=>r.id,render:r=>idCell(r.title,r.id,'v'+r.ver)},
+      {key:'type',label:'Type',render:r=>`<span class="sub">${r.type}</span>`},
+      {key:'status',label:'Status',render:r=>pill(docStatus(r.status),r.status)},
+      {key:'owner',label:'Owner',render:r=>r.owner},
+      {key:'dept',label:'Department',render:r=>`<span class="sub">${r.dept}</span>`},
+      {key:'review',label:'Next review',sortVal:r=>r.review==='—'?'9999':r.review,render:r=>{const rs=reviewState(r.review);return r.review==='—'?'<span class="sub">—</span>':pill(rs,rel(r.review));}},
+    ],detail:docDetail,
+  },
+  capa:{
+    title:'CAPA',h1:'Corrective & Preventive Actions',sub:'Investigations, root-cause analysis, action plans and effectiveness checks',
+    cmds:[{t:'Raise CAPA',cls:'primary',icon:'＋'},{t:'My CAPAs'},{t:'Export'}],
+    chips:SP('list "CAPA" (+ child list "CAPA Actions")')+FLOW('due-date escalation & effectiveness-check reminders')+PCF('QmsRecordGrid (PCF)'),
+    data:DATA.capa,search:['title','id','owner','source'],searchPh:'Search CAPA…',
+    filters:[{key:'status',allLabel:'All statuses',value:r=>r.status},{key:'prio',allLabel:'All priorities',value:r=>r.prio,opts:['High','Medium','Low']}],
+    columns:[
+      {key:'id',label:'CAPA',sortVal:r=>r.id,render:r=>idCell(r.title,r.id)},
+      {key:'source',label:'Source',render:r=>`<span class="sub">${r.source}</span>`},
+      {key:'prio',label:'Priority',sortVal:r=>({High:0,Medium:1,Low:2}[r.prio]),render:r=>prioTag(prioCls(r.prio),r.prio)},
+      {key:'owner',label:'Owner',render:r=>r.owner},
+      {key:'status',label:'Status',render:r=>pill(capaStatus(r.status),r.status)},
+      {key:'due',label:'Due',sortVal:r=>r.due,render:r=>pill(dueState(r.due,r.status==='Closed'),r.status==='Closed'?'Closed':rel(r.due))},
+    ],detail:capaDetail,
+  },
+  ncr:{
+    title:'Nonconformance',h1:'Nonconformance & Deviations',sub:'Logging, containment, disposition and escalation of quality events',
+    cmds:[{t:'Raise NCR',cls:'primary',icon:'＋'},{t:'Escalate to CAPA'},{t:'Export'}],
+    chips:SP('list "Nonconformances"')+FLOW('critical-event notification to QA on raise')+PCF('QmsRecordGrid (PCF)'),
+    data:DATA.ncr,search:['title','id','area','owner'],searchPh:'Search NCR…',
+    filters:[{key:'sev',allLabel:'All severities',value:r=>r.sev,opts:['Critical','Major','Minor']},{key:'status',allLabel:'All statuses',value:r=>r.status}],
+    columns:[
+      {key:'id',label:'Nonconformance',sortVal:r=>r.id,render:r=>idCell(r.title,r.id,r.area)},
+      {key:'sev',label:'Severity',sortVal:r=>({Critical:0,Major:1,Minor:2}[r.sev]),render:r=>pill(ncrSev(r.sev),r.sev)},
+      {key:'raised',label:'Raised',sortVal:r=>r.raised,render:r=>fmt(r.raised)},
+      {key:'owner',label:'Owner',render:r=>r.owner},
+      {key:'status',label:'Status',render:r=>pill(ncrStatus(r.status),r.status)},
+      {key:'capa',label:'CAPA',render:r=>r.capa?`<span class="id">${r.capa}</span>`:'<span class="sub">—</span>'},
+    ],detail:ncrDetail,
+  },
+  change:{
+    title:'Change Control',h1:'Change Control',sub:'Controlled change requests with impact assessment, approval and verification',
+    cmds:[{t:'Raise change',cls:'primary',icon:'＋'},{t:'My changes'},{t:'Export'}],
+    chips:SP('list "Change Controls" (+ lookups to Documents / Equipment / Training)')+FLOW('approval routing by classification')+PCF('QmsRecordGrid (PCF)'),
+    data:DATA.change,search:['title','id','requestor','area'],searchPh:'Search change…',
+    filters:[{key:'type',allLabel:'All types',value:r=>r.type,opts:['Emergency','Major','Minor']},{key:'status',allLabel:'All statuses',value:r=>r.status}],
+    columns:[
+      {key:'id',label:'Change',sortVal:r=>r.id,render:r=>idCell(r.title,r.id)},
+      {key:'type',label:'Type',render:r=>pill(changeType(r.type),r.type)},
+      {key:'requestor',label:'Requestor',render:r=>r.requestor},
+      {key:'area',label:'Area',render:r=>`<span class="sub">${r.area}</span>`},
+      {key:'status',label:'Status',render:r=>pill(changeStatus(r.status),r.status)},
+      {key:'target',label:'Target',sortVal:r=>r.target,render:r=>pill(dueState(r.target,r.status==='Closed'),r.status==='Closed'?'Done':rel(r.target))},
+    ],detail:changeDetail,
+  },
+  audits:{
+    title:'Audits',h1:'Audit Management',sub:'Internal, supplier and regulatory audits — planning, execution and findings',
+    cmds:[{t:'Schedule audit',cls:'primary',icon:'＋'},{t:'Audit programme'},{t:'Export'}],
+    chips:SP('lists "Audits" + "Audit Findings"')+FLOW('finding→CAPA conversion & report-due reminders')+PCF('QmsRecordGrid (PCF)'),
+    data:DATA.audits,search:['title','id','lead','scope'],searchPh:'Search audits…',
+    filters:[{key:'type',allLabel:'All types',value:r=>r.type,opts:['Internal','Supplier','Regulatory']},{key:'status',allLabel:'All statuses',value:r=>r.status}],
+    columns:[
+      {key:'id',label:'Audit',sortVal:r=>r.id,render:r=>idCell(r.title,r.id,r.scope)},
+      {key:'type',label:'Type',render:r=>pill(audType(r.type),r.type)},
+      {key:'lead',label:'Lead auditor',render:r=>r.lead},
+      {key:'date',label:'Date',sortVal:r=>r.date,render:r=>`${fmt(r.date)}<div class="sub">${rel(r.date)}</div>`},
+      {key:'status',label:'Status',render:r=>pill(audStatus(r.status),r.status)},
+      {key:'findings',label:'Findings',sortVal:r=>r.findings,render:r=>r.findings?prioTag(r.findings>2?'high':'med',r.findings):'<span class="sub">0</span>'},
+    ],detail:audDetail,
+  },
+  training:{
+    title:'Training',h1:'Training',sub:'Role-based training assignment, completion and competency tracking',
+    cmds:[{t:'Assign training',cls:'primary',icon:'＋'},{t:'Training matrix'},{t:'Export'}],
+    chips:SP('lists "Training Items" + "Training Assignments"')+FLOW('auto-assign on doc effective · overdue escalation')+PCF('QmsRecordGrid (PCF)'),
+    data:DATA.training,search:['employee','course','id'],searchPh:'Search trainee or course…',
+    filters:[{key:'status',allLabel:'All statuses',value:r=>r.status,opts:['Assigned','Completed','Overdue']},{key:'employee',allLabel:'All people',value:r=>r.employee}],
+    columns:[
+      {key:'id',label:'Assignment',sortVal:r=>r.id,render:r=>idCell(r.course,r.id)},
+      {key:'employee',label:'Employee',render:r=>r.employee},
+      {key:'due',label:'Due',sortVal:r=>r.due,render:r=>pill(dueState(r.due,r.status==='Completed'),r.status==='Completed'?'Completed':rel(r.due))},
+      {key:'status',label:'Status',render:r=>pill(trainStatus(r.status),r.status)},
+      {key:'score',label:'Score',render:r=>r.score==='—'?'<span class="sub">—</span>':r.score},
+    ],detail:trainDetail,
+  },
+  complaints:{
+    title:'Complaints & Vigilance',h1:'Complaints & Vigilance',sub:'Customer complaints, investigation and regulatory reportability',
+    cmds:[{t:'Log complaint',cls:'primary',icon:'＋'},{t:'Escalate to CAPA'},{t:'Export'}],
+    chips:SP('list "Complaints" (+ lookups to Customers / Products)')+FLOW('reportability clock & vigilance reminders')+PCF('QmsRecordGrid (PCF)'),
+    data:DATA.complaints,search:['title','id','customer','product','batch'],searchPh:'Search complaint…',
+    filters:[{key:'sev',allLabel:'All severities',value:r=>r.sev,opts:['Critical','Major','Minor']},{key:'status',allLabel:'All statuses',value:r=>r.status}],
+    columns:[
+      {key:'id',label:'Complaint',sortVal:r=>r.id,render:r=>idCell(r.title,r.id,r.customer)},
+      {key:'product',label:'Product',render:r=>`${r.product}<div class="sub">${r.batch}</div>`},
+      {key:'sev',label:'Severity',sortVal:r=>({Critical:0,Major:1,Minor:2}[r.sev]),render:r=>pill(ncrSev(r.sev),r.sev)},
+      {key:'status',label:'Status',render:r=>pill(compStatus(r.status),r.status)},
+      {key:'reportable',label:'Reportable',render:r=>pill(reportablePill(r.reportable),r.reportable)},
+    ],detail:compDetail,
+  },
+  suppliers:{
+    title:'Suppliers',h1:'Suppliers',sub:'Qualification, approved supplier list and re-evaluation',
+    cmds:[{t:'Add supplier',cls:'primary',icon:'＋'},{t:'Re-evaluation due'},{t:'Export'}],
+    chips:SP('list "Suppliers" (+ links to Audits / NCRs / Complaints)')+FLOW('re-evaluation reminders')+PCF('QmsRecordGrid (PCF)'),
+    data:DATA.suppliers,search:['name','id','scope'],searchPh:'Search supplier…',
+    filters:[{key:'category',allLabel:'All categories',value:r=>r.category,opts:['Critical','Major','Minor']},{key:'status',allLabel:'All statuses',value:r=>r.status,opts:['Approved','Conditional','Suspended']}],
+    columns:[
+      {key:'id',label:'Supplier',sortVal:r=>r.name,render:r=>idCell(r.name,r.id,r.scope)},
+      {key:'category',label:'Category',sortVal:r=>({Critical:0,Major:1,Minor:2}[r.category]),render:r=>prioTag(prioCls(r.category),r.category)},
+      {key:'status',label:'Status',render:r=>pill(supStatus(r.status),r.status)},
+      {key:'lastAudit',label:'Last audit',sortVal:r=>r.lastAudit,render:r=>fmt(r.lastAudit)},
+      {key:'reEval',label:'Re-evaluation',sortVal:r=>r.reEval,render:r=>pill(reviewState(r.reEval),rel(r.reEval))},
+    ],detail:supDetail,
+  },
+  equipment:{
+    title:'Equipment & Calibration',h1:'Equipment & Calibration',sub:'Asset register, calibration and maintenance scheduling',
+    cmds:[{t:'Add asset',cls:'primary',icon:'＋'},{t:'Calibration due'},{t:'Export'}],
+    chips:SP('list "Equipment" (+ "Calibration History")')+FLOW('calibration-due reminders & status changes')+PCF('QmsRecordGrid (PCF)'),
+    data:DATA.equipment,search:['name','id','category'],searchPh:'Search asset…',
+    filters:[{key:'status',allLabel:'All statuses',value:r=>r.status,opts:['In service','Out of service','Overdue','Quarantined']},{key:'crit',allLabel:'All criticality',value:r=>r.crit,opts:['High','Medium','Low']}],
+    columns:[
+      {key:'id',label:'Asset',sortVal:r=>r.id,render:r=>idCell(r.name,r.id,r.category)},
+      {key:'status',label:'Status',render:r=>pill(equipStatus(r.status),r.status)},
+      {key:'lastCal',label:'Last calibration',sortVal:r=>r.lastCal,render:r=>fmt(r.lastCal)},
+      {key:'nextCal',label:'Next calibration',sortVal:r=>r.nextCal,render:r=>pill(reviewState(r.nextCal),rel(r.nextCal))},
+      {key:'crit',label:'Criticality',sortVal:r=>({High:0,Medium:1,Low:2}[r.crit]),render:r=>prioTag(prioCls(r.crit),r.crit)},
+    ],detail:equipDetail,
+  },
+  risk:{
+    title:'Risk Management',h1:'Risk Management',sub:'Risk register, assessment and mitigation tracking (ICH Q9-style)',
+    cmds:[{t:'Add risk',cls:'primary',icon:'＋'},{t:'Review due'},{t:'Export'}],
+    chips:SP('list "Risk Register" (RPN = Severity × Probability, calculated)')+FLOW('periodic re-assessment reminders')+PCF('QmsRecordGrid (PCF)'),
+    data:DATA.risk,search:['title','id','owner','cat'],searchPh:'Search risk…',
+    filters:[{key:'cat',allLabel:'All categories',value:r=>r.cat,opts:['Process','Product','Compliance']},{key:'owner',allLabel:'All owners',value:r=>r.owner}],
+    columns:[
+      {key:'id',label:'Risk',sortVal:r=>r.id,render:r=>idCell(r.title,r.id)},
+      {key:'cat',label:'Category',render:r=>pill(catPill(r.cat),r.cat)},
+      {key:'rpn',label:'RPN',sortVal:r=>rpn(r),render:r=>`${prioTag(rpnBand(rpn(r)),rpn(r))}<div class="sub">S${r.sev}×P${r.prob}</div>`},
+      {key:'owner',label:'Owner',render:r=>r.owner},
+      {key:'review',label:'Next review',sortVal:r=>r.review,render:r=>pill(reviewState(r.review),rel(r.review))},
+    ],detail:riskDetail,
+  },
+  design:{
+    title:'Design Control',h1:'Design Control',sub:'Design History File, inputs/outputs and verification & validation',
+    cmds:[{t:'Add design item',cls:'primary',icon:'＋'},{t:'Open DHF'},{t:'Export'}],
+    chips:SP('lists "Products" + "Design Items" (DHF structure)')+FLOW('design-review gate notifications')+PCF('QmsRecordGrid (PCF)'),
+    data:DATA.design,search:['ref','id','product'],searchPh:'Search design item…',
+    filters:[{key:'type',allLabel:'All item types',value:r=>r.type,opts:['Input','Output','Review','V&V']},{key:'status',allLabel:'All statuses',value:r=>r.status,opts:['Draft','In progress','Approved','Verified']}],
+    columns:[
+      {key:'id',label:'Design item',sortVal:r=>r.id,render:r=>idCell(r.ref,r.id)},
+      {key:'product',label:'Product',render:r=>`<span class="sub">${r.product}</span>`},
+      {key:'type',label:'Type',render:r=>pill(designType(r.type),r.type)},
+      {key:'status',label:'Status',render:r=>pill(designStatus(r.status),r.status)},
+      {key:'owner',label:'Owner',render:r=>r.owner},
+    ],detail:designDetail,
+  },
+};
+
+/* ---------------- Detail views (part 1) ---------------- */
+function notFound(back){return head([{t:'Not found',nav:back}],'Record not found','',[])+`<div class="content"><div class="empty"><div class="big">That record could not be found</div><a data-nav="${back}">Go back to the list</a>.</div></div>`;}
+
+function docDetail(id){const d=DATA.documents.find(x=>x.id===id);if(!d)return notFound('documents');const rs=reviewState(d.review);
+  return head([{t:'Document Control',nav:'documents'},{t:d.id}],d.title,`${d.id} · Version ${d.ver} · ${d.type}`,[{t:'Check out',cls:'primary',icon:'✎'},{t:'Submit for review'},{t:'Start change'},{t:'Download'}])+`
+  <div class="content"><div class="detail"><div>
+    <div class="panel"><h3>Document details</h3><dl class="kv">
+      <dt>Status</dt><dd>${pill(docStatus(d.status),d.status)}</dd><dt>Version</dt><dd>${d.ver}</dd><dt>Owner</dt><dd>${d.owner}</dd><dt>Department</dt><dd>${d.dept}</dd>
+      <dt>Effective date</dt><dd>${d.eff==='—'?'Not yet effective':fmt(d.eff)}</dd><dt>Next review</dt><dd>${d.review==='—'?'—':`${fmt(d.review)} ${rs?pill(rs,rel(d.review)):''}`}</dd></dl>${SP('library item metadata columns')}</div>
+    <div class="panel"><h3>Approval & signatures</h3>
+      <div class="step done"><span class="chk">✓</span><div class="body"><div class="t">Authored</div><div class="m">${d.owner} · drafted v${d.ver}</div></div><span class="when">${fmt(d.eff)}</span></div>
+      <div class="step done"><span class="chk">✓</span><div class="body"><div class="t">Reviewed</div><div class="m">M. Hereman · technical review</div></div><span class="when">—</span></div>
+      <div class="step ${d.status==='Effective'?'done':'active'}"><span class="chk">${d.status==='Effective'?'✓':''}</span><div class="body"><div class="t">QA approved & signed</div><div class="m">K. Christensen · meaning: approval</div></div><span class="when">${d.status==='Effective'?fmt(d.eff):'Pending'}</span></div>
+      ${FLOW('approval flow records signer + timestamp + meaning')}${PCF('QmsStageChecklist (PCF)')}
+      <div class="arch-block" style="margin-top:12px;font-size:12px;color:var(--warn);background:var(--warn-bg);padding:9px 12px;border-radius:6px">⚠ Part 11: a flow captures who/when/why, but a fully compliant e-signature (re-authentication + tamper-evident binding) needs extra design — see deployment notes.</div></div>
+  </div><div>
+    <div class="panel"><h3>Version history</h3><div class="timeline">
+      <div class="tl done"><span class="node"></span><div class="t">v${d.ver} — ${d.status}</div><div class="d">${d.eff==='—'?'In progress':fmt(d.eff)}</div><div class="who">${d.owner}</div></div>
+      <div class="tl done"><span class="node"></span><div class="t">v${(parseFloat(d.ver)-0.1).toFixed(1)} — Superseded</div><div class="d">Minor revision</div></div>
+      <div class="tl done"><span class="node"></span><div class="t">v1.0 — Retired</div><div class="d">Original issue</div></div></div>${SP('native version history')}${PCF('QmsLifecycleTimeline (PCF)')}</div>
+    <div class="panel"><h3>Linked records</h3>
+      <div class="linkrec"><span class="tag">CAPA</span> CAPA-2025-188 <span style="margin-left:auto">${pill('ok','Closed')}</span></div>
+      <div class="linkrec"><span class="tag">TRAIN</span> 14 staff assigned <span style="margin-left:auto">${pill('warn','2 overdue')}</span></div>
+      <div class="linkrec"><span class="tag">CHG</span> CHG-2026-031 <span style="margin-left:auto">${pill('warn','In approval')}</span></div></div>
+  </div></div></div>`;
+}
+
+function capaDetail(id){const c=DATA.capa.find(x=>x.id===id);if(!c)return notFound('capa');const stages=['Open','Investigation','Action in Progress','Effectiveness Check','Closed'];
+  return head([{t:'CAPA',nav:'capa'},{t:c.id}],c.title,`${c.id} · ${c.source} · Priority ${c.prio}`,[{t:'Update action',cls:'primary',icon:'✎'},{t:'Add task'},{t:'Escalate'},{t:'Close CAPA'}])+`
+  <div class="content"><div class="detail"><div>
+    <div class="panel"><h3>Problem statement</h3><div class="descbox">${c.title}.\n\nDetected via ${c.source.toLowerCase()}. Initial impact assessment completed and potentially affected product placed on hold. This CAPA tracks containment, root-cause analysis, corrective and preventive actions, and effectiveness verification before closure.</div></div>
+    <div class="panel"><h3>Root cause analysis</h3><div class="descbox">Method: 5-Why + Fishbone (Man / Machine / Method / Material).\nIdentified cause: ${rootCause(c)}\nVerification: trend reviewed across last 12 batches; confirmed systemic, not isolated.</div>${SP('rich-text + attachment columns')}</div>
+    <div class="panel"><h3>Action plan</h3>
+      <div class="step done"><span class="chk">✓</span><div class="body"><div class="t">Immediate correction</div><div class="m">Quarantine affected batches · ${c.owner}</div></div><span class="when">Done</span></div>
+      <div class="step ${c.stage>=3?'done':'active'}"><span class="chk">${c.stage>=3?'✓':''}</span><div class="body"><div class="t">Corrective action</div><div class="m">Revise SOP & retrain operators</div></div><span class="when">${c.stage>=3?'Done':'In progress'}</span></div>
+      <div class="step ${c.stage>=4?'done':c.stage===3?'active':''}"><span class="chk">${c.stage>=4?'✓':''}</span><div class="body"><div class="t">Preventive action</div><div class="m">Add in-process control check</div></div><span class="when">${c.stage>=4?'Done':rel(c.due)}</span></div>
+      <div class="step ${c.stage>=5?'done':c.stage===4?'active':''}"><span class="chk">${c.stage>=5?'✓':''}</span><div class="body"><div class="t">Effectiveness check</div><div class="m">Verify no recurrence over 3 batches</div></div><span class="when">${c.stage>=5?'Verified':c.stage===4?'Due':'Pending'}</span></div>
+      ${FLOW('each task = "CAPA Actions" item; overdue triggers escalation')}${PCF('QmsStageChecklist (PCF)')}</div>
+  </div><div>
+    <div class="panel"><h3>Status</h3><dl class="kv">
+      <dt>Stage</dt><dd>${pill(capaStatus(c.status),c.status)}</dd><dt>Owner</dt><dd>${c.owner}</dd><dt>Source</dt><dd>${c.source}</dd>
+      <dt>Priority</dt><dd>${prioTag(prioCls(c.prio),c.prio)}</dd><dt>Due date</dt><dd>${fmt(c.due)} ${daysFrom(c.due)<0&&c.status!=='Closed'?pill('danger',rel(c.due)):''}</dd></dl></div>
+    <div class="panel"><h3>Lifecycle</h3><div class="timeline">${stages.map((s,i)=>`<div class="tl ${i<c.stage?'done':i===c.stage?'':'future'}"><span class="node"></span><div class="t">${s}</div><div class="d">${i<c.stage?'Complete':i===c.stage?'Current':'Pending'}</div></div>`).join('')}</div>${PCF('QmsLifecycleTimeline (PCF)')}</div>
+    <div class="panel"><h3>Linked records</h3>${c.source==='Deviation'||c.source==='Nonconformance'?`<div class="linkrec"><span class="tag">NCR</span> NCR-2026-058 <span style="margin-left:auto">${pill('warn','Investigating')}</span></div>`:''}<div class="linkrec"><span class="tag">DOC</span> SOP affected <span style="margin-left:auto">${pill('info','Change raised')}</span></div><div class="linkrec"><span class="tag">TRAIN</span> Retraining <span style="margin-left:auto">${pill('warn','Assigned')}</span></div></div>
+  </div></div></div>`;
+}
+function rootCause(c){return {'CAPA-2026-014':'inadequate in-process weight-check frequency on Line 3','CAPA-2026-019':'supplier CoA not gated before goods receipt','CAPA-2026-021':'gowning log not enforced at point of use','CAPA-2026-009':'calibration schedule not linked to equipment status','CAPA-2026-023':'retain labelling not independently verified','CAPA-2026-006':'method robustness gap under high humidity','CAPA-2025-188':'point-of-use retrieval not part of line clearance'}[c.id]||'process control gap confirmed by investigation';}
+
+function ncrDetail(id){const n=DATA.ncr.find(x=>x.id===id);if(!n)return notFound('ncr');
+  return head([{t:'Nonconformance',nav:'ncr'},{t:n.id}],n.title,`${n.id} · ${n.area} · ${n.sev}`,[{t:'Disposition',cls:'primary'},{t:'Escalate to CAPA'},{t:'Close'}])+`
+  <div class="content"><div class="detail"><div>
+    <div class="panel"><h3>Event description</h3><div class="descbox">${n.title}.\n\nIdentified in ${n.area} on ${fmt(n.raised)}. Immediate containment applied to prevent onward processing. Disposition and impact assessment in progress; escalation to CAPA evaluated by severity and recurrence.</div></div>
+    <div class="panel"><h3>Disposition</h3>
+      <div class="step done"><span class="chk">✓</span><div class="body"><div class="t">Contain</div><div class="m">Affected material quarantined</div></div><span class="when">Done</span></div>
+      <div class="step ${n.status==='Closed'?'done':'active'}"><span class="chk">${n.status==='Closed'?'✓':''}</span><div class="body"><div class="t">Assess & disposition</div><div class="m">Use-as-is / rework / reject decision</div></div><span class="when">${n.status==='Closed'?'Done':'In progress'}</span></div>
+      <div class="step ${n.capa?'done':''}"><span class="chk">${n.capa?'✓':''}</span><div class="body"><div class="t">Escalate to CAPA</div><div class="m">${n.capa?'Linked to '+n.capa:'Evaluated — not required'}</div></div><span class="when">${n.capa?'Linked':'—'}</span></div>
+      ${PCF('QmsStageChecklist (PCF)')}</div>
+  </div><div>
+    <div class="panel"><h3>Details</h3><dl class="kv"><dt>Severity</dt><dd>${pill(ncrSev(n.sev),n.sev)}</dd><dt>Status</dt><dd>${pill(ncrStatus(n.status),n.status)}</dd><dt>Area</dt><dd>${n.area}</dd><dt>Owner</dt><dd>${n.owner}</dd><dt>Raised</dt><dd>${fmt(n.raised)}</dd><dt>Linked CAPA</dt><dd>${n.capa||'—'}</dd></dl></div>
+  </div></div></div>`;
+}
+
+function changeDetail(id){const c=DATA.change.find(x=>x.id===id);if(!c)return notFound('change');const stages=['Draft','Assessment','Approval','Implementation','Closed'];const si=stages.indexOf(c.status);
+  return head([{t:'Change Control',nav:'change'},{t:c.id}],c.title,`${c.id} · ${c.type} change · ${c.area}`,[{t:'Progress change',cls:'primary'},{t:'Add impact'},{t:'Approve'}])+`
+  <div class="content"><div class="detail"><div>
+    <div class="panel"><h3>Change description</h3><div class="descbox">${c.title}.\n\nClassification: ${c.type}. Requested by ${c.requestor} (${c.area}). Target implementation ${fmt(c.target)} (${rel(c.target)}).</div></div>
+    <div class="panel"><h3>Impact assessment</h3>
+      <div class="linkrec"><span class="tag">DOC</span> Affected procedures <span style="margin-left:auto">${pill('info','2 documents')}</span></div>
+      <div class="linkrec"><span class="tag">EQP</span> Affected equipment <span style="margin-left:auto">${pill('neutral',(c.area==='Engineering'||c.area==='Warehouse')?'1 asset':'None')}</span></div>
+      <div class="linkrec"><span class="tag">TRAIN</span> Retraining required <span style="margin-left:auto">${pill('warn','Yes')}</span></div>${SP('lookup columns → Documents / Equipment / Training')}</div>
+    <div class="panel"><h3>Approval & implementation</h3>${stages.slice(0,4).map((s,i)=>`<div class="step ${i<si?'done':i===si?'active':''}"><span class="chk">${i<si?'✓':''}</span><div class="body"><div class="t">${s}</div><div class="m">${['Request raised & classified','Impact & risk assessed','QA approval','Implement & verify effectiveness'][i]}</div></div><span class="when">${i<si?'Done':i===si?'Current':'Pending'}</span></div>`).join('')}${FLOW('approval routing by change classification')}${PCF('QmsStageChecklist (PCF)')}</div>
+  </div><div>
+    <div class="panel"><h3>Details</h3><dl class="kv"><dt>Type</dt><dd>${pill(changeType(c.type),c.type)}</dd><dt>Status</dt><dd>${pill(changeStatus(c.status),c.status)}</dd><dt>Requestor</dt><dd>${c.requestor}</dd><dt>Area</dt><dd>${c.area}</dd><dt>Target date</dt><dd>${fmt(c.target)}</dd></dl></div>
+    <div class="panel"><h3>Lifecycle</h3><div class="timeline">${stages.map((s,i)=>`<div class="tl ${i<si?'done':i===si?'':'future'}"><span class="node"></span><div class="t">${s}</div></div>`).join('')}</div>${PCF('QmsLifecycleTimeline (PCF)')}</div>
+  </div></div></div>`;
+}
+
+function audDetail(id){const a=DATA.audits.find(x=>x.id===id);if(!a)return notFound('audits');
+  return head([{t:'Audits',nav:'audits'},{t:a.id}],a.title,`${a.id} · ${a.type} audit · ${a.scope}`,[{t:'Open report',cls:'primary'},{t:'Add finding'},{t:'Convert finding to CAPA'}])+`
+  <div class="content"><div class="detail"><div>
+    <div class="panel"><h3>Audit plan</h3><div class="descbox">Objective: assess conformance of ${a.scope} against applicable procedures and regulatory expectations.\nScope: ${a.scope}.\nLead auditor: ${a.lead}.\nPlanned date: ${fmt(a.date)} (${rel(a.date)}).</div></div>
+    <div class="panel"><h3>Findings (${a.findings})</h3>${a.findings===0?'<div class="empty"><div class="big">No findings recorded yet</div>Findings appear once the audit is executed.</div>':Array.from({length:a.findings}).map((_,i)=>`<div class="step ${i===0?'active':''}"><span class="chk"></span><div class="body"><div class="t">Finding ${i+1} — ${['Major','Minor','Observation'][i%3]}</div><div class="m">${['Records gap identified','Procedure not followed at point of use','Improvement opportunity noted'][i%3]}</div></div><span class="when">${i<2?'CAPA raised':'Open'}</span></div>`).join('')}${FLOW('"Convert finding to CAPA" creates a linked CAPA')}${PCF('QmsStageChecklist (PCF)')}</div>
+  </div><div>
+    <div class="panel"><h3>Details</h3><dl class="kv"><dt>Type</dt><dd>${pill(audType(a.type),a.type)}</dd><dt>Status</dt><dd>${pill(audStatus(a.status),a.status)}</dd><dt>Lead</dt><dd>${a.lead}</dd><dt>Date</dt><dd>${fmt(a.date)}</dd><dt>Findings</dt><dd>${a.findings}</dd></dl></div>
+    <div class="panel"><h3>Audit lifecycle</h3><div class="timeline">
+      <div class="tl done"><span class="node"></span><div class="t">Planned</div></div>
+      <div class="tl ${a.status==='Planned'?'future':'done'}"><span class="node"></span><div class="t">Scheduled</div></div>
+      <div class="tl ${['Closed','Report Due'].includes(a.status)?'done':a.status==='In Progress'?'':'future'}"><span class="node"></span><div class="t">Executed</div></div>
+      <div class="tl ${a.status==='Closed'?'done':a.status==='Report Due'?'':'future'}"><span class="node"></span><div class="t">Reported</div></div>
+      <div class="tl ${a.status==='Closed'?'done':'future'}"><span class="node"></span><div class="t">Closed</div></div></div>${PCF('QmsLifecycleTimeline (PCF)')}</div>
+  </div></div></div>`;
+}
+
+/* ---------------- Detail views (part 2) ---------------- */
+function trainDetail(id){const t=DATA.training.find(x=>x.id===id);if(!t)return notFound('training');
+  return head([{t:'Training',nav:'training'},{t:t.id}],t.course,`${t.id} · Assigned to ${t.employee}`,[{t:'Mark complete',cls:'primary'},{t:'Record assessment'},{t:'Reassign'}])+`
+  <div class="content"><div class="detail"><div>
+    <div class="panel"><h3>Assignment</h3><div class="descbox">Read-and-understood assignment for ${t.course}, assigned to ${t.employee}.\n\nGenerated automatically when the linked document went effective. Completion is recorded against the current document version; a new effective version re-assigns the task.</div>
+      <div class="step done"><span class="chk">✓</span><div class="body"><div class="t">Assigned</div><div class="m">Auto-assigned on document effective date</div></div><span class="when">Done</span></div>
+      <div class="step ${t.status==='Completed'?'done':'active'}"><span class="chk">${t.status==='Completed'?'✓':''}</span><div class="body"><div class="t">Read & understood</div><div class="m">Acknowledgement by ${t.employee}</div></div><span class="when">${t.status==='Completed'?'Done':rel(t.due)}</span></div>
+      <div class="step ${t.score!=='—'?'done':''}"><span class="chk">${t.score!=='—'?'✓':''}</span><div class="body"><div class="t">Competency assessment</div><div class="m">${t.score!=='—'?'Score recorded':'Pending'}</div></div><span class="when">${t.score!=='—'?t.score:'—'}</span></div>
+      ${FLOW('auto-assign on doc effective · overdue escalation to line manager')}${PCF('QmsStageChecklist (PCF)')}</div>
+  </div><div>
+    <div class="panel"><h3>Details</h3><dl class="kv"><dt>Status</dt><dd>${pill(trainStatus(t.status),t.status)}</dd><dt>Employee</dt><dd>${t.employee}</dd><dt>Due date</dt><dd>${fmt(t.due)} ${t.status==='Overdue'?pill('danger',rel(t.due)):''}</dd><dt>Score</dt><dd>${t.score}</dd></dl></div>
+    <div class="panel"><h3>Linked document</h3><div class="linkrec"><span class="tag">DOC</span> ${t.course.split(' ')[0]} <span style="margin-left:auto">${pill('ok','Effective')}</span></div></div>
+  </div></div></div>`;
+}
+
+function compDetail(id){const c=DATA.complaints.find(x=>x.id===id);if(!c)return notFound('complaints');
+  return head([{t:'Complaints & Vigilance',nav:'complaints'},{t:c.id}],c.title,`${c.id} · ${c.customer} · ${c.sev}`,[{t:'Investigate',cls:'primary'},{t:'Reportability decision'},{t:'Escalate to CAPA'}])+`
+  <div class="content"><div class="detail"><div>
+    <div class="panel"><h3>Complaint description</h3><div class="descbox">${c.title}.\n\nReceived from ${c.customer} regarding ${c.product} (batch ${c.batch}). Acknowledged to complainant; sample requested for investigation. Health-hazard evaluation and reportability assessment in progress.</div></div>
+    <div class="panel"><h3>Investigation & reportability</h3>
+      <div class="step done"><span class="chk">✓</span><div class="body"><div class="t">Logged & acknowledged</div><div class="m">Complainant acknowledged within SLA</div></div><span class="when">Done</span></div>
+      <div class="step ${c.status==='Closed'?'done':'active'}"><span class="chk">${c.status==='Closed'?'✓':''}</span><div class="body"><div class="t">Investigation</div><div class="m">Root cause & health-hazard evaluation</div></div><span class="when">${c.status==='Closed'?'Done':'In progress'}</span></div>
+      <div class="step ${c.reportable==='Under review'?'active':'done'}"><span class="chk">${c.reportable==='Under review'?'':'✓'}</span><div class="body"><div class="t">Reportability decision</div><div class="m">${c.reportable==='Yes'?'Reportable — vigilance report filed':c.reportable==='No'?'Not reportable — rationale recorded':'Under review'}</div></div><span class="when">${pill(reportablePill(c.reportable),c.reportable)}</span></div>
+      ${FLOW('reportability clock & vigilance-deadline reminders')}${PCF('QmsStageChecklist (PCF)')}</div>
+  </div><div>
+    <div class="panel"><h3>Details</h3><dl class="kv"><dt>Severity</dt><dd>${pill(ncrSev(c.sev),c.sev)}</dd><dt>Status</dt><dd>${pill(compStatus(c.status),c.status)}</dd><dt>Customer</dt><dd>${c.customer}</dd><dt>Product</dt><dd>${c.product}</dd><dt>Batch</dt><dd>${c.batch}</dd><dt>Reportable</dt><dd>${c.reportable}</dd></dl></div>
+    <div class="panel"><h3>Linked records</h3><div class="linkrec"><span class="tag">CAPA</span> ${c.sev==='Critical'||c.sev==='Major'?'CAPA-2026-019':'None'} <span style="margin-left:auto">${pill(c.sev==='Minor'?'neutral':'info',c.sev==='Minor'?'Not required':'Linked')}</span></div></div>
+  </div></div></div>`;
+}
+
+function supDetail(id){const s=DATA.suppliers.find(x=>x.id===id);if(!s)return notFound('suppliers');
+  return head([{t:'Suppliers',nav:'suppliers'},{t:s.id}],s.name,`${s.id} · ${s.category} supplier · ${s.scope}`,[{t:'Re-evaluate',cls:'primary'},{t:'Schedule audit'},{t:'Suspend'}])+`
+  <div class="content"><div class="detail"><div>
+    <div class="panel"><h3>Supplier details</h3><dl class="kv"><dt>Category</dt><dd>${prioTag(prioCls(s.category),s.category)}</dd><dt>Status</dt><dd>${pill(supStatus(s.status),s.status)}</dd><dt>Scope of supply</dt><dd>${s.scope}</dd><dt>Last audit</dt><dd>${fmt(s.lastAudit)}</dd><dt>Re-evaluation</dt><dd>${fmt(s.reEval)} ${pill(reviewState(s.reEval),rel(s.reEval))}</dd></dl></div>
+    <div class="panel"><h3>Qualification</h3>
+      <div class="step done"><span class="chk">✓</span><div class="body"><div class="t">Questionnaire</div><div class="m">Supplier quality questionnaire returned</div></div><span class="when">Done</span></div>
+      <div class="step ${s.status==='Suspended'?'active':'done'}"><span class="chk">${s.status==='Suspended'?'':'✓'}</span><div class="body"><div class="t">On-site / remote audit</div><div class="m">Last audit ${fmt(s.lastAudit)}</div></div><span class="when">${s.status==='Suspended'?'Action':'Done'}</span></div>
+      <div class="step ${s.status==='Approved'?'done':'active'}"><span class="chk">${s.status==='Approved'?'✓':''}</span><div class="body"><div class="t">Approval decision</div><div class="m">${s.status==='Approved'?'Added to approved supplier list':s.status==='Conditional'?'Conditional — actions outstanding':'Suspended — pending re-qualification'}</div></div><span class="when">${pill(supStatus(s.status),s.status)}</span></div>
+      ${FLOW('re-evaluation reminders by category cadence')}${PCF('QmsStageChecklist (PCF)')}</div>
+  </div><div>
+    <div class="panel"><h3>Performance & links</h3>
+      <div class="linkrec"><span class="tag">AUD</span> ${s.id==='SUP-014'?'AUD-2026-03':'Last audit'} <span style="margin-left:auto">${pill(s.id==='SUP-014'?'warn':'ok',s.id==='SUP-014'?'Report due':'Closed')}</span></div>
+      <div class="linkrec"><span class="tag">NCR</span> Supplier NCRs <span style="margin-left:auto">${pill(s.status==='Suspended'?'danger':'neutral',s.status==='Suspended'?'2 open':'0 open')}</span></div>
+      <div class="linkrec"><span class="tag">CMP</span> Related complaints <span style="margin-left:auto">${pill('neutral','0')}</span></div></div>
+  </div></div></div>`;
+}
+
+function equipDetail(id){const e=DATA.equipment.find(x=>x.id===id);if(!e)return notFound('equipment');
+  return head([{t:'Equipment & Calibration',nav:'equipment'},{t:e.id}],e.name,`${e.id} · ${e.category} · ${e.crit} criticality`,[{t:'Record calibration',cls:'primary'},{t:'Log maintenance'},{t:'Change status'}])+`
+  <div class="content"><div class="detail"><div>
+    <div class="panel"><h3>Asset details</h3><dl class="kv"><dt>Status</dt><dd>${pill(equipStatus(e.status),e.status)}</dd><dt>Category</dt><dd>${e.category}</dd><dt>Criticality</dt><dd>${prioTag(prioCls(e.crit),e.crit)}</dd><dt>Last calibration</dt><dd>${fmt(e.lastCal)}</dd><dt>Next calibration</dt><dd>${fmt(e.nextCal)} ${pill(reviewState(e.nextCal),rel(e.nextCal))}</dd></dl>${e.status==='Overdue'||e.status==='Quarantined'?`<div class="arch-block" style="margin-top:12px;font-size:12px;color:var(--danger);background:var(--danger-bg);padding:9px 12px;border-radius:6px">⚠ ${e.status==='Overdue'?'Calibration overdue — linked to CAPA-2026-009':'Quarantined — temperature excursion NCR-2026-061 open'}</div>`:''}</div>
+    <div class="panel"><h3>Calibration & maintenance history</h3><div class="timeline">
+      <div class="tl ${e.status==='Overdue'?'':'done'}"><span class="node"></span><div class="t">${e.status==='Overdue'?'Calibration due':'Last calibration — pass'}</div><div class="d">${e.status==='Overdue'?rel(e.nextCal):fmt(e.lastCal)}</div></div>
+      <div class="tl done"><span class="node"></span><div class="t">Preventive maintenance</div><div class="d">Routine service completed</div></div>
+      <div class="tl done"><span class="node"></span><div class="t">Calibration — pass</div><div class="d">Within tolerance</div></div></div>${SP('list "Calibration History"')}${PCF('QmsLifecycleTimeline (PCF)')}</div>
+  </div><div>
+    <div class="panel"><h3>Linked records</h3>
+      <div class="linkrec"><span class="tag">CAPA</span> ${e.id==='BAL-07'?'CAPA-2026-009':'None'} <span style="margin-left:auto">${pill(e.id==='BAL-07'?'info':'neutral',e.id==='BAL-07'?'Effectiveness check':'0')}</span></div>
+      <div class="linkrec"><span class="tag">NCR</span> ${e.id==='CS-02'?'NCR-2026-061':'None'} <span style="margin-left:auto">${pill(e.id==='CS-02'?'danger':'neutral',e.id==='CS-02'?'Critical':'0')}</span></div></div>
+  </div></div></div>`;
+}
+
+function riskDetail(id){const r=DATA.risk.find(x=>x.id===id);if(!r)return notFound('risk');const n=rpn(r);
+  return head([{t:'Risk Management',nav:'risk'},{t:r.id}],r.title,`${r.id} · ${r.cat} · RPN ${n}`,[{t:'Re-assess',cls:'primary'},{t:'Add mitigation'},{t:'Close risk'}])+`
+  <div class="content"><div class="detail"><div>
+    <div class="panel"><h3>Risk assessment</h3>${bars([{l:'Severity',v:r.sev,suffix:' / 5',c:'var(--danger)'},{l:'Probability',v:r.prob,suffix:' / 5',c:'var(--warn)'},{l:'Risk Priority Number (S × P)',v:n,suffix:' / 25',c:n>=15?'var(--danger)':n>=8?'var(--warn)':'var(--ok)'}])}<div style="margin-top:12px" class="descbox">Assessed using an ICH Q9-style matrix. ${n>=15?'High residual risk — mitigation required before proceeding.':n>=8?'Moderate risk — mitigation actions tracked to reduce RPN.':'Low risk — monitored at periodic review.'}</div>${SP('RPN is a calculated column')}</div>
+    <div class="panel"><h3>Mitigation actions</h3>
+      <div class="step done"><span class="chk">✓</span><div class="body"><div class="t">Initial assessment</div><div class="m">Risk scored and categorised</div></div><span class="when">Done</span></div>
+      <div class="step active"><span class="chk"></span><div class="body"><div class="t">Mitigation</div><div class="m">${mitigation(r)}</div></div><span class="when">In progress</span></div>
+      <div class="step"><span class="chk"></span><div class="body"><div class="t">Residual-risk review</div><div class="m">Re-score after mitigation</div></div><span class="when">${rel(r.review)}</span></div>
+      ${PCF('QmsStageChecklist (PCF)')}</div>
+  </div><div>
+    <div class="panel"><h3>Details</h3><dl class="kv"><dt>Category</dt><dd>${pill(catPill(r.cat),r.cat)}</dd><dt>RPN</dt><dd>${prioTag(rpnBand(n),n)} <span class="sub">S${r.sev}×P${r.prob}</span></dd><dt>Owner</dt><dd>${r.owner}</dd><dt>Next review</dt><dd>${fmt(r.review)} ${pill(reviewState(r.review),rel(r.review))}</dd></dl></div>
+    <div class="panel"><h3>Linked records</h3><div class="linkrec"><span class="tag">CAPA</span> ${r.id==='RSK-019'?'CAPA-2026-014':'None'} <span style="margin-left:auto">${pill(r.id==='RSK-019'?'warn':'neutral',r.id==='RSK-019'?'In progress':'0')}</span></div><div class="linkrec"><span class="tag">CHG</span> ${r.id==='RSK-019'?'CHG-2026-028':'None'} <span style="margin-left:auto">${pill(r.id==='RSK-019'?'warn':'neutral',r.id==='RSK-019'?'Implementation':'0')}</span></div></div>
+  </div></div></div>`;
+}
+function mitigation(r){return {'RSK-019':'In-process weight check (CHG-2026-028)','RSK-022':'Alarm setpoint revision & monitoring','RSK-014':'Qualify secondary API source','RSK-008':'Move to electronic capture','RSK-025':'Method robustness study','RSK-011':'Competency matrix & refresher training'}[r.id]||'Mitigation actions defined';}
+
+function designDetail(id){const d=DATA.design.find(x=>x.id===id);if(!d)return notFound('design');
+  return head([{t:'Design Control',nav:'design'},{t:d.id}],d.ref,`${d.id} · ${d.product} · ${d.type}`,[{t:'Update item',cls:'primary'},{t:'Link trace'},{t:'Submit for review'}])+`
+  <div class="content"><div class="detail"><div>
+    <div class="panel"><h3>Design item</h3><div class="descbox">${d.ref}.\n\n${d.type} within the Design History File for ${d.product}. ${d.type==='Input'?'Captured as a design input requirement and traced to design outputs.':d.type==='Output'?'Design output produced to meet linked inputs; subject to verification.':d.type==='V&V'?'Verification/validation evidence demonstrating outputs meet inputs.':'Stage-gate design review record.'}</div>${SP('list "Design Items" — DHF structure')}</div>
+    <div class="panel"><h3>Traceability</h3>
+      <div class="linkrec"><span class="tag">IN</span> Linked design input <span style="margin-left:auto">${pill('ok','Approved')}</span></div>
+      <div class="linkrec"><span class="tag">OUT</span> Linked design output <span style="margin-left:auto">${pill(d.status==='Approved'?'ok':'warn',d.status==='Approved'?'Approved':'In progress')}</span></div>
+      <div class="linkrec"><span class="tag">RSK</span> Linked risk <span style="margin-left:auto">${pill('info','Assessed')}</span></div></div>
+  </div><div>
+    <div class="panel"><h3>Details</h3><dl class="kv"><dt>Type</dt><dd>${pill(designType(d.type),d.type)}</dd><dt>Status</dt><dd>${pill(designStatus(d.status),d.status)}</dd><dt>Product</dt><dd>${d.product}</dd><dt>Owner</dt><dd>${d.owner}</dd></dl></div>
+    <div class="panel"><h3>Design stage</h3><div class="timeline"><div class="tl done"><span class="node"></span><div class="t">Inputs defined</div></div><div class="tl ${d.type==='Input'?'':'done'}"><span class="node"></span><div class="t">Outputs created</div></div><div class="tl ${['V&V','Review'].includes(d.type)?'':'future'}"><span class="node"></span><div class="t">Verification & validation</div></div><div class="tl future"><span class="node"></span><div class="t">Design transfer</div></div></div>${PCF('QmsLifecycleTimeline (PCF)')}</div>
+  </div></div></div>`;
+}
+
+/* ---------------- Dashboard ---------------- */
+function dashboardView(){
+  const openCapa=DATA.capa.filter(c=>c.status!=='Closed').length;
+  const overdueCapa=DATA.capa.filter(c=>c.status!=='Closed'&&daysFrom(c.due)<0).length;
+  const docsReview=DATA.documents.filter(d=>['In Review','Pending Approval','Draft'].includes(d.status)).length;
+  const reviewSoon=DATA.documents.filter(d=>['warn','danger'].includes(reviewState(d.review))).length;
+  const openNcr=DATA.ncr.filter(n=>n.status!=='Closed').length;
+  const critNcr=DATA.ncr.filter(n=>n.sev==='Critical'&&n.status!=='Closed').length;
+  const upcomingAudits=DATA.audits.filter(a=>['Scheduled','Planned','Report Due','In Progress'].includes(a.status)).length;
+  const trainOverdue=DATA.training.filter(t=>t.status==='Overdue').length;
+
+  const attn=[];
+  DATA.capa.filter(c=>c.status!=='Closed'&&daysFrom(c.due)<=2).forEach(c=>attn.push({c:'danger',t:c.title,m:`${c.id} · ${c.owner}`,w:rel(c.due),open:'capa',id:c.id}));
+  DATA.documents.filter(d=>reviewState(d.review)==='danger').forEach(d=>attn.push({c:'danger',t:`${d.title} — review overdue`,m:`${d.id} v${d.ver}`,w:rel(d.review),open:'documents',id:d.id}));
+  DATA.ncr.filter(n=>n.sev==='Critical'&&n.status!=='Closed').forEach(n=>attn.push({c:'danger',t:`${n.title} — critical NCR`,m:`${n.id} · ${n.area}`,w:rel(n.raised),open:'ncr',id:n.id}));
+  DATA.documents.filter(d=>reviewState(d.review)==='warn').forEach(d=>attn.push({c:'warn',t:`${d.title} — review due soon`,m:`${d.id} v${d.ver}`,w:rel(d.review),open:'documents',id:d.id}));
+  DATA.audits.filter(a=>a.status==='Report Due').forEach(a=>attn.push({c:'warn',t:`${a.title} — report due`,m:`${a.id} · ${a.findings} findings`,w:'Overdue',open:'audits',id:a.id}));
+  DATA.training.filter(t=>t.status==='Overdue').forEach(t=>attn.push({c:'warn',t:`${t.employee} — training overdue`,m:t.course,w:rel(t.due),open:'training',id:t.id}));
+  attn.sort((a,b)=>(a.c==='danger'?0:1)-(b.c==='danger'?0:1));
+
+  const capaBy=['Open','Investigation','Action in Progress','Effectiveness Check','Closed'].map(s=>({l:s,v:DATA.capa.filter(c=>c.status===s).length,c:s==='Closed'?'var(--ok)':s==='Action in Progress'?'var(--warn)':'var(--brand)'}));
+  const kpi=(label,num,delta,deltaCls,ringPct,ringColor)=>`<div class="card kpi">${ringPct!=null?ring(ringPct,ringColor):''}<div class="label">${label}</div><div class="num">${num}</div>${delta?`<div class="delta ${deltaCls}">${delta}</div>`:''}</div>`;
+  const nextAud=DATA.audits.filter(a=>a.status==='Scheduled').sort((a,b)=>new Date(a.date)-new Date(b.date))[0];
+
+  return head([{t:'Dashboard'}],'Quality Dashboard','Live view of your quality system — Greenfield Biologics Ltd, Cambridge · '+fmt(TODAY),[{t:'New record',cls:'primary',icon:'＋'},{t:'My tasks'},{t:'Export'}])+`
+  <div class="content">
+    <div class="arch-banner"><b>Architecture view is on.</b> Chips map each surface to its backend. Every module list is the same reusable <b>QmsRecordGrid</b> PCF (JSON in / OnChange out); detail timelines are <b>QmsLifecycleTimeline</b>; action plans are <b>QmsStageChecklist</b>; charts are <b>QmsChart</b>; KPI cards are <b>QmsKpiCard</b>. KPIs aggregate SharePoint lists on load; the overdue / due-soon logic is raised by scheduled Power Automate flows.</div>
+    <div class="grid kpis">
+      ${kpi('Open CAPAs',openCapa,`${overdueCapa} overdue`,overdueCapa?'up':'flat')}
+      ${kpi('Open nonconformances',openNcr,`${critNcr} critical`,critNcr?'up':'flat')}
+      ${kpi('Docs in workflow',docsReview,`${reviewSoon} due for review`,reviewSoon?'up':'flat')}
+      ${kpi('Upcoming audits',upcomingAudits,nextAud?`next ${rel(nextAud.date)}`:'—','flat')}
+      ${kpi('Training compliance',TRAINING_PCT+'%',`${trainOverdue} people overdue`,trainOverdue?'up':'down',TRAINING_PCT,'var(--ok)')}
+    </div>
+    <div class="grid two-col section">
+      <div>
+        <h2>Attention required <span class="count">· ${attn.length} items need action</span></h2>
+        <div class="attn">${attn.map(a=>`<div class="attn row" data-open="${a.open}" data-id="${a.id}"><span class="dot" style="background:${a.c==='danger'?'var(--danger)':'var(--warn)'}"></span><div><div class="ttl">${a.t}</div><div class="meta">${a.m}</div></div><span class="when" style="color:${a.c==='danger'?'var(--danger)':'var(--warn)'}">${a.w}</span></div>`).join('')}</div>
+        ${PCF('QmsRecordGrid (PCF) — compact mode')}${FLOW('daily "QMS due-date scan" writes these alerts')}
+      </div>
+      <div>
+        <h2>CAPA by status</h2>
+        <div class="card" style="padding:16px 18px">${bars(capaBy)}</div>
+        ${PCF('QmsChart (PCF)')}
+      </div>
+    </div>
+    <div class="legend arch-block"><span><i style="background:#E0B23B"></i> SharePoint list / library</span><span><i style="background:#7FB1E0"></i> Power Automate flow</span><span><i style="background:#B79BE0"></i> PCF component (library)</span></div>
+  </div>`;
+}
+
+/* ---------------- Reporting & Analytics ---------------- */
+function reportingView(){
+  const onTime=[72,78,81,85,88,91];
+  const ncrArea=[{l:'Manufacturing',v:6},{l:'Packaging',v:4},{l:'Warehouse',v:3},{l:'Quality',v:2},{l:'Procurement',v:2},{l:'QC',v:1}];
+  const findings=[{l:'Internal',v:3,c:'var(--neutral)'},{l:'Supplier',v:3,c:'var(--info)'},{l:'Regulatory',v:0,c:'var(--danger)'}];
+  const compData=[{l:'Open',v:1,c:'var(--neutral)'},{l:'Investigation',v:2,c:'var(--warn)'},{l:'Closed',v:2,c:'var(--ok)'}];
+  const overdueItems=DATA.capa.filter(c=>c.status!=='Closed'&&daysFrom(c.due)<0).length+DATA.documents.filter(d=>reviewState(d.review)==='danger').length+DATA.training.filter(t=>t.status==='Overdue').length;
+  return head([{t:'Reporting & Analytics'}],'Reporting & Analytics','Quality KPIs, trends and management-review pack — built on the same SharePoint lists',[{t:'Management review pack',cls:'primary',icon:'⤓'},{t:'Open in Power BI'},{t:'Export'}])+`
+  <div class="content">
+    ${SP('aggregates every QMS list')}${PCF('QmsChart (PCF) — one control, multiple chart types')}${archNote('flow','⚙ Standard — Power BI connects directly to SharePoint lists')}
+    <div class="arch-block" style="height:8px"></div>
+    <div class="grid statrow">
+      <div class="card stat"><div class="l">On-time CAPA closure</div><div class="v">91%</div><div class="s" style="color:var(--ok)">▲ 3 pts vs last month</div></div>
+      <div class="card stat"><div class="l">Avg CAPA cycle time</div><div class="v">24d</div><div class="s">target ≤ 30d</div></div>
+      <div class="card stat"><div class="l">Overdue items</div><div class="v">${overdueItems}</div><div class="s" style="color:var(--danger)">across CAPA, docs, training</div></div>
+      <div class="card stat"><div class="l">Open audit findings</div><div class="v">4</div><div class="s">2 converted to CAPA</div></div>
+    </div>
+    <div class="grid charts section">
+      <div class="card chartcard"><h3>On-time CAPA closure (6 months)</h3>${lineChart(onTime,'#115EA3')}<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink-4);margin-top:4px"><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span></div></div>
+      <div class="card chartcard"><h3>Nonconformances by area</h3>${bars(ncrArea)}</div>
+      <div class="card chartcard"><h3>Audit findings by type</h3>${bars(findings)}</div>
+      <div class="card chartcard"><h3>Training compliance</h3><div class="donutwrap">${donut(TRAINING_PCT,'#0E700E','compliant')}<div class="legend2"><span><i style="background:var(--ok)"></i> Compliant ${TRAINING_PCT}%</span><span><i style="background:var(--warn)"></i> Overdue ${DATA.training.filter(t=>t.status==='Overdue').length} people</span><span><i style="background:#EDEDED"></i> Upcoming assignments</span></div></div></div>
+      <div class="card chartcard"><h3>Complaints by status</h3>${bars(compData)}</div>
+      <div class="card chartcard"><h3>Management review</h3><div class="descbox" style="margin-bottom:12px">One-click pack pulling KPIs, overdue actions, audit findings, complaint trends and training compliance into a dated PDF for the quarterly management review.</div><button class="btn primary">⤓ Generate review pack</button></div>
+    </div>
+  </div>`;
+}
+
+/* ---------------- PCF Component Library ---------------- */
+const COMPONENTS=[
+ {name:'QmsRecordGrid',type:'Field-type PCF · JSON in / OnChange out',desc:'The workhorse list — client-side search, multi-filter, sortable columns, paging and row/command selection. One control drives every module list (and the dashboard attention list in compact mode).',inp:'items (JSON string), columns config, pageSize, selectionMode',out:'selectedId, command (via OnChange)',used:'All 11 module lists + dashboard'},
+ {name:'QmsLifecycleTimeline',type:'Field-type PCF',desc:'Renders a record’s stage lifecycle (done / current / future), vertical or horizontal.',inp:'stages (JSON), currentStage',out:'stageClick (optional)',used:'Document, CAPA, NCR, Change, Audit, Supplier, Equipment, Design'},
+ {name:'QmsStageChecklist',type:'Field-type PCF',desc:'Staged action / disposition / findings checklist with per-step status, owner and due.',inp:'steps (JSON)',out:'stepToggle / stepUpdate',used:'CAPA actions, NCR disposition, Audit findings, Change implementation, Risk mitigation'},
+ {name:'QmsChart',type:'Field-type PCF',desc:'Bar / donut / trend chart for KPIs and analytics — the generalised "expiry / trend chart" slot.',inp:'series (JSON), chartType, colours',out:'segmentClick (drill-down)',used:'Dashboard + Reporting & Analytics'},
+ {name:'QmsKpiCard',type:'Field-type PCF (or native)',desc:'Metric card with value, delta and optional ring. Borderline — native Canvas can do this; choose PCF only for the ring + consistent theming.',inp:'label, value, delta, ringPct',out:'cardClick',used:'Dashboard KPI strip, module headers'},
+ {name:'QmsIntakeForm  (optional)',type:'Field-type PCF',desc:'Conditional intake form emitting a JSON payload for SharePoint Patch — your Internet Request pattern. Use only where new / amend forms have real conditional logic; otherwise native Canvas forms.',inp:'schema / config (JSON), mode',out:'payload (JSON via OnChange)',used:'Complex new / amend intakes'},
+];
+function componentsView(){
+  return head([{t:'PCF Component Library'}],'PCF Component Library','The reusable controls this solution is built from — ThePoint.Controls namespace',[{t:'Mono-repo (pac)',cls:'primary'},{t:'Build all'}])+`
+  <div class="content">
+    <div class="card" style="padding:14px 18px;display:flex;gap:12px;align-items:flex-start;margin-bottom:20px;background:var(--purple-bg);border-color:#C9B6EC">
+      <span style="font-size:20px">▦</span>
+      <div style="font-size:13px;color:var(--ink-2)"><b>~5 components, not 12 monoliths.</b> Every module list is the same <b>QmsRecordGrid</b>; every lifecycle is <b>QmsLifecycleTimeline</b>; every action plan is <b>QmsStageChecklist</b>. Building one configurable control per pattern (rather than one per module) is what keeps this maintainable, versionable and reusable across apps. Status pills, badges and tags are plain styling inside the grid — not separate PCFs (don't pay deploy / version overhead for primitives).</div>
+    </div>
+    <div class="grid complibgrid">
+      ${COMPONENTS.map(c=>`<div class="card complib"><div class="nm">${c.name}</div><div class="ty">${c.type}</div><div class="ds">${c.desc}</div><div class="io"><b>In:</b> ${c.inp}</div><div class="io"><b>Out:</b> ${c.out}</div><div class="used"><b>Used by:</b> ${c.used}</div></div>`).join('')}
+    </div>
+    <div class="card" style="padding:16px 18px;margin-top:18px">
+      <h3 style="margin:0 0 12px;font-size:14px">Build & governance notes</h3>
+      <div class="descbox">• <b>Field-type over dataset-type.</b> Canvas collections don't bind cleanly to dataset controls — each control accepts a JSON string from Power Fx and emits outputs via OnChange.\n• <b>Deployment.</b> All controls deploy via a Dataverse-enabled Dev / Sandbox environment with the System Customizer role (the prvCreateCustomControl wall). The app itself stays SharePoint-backed and standard-licensed — Dataverse is only needed in-environment for control deployment, not as a data source.\n• <b>Mono-repo.</b> One repo for the library; pin a single Fluent UI v9 version across all controls and share build config so pac React templates can't pull a mismatched Fluent version.\n• <b>Performance.</b> Virtualise large grids (react-window); keep updateView lean and avoid re-emitting outputs unless values actually change.</div>
+    </div>
+    <div class="footnote">Standard licensing throughout: SharePoint lists / libraries, standard Power Apps controls, standard Power Automate flows, Power BI for reporting. No premium connectors, custom connectors or Dataverse as a data source. PCF code components do not themselves trigger premium licensing.</div>
+  </div>`;
+}
+
+/* ---------------- Router + boot ---------------- */
+function render(){
+  renderNav();
+  const main=document.getElementById('main');
+  let html;
+  if(state.route==='dashboard') html=dashboardView();
+  else if(state.route==='reporting') html=reportingView();
+  else if(state.route==='components') html=componentsView();
+  else if(MODULES[state.route]) html=state.id?MODULES[state.route].detail(state.id):renderList(state.route);
+  else html=dashboardView();
+  main.innerHTML=html; main.scrollTop=0; bindView();
+}
+function go(route,id){state.route=route;state.id=id||null;state.q='';state.sort={col:null,dir:1};state.filters={};render();}
+document.addEventListener('click',e=>{
+  const nav=e.target.closest('[data-nav]'); if(nav){go(nav.getAttribute('data-nav'));return;}
+  const open=e.target.closest('[data-open]'); if(open){go(open.getAttribute('data-open'),open.getAttribute('data-id'));return;}
+  const sort=e.target.closest('[data-sort]'); if(sort){const c=sort.getAttribute('data-sort');if(state.sort.col===c)state.sort.dir*=-1;else state.sort={col:c,dir:1};render();return;}
+});
+function bindView(){
+  if(MODULES[state.route]&&!state.id){
+    const s=document.getElementById('listSearch');
+    if(s) s.addEventListener('input',()=>{state.q=s.value;render();const n=document.getElementById('listSearch');if(n){n.focus();n.setSelectionRange(n.value.length,n.value.length);}});
+    MODULES[state.route].filters.forEach(flt=>{const sel=document.getElementById('flt_'+flt.key);if(sel)sel.addEventListener('change',()=>{state.filters[state.route]=state.filters[state.route]||{};state.filters[state.route][flt.key]=sel.value;render();});});
+  }
+}
+document.getElementById('archBtn').addEventListener('click',function(){document.body.classList.toggle('show-arch');this.classList.toggle('on',document.body.classList.contains('show-arch'));});
+go('dashboard');
+</script>
+</body>
+</html>
