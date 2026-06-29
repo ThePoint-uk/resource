@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fortys Capital · Funder Reporting (PCF)</title>
+<style>
+:root{
+  --font:'Segoe UI','Segoe UI Web (West European)',-apple-system,BlinkMacSystemFont,Roboto,'Helvetica Neue',Arial,sans-serif;
+  --brand:#0F6CBD; --brand-hover:#115EA3; --brand-bg:#EBF3FC; --brand-bd:#B4D6FA;
+  --bg:#F5F5F5; --card:#FFFFFF;
+  --stroke:#E1DFDD; --stroke-1:#D2D0CE; --stroke-2:#EDEBE9; --stroke-3:#F3F2F1;
+  --fg:#242424; --fg-2:#616161; --fg-3:#8A8886; --fg-4:#A19F9D;
+  --ok-fg:#0E700E; --ok-bg:#E7F3E3; --ok-bd:#BDDFB8; --ok-strong:#107C10;
+  --warn-fg:#8A5300; --warn-bg:#FBF3D5; --warn-bd:#EFD590;
+  --bad-fg:#A4262C; --bad-bg:#FDEDEE; --bad-bd:#EEACB2;
+  --in-fg:#A4262C; --in-bg:#FCEEEF; --out-fg:#0E6E5C; --out-bg:#E1F1ED; --na-fg:#5B6B7B; --na-bg:#EDF1F5;
+  --ch-blue:#0F6CBD; --ch-teal:#038387; --ch-purple:#8764B8; --ch-orange:#CA5010;
+  --ch-green:#107C10; --ch-amber:#D9A300; --ch-grey:#C2BFBC; --ch-rose:#BC4B4F; --ch-tealx:#0E7C6E;
+  --sh2:0 0 2px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.14);
+  --sh4:0 0 2px rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.14);
+  --r:4px; --r-lg:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{font-family:var(--font);font-size:14px;color:var(--fg);background:#1f1f1f;line-height:1.4}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+a{color:var(--brand);text-decoration:none}
+.num{font-variant-numeric:tabular-nums lining-nums;white-space:nowrap}
+:focus-visible{outline:2px solid var(--brand);outline-offset:1px;border-radius:2px}
+.rev{position:sticky;top:0;z-index:80;min-height:42px;display:flex;align-items:center;gap:14px;padding:5px 16px;background:#252423;color:#d6d6d6;border-bottom:1px solid #000;flex-wrap:wrap}
+.rev__b{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:#f3f2f1;white-space:nowrap}
+.rev__dot{width:13px;height:13px;border-radius:3px;background:linear-gradient(135deg,#3aa0ff,var(--brand))}
+.seg{display:inline-flex;background:#1b1a19;border:1px solid #3b3a39;border-radius:5px;padding:2px;gap:2px}
+.seg button{display:flex;align-items:center;gap:7px;padding:5px 11px;border-radius:4px;font-size:12.5px;font-weight:600;color:#a19f9d;transition:.15s;white-space:nowrap}
+.seg button .n{font-size:10px;opacity:.7;font-weight:700}
+.seg button[aria-selected=true]{background:#fff;color:#242424;box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.pcftoggle{display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:5px;font-size:12.5px;font-weight:600;color:#cdcdcd;border:1px solid #3b3a39;transition:.15s;white-space:nowrap}
+.pcftoggle svg{width:14px;height:14px}
+.pcftoggle:hover{color:#fff;border-color:#5a5958}
+.pcftoggle[aria-pressed=true]{background:var(--brand);border-color:var(--brand);color:#fff}
+.rev__note{margin-left:auto;font-size:11px;color:#8a8886;display:flex;align-items:center;gap:6px}
+.rev__note::before{content:"";width:5px;height:5px;border-radius:50%;background:#ffb900}
+.appbar{display:flex;align-items:center;gap:12px;height:48px;padding:0 16px;background:var(--card);border-bottom:1px solid var(--stroke)}
+.appicon{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,#3a96dd,var(--brand));display:grid;place-items:center;color:#fff;flex:none}
+.appicon svg{width:16px;height:16px}
+.appname{font-size:15px;font-weight:600}
+.envchip{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--fg-2);background:var(--bg);border:1px solid var(--stroke-2);border-radius:20px;padding:3px 10px}
+.envchip i{width:7px;height:7px;border-radius:50%;background:var(--ok-strong)}
+.appbar__sp{flex:1}
+.iconbtn{width:32px;height:32px;border-radius:var(--r);display:grid;place-items:center;color:var(--fg-2);transition:.12s}
+.iconbtn:hover{background:var(--stroke-3);color:var(--fg)} .iconbtn svg{width:18px;height:18px}
+.uav{width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:600;flex:none}
+.subbar{display:flex;align-items:center;gap:6px;padding:0 16px;background:var(--card);border-bottom:1px solid var(--stroke);min-height:44px;flex-wrap:wrap}
+.crumb{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--fg-2);margin-right:6px}
+.crumb b{color:var(--fg);font-weight:600} .crumb a{color:var(--fg-2)} .crumb svg{width:14px;height:14px;color:var(--fg-4)}
+.cmd{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border-radius:var(--r);font-size:13.5px;transition:.12s;white-space:nowrap}
+.cmd:hover{background:var(--stroke-3)} .cmd svg{width:17px;height:17px;color:var(--fg-2)}
+.cmd .cnt{font-size:11px;font-weight:700;color:#fff;background:var(--brand);border-radius:20px;padding:0 6px;min-width:16px;text-align:center}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:var(--r);font-size:13px;color:var(--fg);border:1px solid var(--stroke-1);background:#fff}
+.chip svg{width:15px;height:15px;color:var(--fg-2)}
+.sep{width:1px;height:20px;background:var(--stroke);margin:0 2px}
+.subbar__sp{flex:1}
+.srch{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--stroke-1);border-radius:var(--r);padding:0 10px;height:32px;min-width:220px}
+.srch:focus-within{border-color:var(--brand);box-shadow:inset 0 -2px 0 -1px var(--brand)}
+.srch svg{width:15px;height:15px;color:var(--fg-2)} .srch input{border:0;background:none;font:inherit;font-size:13px;width:100%;color:var(--fg)}
+.srch input::placeholder{color:var(--fg-3)}
+.pivot{display:flex;gap:2px;padding:0 16px;background:var(--card);border-bottom:1px solid var(--stroke);overflow-x:auto}
+.pivot button{position:relative;padding:11px 12px;font-size:14px;font-weight:600;color:var(--fg-2);transition:.12s;white-space:nowrap}
+.pivot button:hover{color:var(--fg);background:var(--stroke-3)} .pivot button .c{font-weight:400;color:var(--fg-3);margin-left:5px}
+.pivot button[aria-selected=true]{color:var(--fg)}
+.pivot button[aria-selected=true]::after{content:"";position:absolute;left:12px;right:12px;bottom:0;height:2.5px;background:var(--brand);border-radius:2px}
+.wrap{background:var(--bg);padding:18px 22px 64px;min-height:calc(100vh - 176px)}
+.screen{display:none;animation:fade .28s ease both;max-width:1560px}
+.screen.is-active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
+.tile{background:var(--card);border:1px solid var(--stroke-2);border-radius:var(--r-lg);padding:15px 16px;box-shadow:var(--sh2);position:relative}
+.tile__l{font-size:12px;color:var(--fg-2);font-weight:600}
+.tile__n{font-size:26px;font-weight:600;margin-top:8px;letter-spacing:-.01em;line-height:1}
+.tile__n .u{font-size:14px;color:var(--fg-3);font-weight:600}
+.tile__s{font-size:11.5px;color:var(--fg-3);margin-top:7px;display:flex;align-items:center;gap:5px}
+.tile__ic{position:absolute;top:14px;right:14px;width:26px;height:26px;border-radius:6px;display:grid;place-items:center;background:var(--brand-bg);color:var(--brand)}
+.tile__ic svg{width:15px;height:15px}
+.tile.ok .tile__ic{background:var(--ok-bg);color:var(--ok-fg)} .tile.ok .tile__n{color:var(--ok-fg)}
+.delta{font-weight:600} .delta.up{color:var(--ok-fg)} .delta.dn{color:var(--bad-fg)}
+.card{background:var(--card);border:1px solid var(--stroke-2);border-radius:var(--r-lg);box-shadow:var(--sh2);overflow:hidden}
+.card__hd{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--stroke-2)}
+.card__hd h2{font-size:15px;font-weight:600} .card__hd .sub{font-size:12px;color:var(--fg-3)}
+.card__hd .r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.cardpad{padding:18px 18px 20px}
+.linkbtn{font-size:13px;color:var(--brand);font-weight:600;display:inline-flex;align-items:center;gap:5px}
+.linkbtn svg{width:14px;height:14px}
+.split{display:grid;grid-template-columns:1fr 350px;gap:16px;align-items:start}
+.dl-wrap{overflow-x:auto}
+.dl{width:100%;border-collapse:collapse;min-width:680px}
+.dl thead th{font-size:12.5px;font-weight:600;color:var(--fg-2);text-align:left;padding:9px 12px;border-bottom:1px solid var(--stroke);white-space:nowrap;background:var(--card)}
+.dl th.r,.dl td.r{text-align:right}
+.dl tbody td{padding:0 12px;height:46px;border-bottom:1px solid var(--stroke-3);vertical-align:middle;font-size:13.5px}
+.dl tbody tr{transition:background .1s} .dl tbody tr.cl{cursor:pointer}
+.dl tbody tr.cl:hover{background:#F7F9FB}
+.dl tbody tr.repaid-row{background:#FBFDF9} .dl tbody tr.repaid-row:hover{background:#F4FAF1}
+.dl tbody tr:last-child td{border-bottom:0}
+.fn{display:flex;align-items:center;gap:9px;font-weight:600} .fn .lk{color:var(--brand)}
+.dl tbody tr.cl:hover .fn .lk{text-decoration:underline}
+.idtag{font-size:11px;font-weight:600;color:var(--fg-2);background:var(--stroke-3);border:1px solid var(--stroke-2);border-radius:4px;padding:1px 6px}
+.loan{font-weight:600;font-size:13.5px} .loan small{display:block;color:var(--fg-3);font-weight:400;font-size:11.5px;margin-top:1px}
+.loanlink{color:var(--brand);cursor:pointer} .loanlink:hover{text-decoration:underline}
+.muted{color:var(--fg-3)} .num.amt{font-weight:600;font-size:13.5px}
+.dl tfoot td{height:46px;padding:0 12px;background:var(--stroke-3);border-top:2px solid var(--stroke-1);font-weight:600;font-size:13.5px}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;line-height:1;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.badge svg{width:12px;height:12px;flex:none}
+.fill-active{background:var(--brand-bg);color:var(--brand)} .fill-pending{background:var(--warn-bg);color:var(--warn-fg)}
+.fill-repaid{background:var(--ok-bg);color:var(--ok-fg)} .fill-redeemed{background:#F0EFEE;color:var(--fg-2)}
+.fill-in{background:var(--in-bg);color:var(--in-fg)} .fill-out{background:var(--out-bg);color:var(--out-fg)} .fill-na{background:var(--na-bg);color:var(--na-fg)}
+.line{background:#fff;border:1px solid} .line-snr{border-color:var(--ok-bd);color:var(--ok-fg)}
+.line-sub{border-color:var(--warn-bd);color:var(--warn-fg)} .line-none{border-color:var(--stroke-1);color:var(--fg-2)}
+.statwrap{display:flex;flex-direction:column;gap:3px;align-items:flex-start} .noted{font-size:10.5px;color:var(--fg-3);white-space:nowrap}
+.prog{display:flex;align-items:center;gap:9px;min-width:140px}
+.prog__t{flex:1;height:6px;border-radius:4px;background:#EAE8E6;overflow:hidden}
+.prog__f{height:100%;width:0;border-radius:4px;background:var(--ok-strong);transition:width .95s cubic-bezier(.22,1,.36,1)}
+body.is-ready .prog__f{width:var(--p)}
+.prog__v{font-size:12.5px;font-weight:600;color:var(--fg-2);width:36px;text-align:right;font-variant-numeric:tabular-nums}
+.prog.done .prog__v{color:var(--ok-fg)} .prog.zero .prog__f{background:#C8C6C4} .prog.zero .prog__v{color:var(--fg-4)}
+.fhead{display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center;background:var(--card);border:1px solid var(--stroke-2);border-radius:var(--r-lg);box-shadow:var(--sh4);padding:18px 20px;margin-bottom:14px}
+.persona{display:flex;align-items:center;gap:15px}
+.pav{width:52px;height:52px;border-radius:50%;background:#6E59C0;color:#fff;display:grid;place-items:center;font-size:20px;font-weight:600;flex:none}
+.lav{width:52px;height:52px;border-radius:13px;background:linear-gradient(135deg,#2E8B7F,#0E6E5C);color:#fff;display:grid;place-items:center;flex:none} .lav svg{width:25px;height:25px}
+.pname{font-size:23px;font-weight:600;letter-spacing:-.01em;line-height:1.1}
+.psub{display:flex;align-items:center;gap:9px;margin-top:6px;flex-wrap:wrap} .psub .meta{font-size:13px;color:var(--fg-2)} .psub .dot{width:3px;height:3px;border-radius:50%;background:var(--fg-4)}
+.fhead__act{display:flex;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:var(--r);font-size:13.5px;font-weight:600;border:1px solid var(--stroke-1);background:#fff;color:var(--fg);transition:.12s}
+.btn:hover{background:var(--stroke-3)} .btn svg{width:16px;height:16px;color:var(--fg-2)}
+.btn.pri{background:var(--brand);border-color:var(--brand);color:#fff} .btn.pri:hover{background:var(--brand-hover)} .btn.pri svg{color:#fff}
+.msg{display:flex;align-items:flex-start;gap:11px;background:var(--ok-bg);border:1px solid var(--ok-bd);border-radius:var(--r);padding:11px 14px;margin-bottom:14px;color:#103D10;font-size:13px}
+.msg__ic{color:var(--ok-strong);flex:none;margin-top:1px} .msg__ic svg{width:18px;height:18px} .msg b{font-weight:600}
+.msg__x{margin-left:auto;color:var(--fg-2);width:22px;height:22px;border-radius:4px;display:grid;place-items:center} .msg__x:hover{background:rgba(0,0,0,.06)} .msg__x svg{width:14px;height:14px}
+.prow{display:grid;grid-template-columns:390px 1fr;gap:16px;margin-bottom:14px;align-items:stretch}
+.repflex{display:flex;gap:24px;align-items:center;padding:16px 20px}
+.repflex__main{flex:1}
+.repay__bar{display:flex;height:13px;border-radius:7px;overflow:hidden;background:#EAE8E6;margin-bottom:11px}
+.repay__seg{height:100%;width:0;transition:width 1.05s cubic-bezier(.22,1,.36,1)}
+body.is-ready .seg-repaid{width:var(--wr)} body.is-ready .seg-out{width:var(--wo)}
+.seg-repaid{background:var(--ok-strong)} .seg-out{background:var(--brand)}
+.legend{display:flex;gap:18px;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--fg-2)}
+.legend i{width:9px;height:9px;border-radius:2px;flex:none} .legend b{color:var(--fg);font-weight:600;font-variant-numeric:tabular-nums}
+.repcount{border-left:1px solid var(--stroke-2);padding-left:22px;text-align:center}
+.repcount .big{font-size:30px;font-weight:600;line-height:1} .repcount .big .s{font-size:16px;color:var(--fg-3)}
+.repcount .lab{font-size:12px;color:var(--fg-2);margin-top:5px;max-width:120px}
+.led{display:flex;flex-direction:column}
+.net{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--stroke-2)}
+.netc{padding:13px 16px}.netc+.netc{border-left:1px solid var(--stroke-2)}
+.netc .l{font-size:11.5px;font-weight:600;color:var(--fg-2);display:flex;align-items:center;gap:6px} .netc .l svg{width:13px;height:13px}
+.netc.in .l svg{color:var(--in-fg)}.netc.out .l svg{color:var(--out-fg)}
+.netc .v{font-size:18px;font-weight:600;margin-top:6px;font-variant-numeric:tabular-nums} .netc.in .v{color:var(--in-fg)}.netc.out .v{color:var(--out-fg)}
+.lrow{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid var(--stroke-3)} .lrow:last-child{border-bottom:0}
+.lic{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;flex:none} .lic.in{background:var(--in-bg);color:var(--in-fg)}.lic.out{background:var(--out-bg);color:var(--out-fg)} .lic svg{width:15px;height:15px}
+.lbd{flex:1;min-width:0} .lt{display:flex;justify-content:space-between;align-items:baseline;gap:10px} .lt .ty{font-size:13px;font-weight:600}
+.lt .am{font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums} .lt .am.in{color:var(--in-fg)}.lt .am.out{color:var(--out-fg)}
+.ls{font-size:11.5px;color:var(--fg-3);margin-top:3px;display:flex;align-items:center;gap:7px} .ls .d{width:3px;height:3px;border-radius:50%;background:var(--fg-4)}
+.led__ft{padding:11px 16px;text-align:center;border-top:1px solid var(--stroke-2)}
+.grp{border-bottom:1px solid var(--stroke-2)}.grp:last-child{border-bottom:0}
+.grp__hd{display:flex;align-items:center;gap:11px;padding:11px 16px;background:var(--stroke-3);cursor:pointer;user-select:none} .grp__hd:hover{background:#EFEDEB}
+.grp__chev{width:16px;height:16px;color:var(--fg-3);transition:transform .2s} .grp.closed .grp__chev{transform:rotate(-90deg)}
+.grp__nm{font-weight:600;font-size:13.5px} .grp__mt{font-size:11.5px;color:var(--fg-3);margin-top:1px}
+.grp__rt{margin-left:auto;display:flex;gap:26px;text-align:right} .grp__rt .k{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--fg-4);font-weight:600}
+.grp__rt .v{font-size:14px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums} .grp__rt .v.out{color:var(--brand)}
+.grp__body{overflow:hidden;transition:max-height .26s ease} .grp.closed .grp__body{max-height:0!important}
+.mw__next{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--stroke-3);border-bottom:1px solid var(--stroke-2)}
+.mw__next .e{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-3);font-weight:600} .mw__next .d{font-size:20px;font-weight:600;margin-top:2px}
+.mw__days{margin-left:auto;text-align:right} .mw__days .n{font-size:21px;font-weight:600;color:var(--brand);line-height:1} .mw__days .n small{font-size:11px;color:var(--fg-3);font-weight:600}
+.mwr{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--stroke-3)} .mwr:last-child{border-bottom:0}
+.mwdate{width:54px;flex:none;text-align:center} .mwdate .dd{font-size:16px;font-weight:600;line-height:1}.mwdate .mm{font-size:11px;color:var(--fg-3);text-transform:uppercase}
+.mwl{width:1px;align-self:stretch;background:var(--stroke-2)} .mwb{flex:1;min-width:0}
+.mwt{display:flex;justify-content:space-between;align-items:baseline;gap:8px} .mwt .r{font-weight:600;font-size:13px}.mwt .r small{color:var(--fg-3);font-weight:400;margin-left:5px}
+.mwt .a{font-weight:600;font-size:13px;font-variant-numeric:tabular-nums} .mws{font-size:11.5px;color:var(--fg-3);margin-top:4px;display:flex;align-items:center;gap:7px}
+.kv{display:flex;flex-direction:column}
+.kv__r{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:11px 16px;border-bottom:1px solid var(--stroke-3);font-size:13px} .kv__r:last-child{border-bottom:0}
+.kv__k{color:var(--fg-2)} .kv__v{font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.tl{padding:8px 18px 14px}
+.tlrow{display:grid;grid-template-columns:64px 32px 1fr;gap:0}
+.tldate{text-align:right;padding:16px 12px 0 0} .tldate .dd{font-size:12.5px;font-weight:600;display:block;line-height:1.15} .tldate .yy{font-size:11px;color:var(--fg-3)}
+.tlrail{position:relative;display:flex;justify-content:center}
+.tlrail::before{content:"";position:absolute;top:0;bottom:0;width:2px;background:var(--stroke-1)}
+.tlrow:first-child .tlrail::before{top:18px}
+.tlrow:last-child .tlrail::before{bottom:auto;height:28px}
+.tlnode{position:relative;z-index:2;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;margin-top:11px;border:3px solid #fff} .tlnode svg{width:14px;height:14px}
+.tlnode.in{background:var(--in-bg);color:var(--in-fg)} .tlnode.out{background:var(--ok-bg);color:var(--ok-strong)}
+.tlnode.alloc{background:var(--brand-bg);color:var(--brand)} .tlnode.loan{background:#EDE7F6;color:#6E59C0}
+.tlnode.future{background:#F0EFEE;color:var(--fg-3);border:3px dashed var(--stroke-1)}
+.tlcard{margin:7px 0 18px 10px;background:#fff;border:1px solid var(--stroke-2);border-radius:8px;padding:11px 14px;box-shadow:var(--sh2)}
+.tlrow:last-child .tlcard{margin-bottom:2px}
+.tlrow.fut .tlcard{background:#FAFAFA;border-style:dashed}
+.tlc__t{display:flex;justify-content:space-between;align-items:baseline;gap:10px} .tlc__t .ti{font-size:13.5px;font-weight:600}
+.tlc__t .am{font-weight:600;font-size:13.5px;font-variant-numeric:tabular-nums} .tlc__t .am.in{color:var(--in-fg)}.tlc__t .am.out{color:var(--out-fg)}
+.tlc__d{font-size:12.5px;color:var(--fg-2);margin-top:4px} .tlc__m{font-size:11px;color:var(--fg-3);margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap} .tlc__m .dt{width:3px;height:3px;border-radius:50%;background:var(--fg-4)}
+.insights{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.ins{flex:1;min-width:210px;background:var(--card);border:1px solid var(--stroke-2);border-radius:8px;box-shadow:var(--sh2);padding:13px 15px;display:flex;gap:12px;align-items:center}
+.ins__ic{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;flex:none} .ins__ic svg{width:19px;height:19px}
+.ins__t{font-size:12px;color:var(--fg-2)} .ins__v{font-size:15px;font-weight:600;margin-top:2px}
+.chartgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+.s4{grid-column:span 4}.s5{grid-column:span 5}.s7{grid-column:span 7}.s12{grid-column:span 12}
+.donut{display:flex;align-items:center;gap:18px}
+.donut__c{position:relative;width:130px;height:130px;flex:none} .donut__c svg{width:130px;height:130px;display:block}
+.ring-seg{stroke-dasharray:0 100;transition:stroke-dasharray 1.05s cubic-bezier(.22,1,.36,1)} body.is-ready .ring-seg{stroke-dasharray:var(--seg)}
+.donut__hole{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.donut__big{font-size:18px;font-weight:600;line-height:1.05} .donut__lab{font-size:10.5px;color:var(--fg-3);margin-top:2px}
+.dlegend{list-style:none;display:flex;flex-direction:column;gap:9px;flex:1;min-width:0}
+.dlegend li{display:flex;align-items:center;gap:9px;font-size:12.5px}
+.dlegend .sw{width:11px;height:11px;border-radius:3px;flex:none} .dlegend .nm{color:var(--fg-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dlegend .vl{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums;padding-left:8px} .dlegend .pc{color:var(--fg-3);font-size:11.5px;width:38px;text-align:right;flex:none}
+.hbars{display:flex;flex-direction:column;gap:12px}
+.hbar{display:grid;grid-template-columns:158px 1fr 104px;align-items:center;gap:12px}
+.hbar .nm{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:7px}
+.hbar .rk{font-size:11px;font-weight:700;color:var(--fg-4);width:14px}
+.hbar .tr{height:18px;border-radius:4px;background:var(--stroke-3);overflow:hidden}
+.hbar .fl{height:100%;width:0;border-radius:4px;background:var(--ch-blue);transition:width 1s cubic-bezier(.22,1,.36,1)} body.is-ready .hbar .fl{width:var(--w)}
+.hbar.top .fl{background:linear-gradient(90deg,#0B4E86,#0F6CBD)}
+.hbar .vl{text-align:right;font-weight:600;font-size:13px;font-variant-numeric:tabular-nums} .hbar .vl small{color:var(--fg-3);font-weight:400;margin-left:6px}
+.sbar{display:flex;height:15px;border-radius:8px;overflow:hidden;background:var(--stroke-2);margin-bottom:12px}
+.sbar i{height:100%;width:0;transition:width 1.05s cubic-bezier(.22,1,.36,1)} body.is-ready .sbar i{width:var(--w)}
+.colchart{display:grid;grid-template-columns:54px 1fr;gap:10px}
+.yax{display:flex;flex-direction:column;justify-content:space-between;height:var(--ch-h,200px);font-size:10.5px;color:var(--fg-4);text-align:right;line-height:1}
+.plot{position:relative;height:var(--ch-h,200px);border-bottom:1px solid var(--stroke-1)}
+.plot.g3{background:linear-gradient(var(--stroke-2),var(--stroke-2)) 0 0/100% 1px no-repeat,linear-gradient(var(--stroke-2),var(--stroke-2)) 0 33.33%/100% 1px no-repeat,linear-gradient(var(--stroke-2),var(--stroke-2)) 0 66.66%/100% 1px no-repeat}
+.plot.g4{background:linear-gradient(var(--stroke-2),var(--stroke-2)) 0 0/100% 1px no-repeat,linear-gradient(var(--stroke-2),var(--stroke-2)) 0 25%/100% 1px no-repeat,linear-gradient(var(--stroke-2),var(--stroke-2)) 0 50%/100% 1px no-repeat,linear-gradient(var(--stroke-2),var(--stroke-2)) 0 75%/100% 1px no-repeat}
+.cols{position:absolute;inset:0;display:flex;align-items:flex-end;gap:10px;padding:0 6px}
+.col{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.colstack{width:58%;max-width:62px;height:100%;display:flex;flex-direction:column;justify-content:flex-end}
+.seg{width:100%;height:0;border-radius:3px 3px 0 0;transition:height .9s cubic-bezier(.22,1,.36,1)} body.is-ready .seg{height:var(--sh)}
+.colgrp{display:flex;gap:6px;align-items:flex-end;justify-content:center;height:100%}
+.gbar{width:20px;height:0;border-radius:3px 3px 0 0;transition:height .9s cubic-bezier(.22,1,.36,1)} body.is-ready .gbar{height:var(--sh)}
+.xax{display:flex;gap:10px;padding:8px 6px 0} .xc{flex:1;text-align:center} .xc .xd{font-size:11px;color:var(--fg-2);font-weight:500} .xc .xv{font-size:12px;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums}
+.xc .xv.in{color:var(--in-fg)} .xc .xv.out{color:var(--out-fg)}
+.clegend{display:flex;gap:18px;margin-top:6px;padding-left:54px;flex-wrap:wrap} .clegend span{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--fg-2)} .clegend i{width:11px;height:11px;border-radius:3px}
+.note{margin-top:22px;font-size:12px;color:var(--fg-3);display:flex;gap:9px;align-items:center} .note::before{content:"";width:20px;height:1px;background:var(--stroke-1)}
+.pcf{position:relative}
+.pcf::after{content:attr(data-pcf);position:absolute;top:-5px;left:10px;transform:translateY(-100%);background:var(--brand);color:#fff;font-size:10px;font-weight:700;letter-spacing:.02em;padding:2px 8px;border-radius:3px;white-space:nowrap;z-index:6;opacity:0;pointer-events:none;transition:opacity .15s;box-shadow:0 1px 3px rgba(0,0,0,.28)}
+body.show-pcf .pcf{outline:1.5px dashed var(--brand);outline-offset:4px;border-radius:6px}
+body.show-pcf .pcf::after{opacity:1}
+.pcfpanel{position:fixed;right:18px;bottom:18px;width:256px;background:#fff;border:1px solid var(--stroke-1);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.20);z-index:95;overflow:hidden;display:none}
+body.show-pcf .pcfpanel{display:block}
+.pcfpanel__hd{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--brand);color:#fff;font-size:12.5px;font-weight:700}
+.pcfpanel__hd svg{width:15px;height:15px} .pcfpanel__hd .ct{margin-left:auto;background:rgba(255,255,255,.25);border-radius:20px;padding:1px 9px;font-size:11px}
+.pcfpanel__b{max-height:248px;overflow:auto;padding:7px 0}
+.pcfgrp{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-4);padding:7px 14px 4px}
+.pcfpanel__i{display:flex;align-items:center;gap:9px;padding:5px 14px;font-size:12px;color:var(--fg)}
+.pcfpanel__i .n{width:17px;height:17px;border-radius:4px;background:var(--brand-bg);color:var(--brand);font-size:9.5px;font-weight:700;display:grid;place-items:center;flex:none}
+.pcfpanel__ft{padding:9px 14px;border-top:1px solid var(--stroke-2);font-size:11px;color:var(--fg-3)}
+@media (max-width:1240px){
+  .tiles{grid-template-columns:repeat(3,1fr)} .split{grid-template-columns:1fr}
+  .prow{grid-template-columns:1fr} .fhead{grid-template-columns:1fr}
+  .s4{grid-column:span 6}.s5{grid-column:span 12}.s7{grid-column:span 12}
+}
+@media (max-width:760px){.tiles{grid-template-columns:repeat(2,1fr)}.wrap{padding:14px}.s4{grid-column:span 12}.repcount{border-left:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}
+  .prog__f{width:var(--p)!important}.seg-repaid{width:var(--wr)!important}.seg-out{width:var(--wo)!important}
+  .sbar i{width:var(--w)!important}.hbar .fl{width:var(--w)!important}.seg{height:var(--sh)!important}.gbar{height:var(--sh)!important}.ring-seg{stroke-dasharray:var(--seg)!important}}
+</style>
+</head>
+<body>
+
+<div class="rev">
+  <div class="rev__b"><span class="rev__dot"></span>Funder Reporting · PCF control</div>
+  <div class="seg" role="tablist" aria-label="Screen">
+    <button role="tab" aria-selected="true" data-screen="overview"><span class="n">01</span>Funders</button>
+    <button role="tab" aria-selected="false" data-screen="profile"><span class="n">02</span>Allocations</button>
+    <button role="tab" aria-selected="false" data-screen="loan"><span class="n">03</span>Loan history</button>
+    <button role="tab" aria-selected="false" data-screen="analytics"><span class="n">04</span>Analytics</button>
+  </div>
+  <button class="pcftoggle" id="pcfToggle" aria-pressed="false" title="Highlight the PCF controls to build">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 21 12 12 21 3 12 12 3Z"/></svg>PCF controls</button>
+  <div class="rev__note">Self-contained mock-up - illustrative data</div>
+</div>
+
+<div class="appbar">
+  <div class="appicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 3 7.5 12 12l9-4.5L12 3Z"/><path d="M3 12l9 4.5L21 12"/></svg></div>
+  <div class="appname">Funder Reporting</div>
+  <span class="envchip"><i></i>Fortys Capital - Production</span>
+  <div class="appbar__sp"></div>
+  <button class="iconbtn" title="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg></button>
+  <button class="iconbtn" title="Settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg></button>
+  <div class="uav">LF</div>
+</div>
+
+<section class="screen is-active" id="screen-overview">
+  <div class="subbar">
+    <button class="cmd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v4h-4"/></svg>Refresh</button>
+    <button class="cmd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5h16l-6 7v6l-4 2v-8z"/></svg>Filter<span class="cnt">2</span></button>
+    <button class="cmd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 6h16M4 12h16M4 18h16"/></svg>Group: Vehicle</button>
+    <button class="cmd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M9 4v16M15 4v16"/></svg>Columns</button>
+    <span class="sep"></span>
+    <button class="cmd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12M12 15l-4-4M12 15l4-4M5 19h14"/></svg>Export</button>
+    <div class="subbar__sp"></div>
+    <label class="srch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input placeholder="Search funders, loans, vehicles"></label>
+  </div>
+  <div class="pivot" role="tablist">
+    <button aria-selected="true">By vehicle</button><button>By funder</button>
+    <button>Maturity calendar</button><button>Fully repaid <span class="c">2</span></button>
+    <button data-go="analytics">Charts</button>
+  </div>
+
+  <div class="wrap">
+    <div class="tiles pcf" data-pcf="PCF · KPI Tiles">
+      <div class="tile"><div class="tile__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M16 8h5M16 12h4"/></svg></div><div class="tile__l">Active funders</div><div class="tile__n">8</div><div class="tile__s"><span class="num">11</span> allocations</div></div>
+      <div class="tile"><div class="tile__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg></div><div class="tile__l">Committed facility</div><div class="tile__n">£2.87<span class="u">m</span></div><div class="tile__s"><span class="delta up">▲ £180k</span> vs last month</div></div>
+      <div class="tile"><div class="tile__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="tile__l">Capital outstanding</div><div class="tile__n">£2.11<span class="u">m</span></div><div class="tile__s">across <span class="num">9</span> live allocations</div></div>
+      <div class="tile ok"><div class="tile__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M21 12a9 9 0 1 1-4-7.5"/><path d="M9 11.5l2.5 2.5L21 5"/></svg></div><div class="tile__l">Capital repaid</div><div class="tile__n">£371<span class="u">k</span></div><div class="tile__s">returned to funders</div></div>
+      <div class="tile ok"><div class="tile__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 11.5l2.5 2.5L21 5"/><path d="M21 12a9 9 0 1 1-4-7.5"/></svg></div><div class="tile__l">Facilities fully repaid</div><div class="tile__n">2</div><div class="tile__s">noted &amp; closed</div></div>
+    </div>
+
+    <div class="split">
+      <div class="card pcf" data-pcf="PCF · Allocations Grid">
+        <div class="card__hd"><h2>Funder allocations by vehicle</h2><span class="sub">11 allocations · 4 vehicles</span></div>
+
+        <div class="grp">
+          <div class="grp__hd" data-grp><svg class="grp__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6"/></svg>
+            <div><div class="grp__nm">Fortys Capital 7 Ltd</div><div class="grp__mt">2 funders · loan 2119 LPT5</div></div>
+            <div class="grp__rt"><div><div class="k">Committed</div><div class="v">£752,000</div></div><div><div class="k">Outstanding</div><div class="v out">£701,000</div></div></div></div>
+          <div class="grp__body"><div class="dl-wrap"><table class="dl">
+            <thead><tr><th>Funder</th><th>Loan</th><th class="r">Facility</th><th class="r">Outstanding</th><th>Repaid</th><th>Maturity</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr class="cl"><td><div class="fn"><span class="lk">Deborah Meyer</span><span class="idtag">32</span></div></td><td><div class="loan">2119 <small>LPT5 · Senior</small></div></td><td class="r num amt">£501,000</td><td class="r num amt">£501,000</td><td><div class="prog zero"><div class="prog__t"><i class="prog__f" style="--p:0%"></i></div><span class="prog__v">0%</span></div></td><td class="num muted">15 Jan 2027</td><td><span class="badge fill-active">Active</span></td></tr>
+              <tr class="cl"><td><div class="fn"><span class="lk">David Ingram</span><span class="idtag">28</span></div></td><td><div class="loan">2119 <small>LPT5 · Subordinated</small></div></td><td class="r num amt">£251,000</td><td class="r num amt">£200,000</td><td><div class="prog zero"><div class="prog__t"><i class="prog__f" style="--p:0%"></i></div><span class="prog__v">0%</span></div></td><td class="num muted">15 Jan 2027</td><td><span class="badge fill-active">Active</span></td></tr>
+            </tbody></table></div></div>
+        </div>
+
+        <div class="grp">
+          <div class="grp__hd" data-grp><svg class="grp__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6"/></svg>
+            <div><div class="grp__nm">Fortys Capital 6 Ltd</div><div class="grp__mt">4 funders · loans 2111 · 2113 · 2114 · 2130</div></div>
+            <div class="grp__rt"><div><div class="k">Committed</div><div class="v">£1,255,000</div></div><div><div class="k">Outstanding</div><div class="v out">£575,000</div></div></div></div>
+          <div class="grp__body"><div class="dl-wrap"><table class="dl">
+            <thead><tr><th>Funder</th><th>Loan</th><th class="r">Facility</th><th class="r">Outstanding</th><th>Repaid</th><th>Maturity</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr class="cl" data-profile><td><div class="fn"><span class="lk">Gianluca Investments</span><span class="idtag">126</span></div></td><td><div class="loan">2114 <small>LTF 1 · Senior</small></div></td><td class="r num amt">£500,000</td><td class="r num amt">£300,000</td><td><div class="prog zero"><div class="prog__t"><i class="prog__f" style="--p:0%"></i></div><span class="prog__v">0%</span></div></td><td class="num muted">13 Jan 2027</td><td><span class="badge fill-pending">Pending</span></td></tr>
+              <tr class="cl repaid-row" data-profile><td><div class="fn"><span class="lk">Gianluca Investments</span><span class="idtag">126</span></div></td><td><div class="loan">2113 <small>LIT-123 · Subordinated</small></div></td><td class="r num amt">£250,000</td><td class="r num amt muted">£0</td><td><div class="prog done"><div class="prog__t"><i class="prog__f" style="--p:100%"></i></div><span class="prog__v">100%</span></div></td><td class="num muted">13 Jan 2027</td><td><div class="statwrap"><span class="badge fill-repaid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12.5l4 4L19 6"/></svg>Fully repaid</span><span class="noted">noted 12 Jun 2026</span></div></td></tr>
+              <tr class="cl" data-profile><td><div class="fn"><span class="lk">Gianluca Investments</span><span class="idtag">126</span></div></td><td><div class="loan">2130 <small>ADV-2130 · Senior</small></div></td><td class="r num amt">£400,000</td><td class="r num amt">£200,000</td><td><div class="prog"><div class="prog__t"><i class="prog__f" style="--p:39%"></i></div><span class="prog__v">39%</span></div></td><td class="num muted">12 Jan 2027</td><td><span class="badge fill-active">Active</span></td></tr>
+              <tr class="cl"><td><div class="fn"><span class="lk">Brinkley Holdings Ltd</span><span class="idtag">22</span></div></td><td><div class="loan">2113 <small>LIT-123 · Subordinated</small></div></td><td class="r num amt">£50,000</td><td class="r num amt">£50,000</td><td><div class="prog zero"><div class="prog__t"><i class="prog__f" style="--p:0%"></i></div><span class="prog__v">0%</span></div></td><td class="num muted">13 Jan 2027</td><td><span class="badge fill-pending">Pending</span></td></tr>
+              <tr class="cl"><td><div class="fn"><span class="lk">Bridgeport Investments</span><span class="idtag">20</span></div></td><td><div class="loan">2114 <small>LTF 1 · Senior</small></div></td><td class="r num amt">£50,000</td><td class="r num amt">£25,000</td><td><div class="prog zero"><div class="prog__t"><i class="prog__f" style="--p:0%"></i></div><span class="prog__v">0%</span></div></td><td class="num muted">13 Jan 2027</td><td><span class="badge fill-pending">Pending</span></td></tr>
+              <tr class="cl repaid-row"><td><div class="fn"><span class="lk">David Papa</span><span class="idtag">29</span></div></td><td><div class="loan">2111 <small>2 LIT 2 · None</small></div></td><td class="r num amt">£5,000</td><td class="r num amt muted">£0</td><td><div class="prog done"><div class="prog__t"><i class="prog__f" style="--p:100%"></i></div><span class="prog__v">100%</span></div></td><td class="num muted">12 Jan 2027</td><td><div class="statwrap"><span class="badge fill-repaid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12.5l4 4L19 6"/></svg>Fully repaid</span><span class="noted">noted 09 Jun 2026</span></div></td></tr>
+            </tbody></table></div></div>
+        </div>
+
+        <div class="grp">
+          <div class="grp__hd" data-grp><svg class="grp__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6"/></svg>
+            <div><div class="grp__nm">Fortys Capital 1 Ltd</div><div class="grp__mt">1 funder · loan 2112 1 Jan St</div></div>
+            <div class="grp__rt"><div><div class="k">Committed</div><div class="v">£750,000</div></div><div><div class="k">Outstanding</div><div class="v out">£750,000</div></div></div></div>
+          <div class="grp__body"><div class="dl-wrap"><table class="dl">
+            <thead><tr><th>Funder</th><th>Loan</th><th class="r">Facility</th><th class="r">Outstanding</th><th>Repaid</th><th>Maturity</th><th>Status</th></tr></thead>
+            <tbody><tr class="cl" data-profile><td><div class="fn"><span class="lk">Gianluca Investments</span><span class="idtag">126</span></div></td><td><div class="loan">2112 <small>1 Jan St · Senior</small></div></td><td class="r num amt">£750,000</td><td class="r num amt">£750,000</td><td><div class="prog zero"><div class="prog__t"><i class="prog__f" style="--p:0%"></i></div><span class="prog__v">0%</span></div></td><td class="num muted">31 Dec 2026</td><td><span class="badge fill-active">Active</span></td></tr></tbody></table></div></div>
+        </div>
+
+        <div class="grp">
+          <div class="grp__hd" data-grp><svg class="grp__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6"/></svg>
+            <div><div class="grp__nm">Fortys Capital Ltd</div><div class="grp__mt">2 funders · loan 2115 LEEEEE</div></div>
+            <div class="grp__rt"><div><div class="k">Committed</div><div class="v">£110,000</div></div><div><div class="k">Outstanding</div><div class="v out">£85,000</div></div></div></div>
+          <div class="grp__body"><div class="dl-wrap"><table class="dl">
+            <thead><tr><th>Funder</th><th>Loan</th><th class="r">Facility</th><th class="r">Outstanding</th><th>Repaid</th><th>Maturity</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr class="cl"><td><div class="fn"><span class="lk">Bridgeport Land Ltd</span><span class="idtag">21</span></div></td><td><div class="loan">2115 <small>LEEEEE · Senior</small></div></td><td class="r num amt">£55,000</td><td class="r num amt">£55,000</td><td><div class="prog zero"><div class="prog__t"><i class="prog__f" style="--p:0%"></i></div><span class="prog__v">0%</span></div></td><td class="num muted">14 Jan 2027</td><td><span class="badge fill-pending">Pending</span></td></tr>
+              <tr class="cl"><td><div class="fn"><span class="lk">Dancastle Associates</span><span class="idtag">26</span></div></td><td><div class="loan">2115 <small>LEEEEE · Subordinated</small></div></td><td class="r num amt">£55,000</td><td class="r num amt">£30,000</td><td><div class="prog zero"><div class="prog__t"><i class="prog__f" style="--p:0%"></i></div><span class="prog__v">0%</span></div></td><td class="num muted">14 Jan 2027</td><td><span class="badge fill-pending">Pending</span></td></tr>
+            </tbody></table></div></div>
+        </div>
+      </div>
+
+      <div class="card pcf" data-pcf="PCF · Maturity Watch">
+        <div class="card__hd"><h2>Maturity watch</h2><span class="sub">next 12 months</span></div>
+        <div class="mw__next"><div><div class="e">Next maturity</div><div class="d">31 Dec 2026</div></div><div class="mw__days"><div class="n">188<small>d</small></div></div></div>
+        <div class="mwr"><div class="mwdate"><div class="dd">31</div><div class="mm">Dec 26</div></div><div class="mwl"></div><div class="mwb"><div class="mwt"><div class="r">1 Jan St <small>2112</small></div><div class="a">£750,000</div></div><div class="mws">Gianluca Investments · FC 1 Ltd</div></div></div>
+        <div class="mwr"><div class="mwdate"><div class="dd">12</div><div class="mm">Jan 27</div></div><div class="mwl"></div><div class="mwb"><div class="mwt"><div class="r">ADV-2130 <small>2130</small></div><div class="a">£400,000</div></div><div class="mws">Gianluca Investments · FC 6 Ltd</div></div></div>
+        <div class="mwr"><div class="mwdate"><div class="dd">13</div><div class="mm">Jan 27</div></div><div class="mwl"></div><div class="mwb"><div class="mwt"><div class="r">LTF 1 <small>2114</small></div><div class="a">£550,000</div></div><div class="mws">Gianluca · Bridgeport · FC 6 Ltd</div></div></div>
+        <div class="mwr"><div class="mwdate"><div class="dd">14</div><div class="mm">Jan 27</div></div><div class="mwl"></div><div class="mwb"><div class="mwt"><div class="r">LEEEEE <small>2115</small></div><div class="a">£110,000</div></div><div class="mws">Bridgeport Land · Dancastle · FC Ltd</div></div></div>
+        <div class="mwr"><div class="mwdate"><div class="dd">15</div><div class="mm">Jan 27</div></div><div class="mwl"></div><div class="mwb"><div class="mwt"><div class="r">LPT5 <small>2119</small></div><div class="a">£752,000</div></div><div class="mws">Deborah Meyer · David Ingram · FC 7 Ltd</div></div></div>
+        <div class="led__ft"><a class="linkbtn">Open maturity calendar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      </div>
+    </div>
+    <div class="note">Concept mock-up · Fluent 2 / PCF styling · figures illustrative · sourced from FunderList, Funders &amp; FunderTransactions lists</div>
+  </div>
+</section>
+
+<section class="screen" id="screen-profile">
+  <div class="subbar">
+    <div class="crumb"><a href="#" data-go="overview">Funders</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg><b>Gianluca Investments</b></div>
+    <span class="sep"></span>
+    <button class="cmd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v4h-4"/></svg>Refresh</button>
+    <button class="cmd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12M12 15l-4-4M12 15l4-4M5 19h14"/></svg>Export statement</button>
+    <div class="subbar__sp"></div>
+    <label class="srch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input placeholder="Search this funder's allocations"></label>
+  </div>
+
+  <div class="wrap">
+    <div class="fhead pcf" data-pcf="PCF · Funder Header">
+      <div class="persona"><div class="pav">GI</div><div>
+        <div class="pname">Gianluca Investments</div>
+        <div class="psub"><span class="badge fill-active">Active funder</span><span class="meta">Funder ID 126</span><span class="dot"></span><span class="meta">4 allocations · 3 vehicles</span><span class="dot"></span><span class="meta">Consent: <b style="color:var(--fg)">n/a</b></span><span class="dot"></span><span class="meta">Completion 14/01/2026</span></div>
+      </div></div>
+      <div class="fhead__act">
+        <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>Funder record</button>
+        <button class="btn pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M9 11.5l2.5 2.5L21 5"/><path d="M21 12a9 9 0 1 1-4-7.5"/></svg>Record repayment</button>
+      </div>
+    </div>
+
+    <div class="tiles pcf" data-pcf="PCF · KPI Tiles" style="grid-template-columns:repeat(4,1fr)">
+      <div class="tile"><div class="tile__l">Overall facility</div><div class="tile__n">£1.90<span class="u">m</span></div><div class="tile__s">committed across 4 loans</div></div>
+      <div class="tile"><div class="tile__l">Capital funded</div><div class="tile__n">£1.62<span class="u">m</span></div><div class="tile__s">£284k undrawn / additional</div></div>
+      <div class="tile ok"><div class="tile__l">Capital repaid</div><div class="tile__n">£366<span class="u">k</span></div><div class="tile__s">returned to funder</div></div>
+      <div class="tile"><div class="tile__l">Outstanding</div><div class="tile__n">£1.25<span class="u">m</span></div><div class="tile__s">currently deployed</div></div>
+    </div>
+
+    <div class="msg" id="repayMsg">
+      <span class="msg__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.5 2.5L16 8"/></svg></span>
+      <div><b>Facility repayment recorded.</b> 1 of this funder's 4 allocations is fully repaid, <b>LIT-123 (2113), £240,000</b> returned in full. Noted 12 Jun 2026 by L. Forsyth. <a href="#" data-scrollrepaid>View allocation</a></div>
+      <button class="msg__x" title="Dismiss" data-dismiss><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+
+    <div class="prow">
+      <div class="card pcf" data-pcf="PCF · Allocation Donut">
+        <div class="card__hd"><h2>Allocation by loan</h2><span class="sub">share of £1.90m</span></div>
+        <div class="cardpad"><div class="donut">
+          <div class="donut__c"><svg viewBox="0 0 36 36"><g transform="rotate(-90 18 18)">
+            <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--stroke-2)" stroke-width="4"></circle>
+            <circle class="ring-seg" cx="18" cy="18" r="15.915" fill="none" stroke-width="4" style="--seg:39.47 60.53;stroke:var(--ch-blue);stroke-dashoffset:0"></circle>
+            <circle class="ring-seg" cx="18" cy="18" r="15.915" fill="none" stroke-width="4" style="--seg:26.32 73.68;stroke:var(--ch-teal);stroke-dashoffset:-39.47"></circle>
+            <circle class="ring-seg" cx="18" cy="18" r="15.915" fill="none" stroke-width="4" style="--seg:21.05 78.95;stroke:var(--ch-purple);stroke-dashoffset:-65.79"></circle>
+            <circle class="ring-seg" cx="18" cy="18" r="15.915" fill="none" stroke-width="4" style="--seg:13.16 86.84;stroke:var(--ch-green);stroke-dashoffset:-86.84"></circle>
+          </g></svg><div class="donut__hole"><div class="donut__big">£1.90m</div><div class="donut__lab">facility</div></div></div>
+          <ul class="dlegend">
+            <li><span class="sw" style="background:var(--ch-blue)"></span><span class="nm">2112 · 1 Jan St</span><span class="vl">£750k</span><span class="pc">39%</span></li>
+            <li><span class="sw" style="background:var(--ch-teal)"></span><span class="nm">2114 · LTF 1</span><span class="vl">£500k</span><span class="pc">26%</span></li>
+            <li><span class="sw" style="background:var(--ch-purple)"></span><span class="nm">2130 · ADV-2130</span><span class="vl">£400k</span><span class="pc">21%</span></li>
+            <li><span class="sw" style="background:var(--ch-green)"></span><span class="nm">2113 · LIT-123 ✓</span><span class="vl">£250k</span><span class="pc">13%</span></li>
+          </ul>
+        </div></div>
+      </div>
+
+      <div class="card pcf" data-pcf="PCF · Repayment Tracker">
+        <div class="card__hd"><h2>Facility repayment</h2><span class="sub">23% of funded capital returned</span></div>
+        <div class="repflex">
+          <div class="repflex__main">
+            <div class="repay__bar"><i class="repay__seg seg-repaid" style="--wr:22.6%"></i><i class="repay__seg seg-out" style="--wo:77.4%"></i></div>
+            <div class="legend">
+              <span><i style="background:var(--ok-strong)"></i>Repaid <b>£365,542</b></span>
+              <span><i style="background:var(--brand)"></i>Outstanding <b>£1,250,000</b></span>
+              <span><i style="background:#EAE8E6"></i>Undrawn / additional <b>£284,458</b></span>
+            </div>
+          </div>
+          <div class="repcount"><div class="big">1<span class="s"> / 4</span></div><div class="lab">allocations fully repaid &amp; noted</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="card pcf" data-pcf="PCF · Allocations Grid">
+        <div class="card__hd"><h2>Allocations</h2><span class="sub">all current &amp; closed positions</span>
+          <div class="r"><span class="badge fill-active" style="cursor:pointer">Current 3</span><span class="badge fill-repaid" style="cursor:pointer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12.5l4 4L19 6"/></svg>Repaid 1</span><span class="badge fill-na" style="cursor:pointer">All 4</span></div>
+        </div>
+        <div class="dl-wrap"><table class="dl">
+          <thead><tr><th>Loan</th><th>Type</th><th class="r">Facility</th><th class="r">Funded</th><th class="r">Repaid</th><th class="r">Outstanding</th><th>Repayment</th><th>Maturity</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr class="cl"><td><div class="loan"><span class="loanlink" data-loan>2112</span> <small>1 Jan St · FC 1 Ltd</small></div></td><td><span class="badge line line-snr">Senior</span></td><td class="r num amt">£750,000</td><td class="r num">£750,000</td><td class="r num muted">£0</td><td class="r num amt">£750,000</td><td><div class="prog zero"><div class="prog__t"><i class="prog__f" style="--p:0%"></i></div><span class="prog__v">0%</span></div></td><td class="num muted">31 Dec 2026</td><td><span class="badge fill-active">Active</span></td></tr>
+            <tr class="cl repaid-row" id="repaidAlloc"><td><div class="loan"><span class="loanlink" data-loan>2113</span> <small>LIT-123 · FC 6 Ltd</small></div></td><td><span class="badge line line-sub">Subordinated</span></td><td class="r num amt">£250,000</td><td class="r num">£240,000</td><td class="r num" style="color:var(--ok-fg);font-weight:600">£240,000</td><td class="r num muted">£0</td><td><div class="prog done"><div class="prog__t"><i class="prog__f" style="--p:100%"></i></div><span class="prog__v">100%</span></div></td><td class="num muted">13 Jan 2027</td><td><div class="statwrap"><span class="badge fill-repaid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12.5l4 4L19 6"/></svg>Fully repaid</span><span class="noted">noted 12 Jun 2026 · LF</span></div></td></tr>
+            <tr class="cl"><td><div class="loan"><span class="loanlink" data-loan>2114</span> <small>LTF 1 · FC 6 Ltd</small></div></td><td><span class="badge line line-snr">Senior</span></td><td class="r num amt">£500,000</td><td class="r num">£300,000</td><td class="r num muted">£0</td><td class="r num amt">£300,000</td><td><div class="prog zero"><div class="prog__t"><i class="prog__f" style="--p:0%"></i></div><span class="prog__v">0%</span></div></td><td class="num muted">13 Jan 2027</td><td><span class="badge fill-pending">Pending</span></td></tr>
+            <tr class="cl"><td><div class="loan"><span class="loanlink" data-loan>2130</span> <small>ADV-2130 · FC 6 Ltd</small></div></td><td><span class="badge line line-snr">Senior</span></td><td class="r num amt">£400,000</td><td class="r num">£325,542</td><td class="r num" style="color:var(--ok-fg);font-weight:600">£125,542</td><td class="r num amt">£200,000</td><td><div class="prog"><div class="prog__t"><i class="prog__f" style="--p:39%"></i></div><span class="prog__v">39%</span></div></td><td class="num muted">12 Jan 2027</td><td><span class="badge fill-active">Active</span></td></tr>
+          </tbody>
+          <tfoot><tr><td colspan="2">Total - 4 allocations</td><td class="r num">£1,900,000</td><td class="r num">£1,615,542</td><td class="r num" style="color:var(--ok-fg)">£365,542</td><td class="r num">£1,250,000</td><td><div class="prog"><div class="prog__t"><i class="prog__f" style="--p:23%"></i></div><span class="prog__v">23%</span></div></td><td></td><td></td></tr></tfoot>
+        </table></div>
+      </div>
+
+      <div class="card led pcf" data-pcf="PCF · Transaction Ledger">
+        <div class="card__hd"><h2>Funder activity</h2><span class="sub">transactions</span></div>
+        <div class="net">
+          <div class="netc in"><div class="l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 5v14M12 19l-5-5M12 19l5-5"/></svg>Capital in</div><div class="v">£1,615,542</div></div>
+          <div class="netc out"><div class="l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 19V5M12 5l-5 5M12 5l5 5"/></svg>Capital out</div><div class="v">£365,542</div></div>
+        </div>
+        <div class="lrow"><div class="lic out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M12 5l-5 5M12 5l5 5"/></svg></div><div class="lbd"><div class="lt"><span class="ty">Capital Transfer Out</span><span class="am out">-£240,000</span></div><div class="ls">2113 · LIT-123 <span class="d"></span> 12 Jun 2026 <span class="badge fill-repaid" style="font-size:10px;padding:2px 6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="M5 12.5l4 4L19 6"/></svg>Facility closed</span></div></div></div>
+        <div class="lrow"><div class="lic out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M12 5l-5 5M12 5l5 5"/></svg></div><div class="lbd"><div class="lt"><span class="ty">Capital Transfer Out</span><span class="am out">-£125,542</span></div><div class="ls">2130 · ADV-2130 <span class="d"></span> 05 May 2026 <span class="badge fill-out" style="font-size:10px;padding:2px 6px">Part repayment</span></div></div></div>
+        <div class="lrow"><div class="lic in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M12 19l-5-5M12 19l5-5"/></svg></div><div class="lbd"><div class="lt"><span class="ty">Capital Transfer In</span><span class="am in">+£325,542</span></div><div class="ls">2130 · ADV-2130 <span class="d"></span> 18 Feb 2026 <span class="badge fill-na" style="font-size:10px;padding:2px 6px">Approved</span></div></div></div>
+        <div class="lrow"><div class="lic in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M12 19l-5-5M12 19l5-5"/></svg></div><div class="lbd"><div class="lt"><span class="ty">Capital Transfer In</span><span class="am in">+£300,000</span></div><div class="ls">2114 · LTF 1 <span class="d"></span> 10 Mar 2026 <span class="badge fill-pending" style="font-size:10px;padding:2px 6px">Pending</span></div></div></div>
+        <div class="lrow"><div class="lic in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M12 19l-5-5M12 19l5-5"/></svg></div><div class="lbd"><div class="lt"><span class="ty">Capital Transfer In</span><span class="am in">+£240,000</span></div><div class="ls">2113 · LIT-123 <span class="d"></span> 14 Jan 2026 <span class="badge fill-na" style="font-size:10px;padding:2px 6px">Approved</span></div></div></div>
+        <div class="led__ft"><a class="linkbtn">View all 6 transactions <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+      </div>
+    </div>
+    <div class="note">Concept mock-up · Funder 126 · repayment derived from Capital Transfer Out vs Capital Transfer In · figures illustrative</div>
+  </div>
+</section>
+
+<section class="screen" id="screen-loan">
+  <div class="subbar">
+    <div class="crumb"><a href="#" data-go="overview">Loans</a><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg><b>LIT-123 (2113)</b></div>
+    <span class="sep"></span>
+    <button class="cmd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v4h-4"/></svg>Refresh</button>
+    <button class="cmd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12M12 15l-4-4M12 15l4-4M5 19h14"/></svg>Export history</button>
+    <div class="subbar__sp"></div>
+    <label class="srch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input placeholder="Search this loan's history"></label>
+  </div>
+
+  <div class="wrap">
+    <div class="fhead pcf" data-pcf="PCF · Loan Header">
+      <div class="persona"><div class="lav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5h12l4 4v10H4z"/><path d="M16 5v4h4M8 13h8M8 16.5h5"/></svg></div><div>
+        <div class="pname">LIT-123 <span style="font-weight:400;color:var(--fg-3);font-size:18px">· Loan 2113</span></div>
+        <div class="psub"><span class="badge fill-active">Part repaid</span><span class="meta">Fortys Capital 6 Ltd</span><span class="dot"></span><span class="badge line line-sub">Subordinated</span><span class="dot"></span><span class="meta">Matures 13 Jan 2027</span><span class="dot"></span><span class="meta">2 funders</span></div>
+      </div></div>
+      <div class="fhead__act">
+        <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></svg>Loan record</button>
+        <button class="btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 5v14M5 12h14"/></svg>Add transaction</button>
+      </div>
+    </div>
+
+    <div class="tiles pcf" data-pcf="PCF · KPI Tiles">
+      <div class="tile"><div class="tile__l">Loan facility</div><div class="tile__n">£300<span class="u">k</span></div><div class="tile__s">committed by 2 funders</div></div>
+      <div class="tile"><div class="tile__l">Funders</div><div class="tile__n">2</div><div class="tile__s">1 closed · 1 pending</div></div>
+      <div class="tile"><div class="tile__l">Capital funded</div><div class="tile__n">£290<span class="u">k</span></div><div class="tile__s">transferred in</div></div>
+      <div class="tile ok"><div class="tile__l">Capital repaid</div><div class="tile__n">£240<span class="u">k</span></div><div class="tile__s">transferred out</div></div>
+      <div class="tile"><div class="tile__l">Outstanding</div><div class="tile__n">£50<span class="u">k</span></div><div class="tile__s">still deployed</div></div>
+    </div>
+
+    <div class="split">
+      <div class="card pcf" data-pcf="PCF · Loan History Timeline">
+        <div class="card__hd"><h2>Loan history</h2><span class="sub">all events, newest first</span>
+          <div class="r"><a class="linkbtn">Filter <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16l-6 7v6l-4 2v-8z"/></svg></a></div>
+        </div>
+        <div class="tl">
+          <div class="tlrow fut">
+            <div class="tldate"><span class="dd">13 Jan</span><span class="yy">2027</span></div>
+            <div class="tlrail"><div class="tlnode future"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9h17M8 3v3M16 3v3"/></svg></div></div>
+            <div class="tlcard"><div class="tlc__t"><span class="ti">Maturity due</span><span class="am">£50,000</span></div><div class="tlc__d">Outstanding subordinated capital falls due. Brinkley Holdings position to be repaid or refinanced.</div><div class="tlc__m"><span class="badge fill-na" style="font-size:10px;padding:2px 6px">Scheduled</span><span class="dt"></span>197 days away</div></div>
+          </div>
+          <div class="tlrow">
+            <div class="tldate"><span class="dd">12 Jun</span><span class="yy">2026</span></div>
+            <div class="tlrail"><div class="tlnode out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12.5l4 4L19 6"/></svg></div></div>
+            <div class="tlcard"><div class="tlc__t"><span class="ti">Capital transferred out · Gianluca Investments</span><span class="am out">-£240,000</span></div><div class="tlc__d">Subordinated facility repaid in full. Allocation closed and marked fully repaid.</div><div class="tlc__m"><span class="badge fill-repaid" style="font-size:10px;padding:2px 6px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="M5 12.5l4 4L19 6"/></svg>Facility closed</span><span class="dt"></span>Approved<span class="dt"></span>by L. Forsyth</div></div>
+          </div>
+          <div class="tlrow">
+            <div class="tldate"><span class="dd">18 Jan</span><span class="yy">2026</span></div>
+            <div class="tlrail"><div class="tlnode in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 5v14M12 19l-5-5M12 19l5-5"/></svg></div></div>
+            <div class="tlcard"><div class="tlc__t"><span class="ti">Capital transferred in · Brinkley Holdings Ltd</span><span class="am in">+£50,000</span></div><div class="tlc__d">Subordinated participation funded.</div><div class="tlc__m"><span class="badge fill-pending" style="font-size:10px;padding:2px 6px">Pending approval</span></div></div>
+          </div>
+          <div class="tlrow">
+            <div class="tldate"><span class="dd">14 Jan</span><span class="yy">2026</span></div>
+            <div class="tlrail"><div class="tlnode in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 5v14M12 19l-5-5M12 19l5-5"/></svg></div></div>
+            <div class="tlcard"><div class="tlc__t"><span class="ti">Capital transferred in · Gianluca Investments</span><span class="am in">+£240,000</span></div><div class="tlc__d">Subordinated participation funded.</div><div class="tlc__m"><span class="badge fill-na" style="font-size:10px;padding:2px 6px">Approved</span></div></div>
+          </div>
+          <div class="tlrow">
+            <div class="tldate"><span class="dd">13 Jan</span><span class="yy">2026</span></div>
+            <div class="tlrail"><div class="tlnode alloc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M18 8v6M21 11h-6"/></svg></div></div>
+            <div class="tlcard"><div class="tlc__t"><span class="ti">Funder allocation added · Brinkley Holdings Ltd</span></div><div class="tlc__d">Subordinated, £50,000 facility committed against this loan.</div><div class="tlc__m"><span class="badge line line-sub" style="font-size:10px;padding:2px 6px">Subordinated</span><span class="dt"></span>by L. Forsyth</div></div>
+          </div>
+          <div class="tlrow">
+            <div class="tldate"><span class="dd">13 Jan</span><span class="yy">2026</span></div>
+            <div class="tlrail"><div class="tlnode alloc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M18 8v6M21 11h-6"/></svg></div></div>
+            <div class="tlcard"><div class="tlc__t"><span class="ti">Funder allocation added · Gianluca Investments</span></div><div class="tlc__d">Subordinated, £250,000 facility committed against this loan.</div><div class="tlc__m"><span class="badge line line-sub" style="font-size:10px;padding:2px 6px">Subordinated</span><span class="dt"></span>by L. Forsyth</div></div>
+          </div>
+          <div class="tlrow">
+            <div class="tldate"><span class="dd">13 Jan</span><span class="yy">2026</span></div>
+            <div class="tlrail"><div class="tlnode loan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h12l4 4v10H4z"/><path d="M16 5v4h4"/></svg></div></div>
+            <div class="tlcard"><div class="tlc__t"><span class="ti">Loan facility completed</span><span class="am">£300,000</span></div><div class="tlc__d">LIT-123 drawn on Fortys Capital 6 Ltd. Maturity set to 13 Jan 2027.</div><div class="tlc__m">Completion date 13 Jan 2026<span class="dt"></span>Coupon 9.5% · Default 14%</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card pcf" data-pcf="PCF · Loan Summary">
+        <div class="card__hd"><h2>Loan summary</h2></div>
+        <div class="kv">
+          <div class="kv__r"><span class="kv__k">Lending vehicle</span><span class="kv__v">FC 6 Ltd</span></div>
+          <div class="kv__r"><span class="kv__k">Facility type</span><span class="kv__v"><span class="badge line line-sub">Subordinated</span></span></div>
+          <div class="kv__r"><span class="kv__k">Total facility</span><span class="kv__v">£300,000</span></div>
+          <div class="kv__r"><span class="kv__k">Coupon rate</span><span class="kv__v">9.5%</span></div>
+          <div class="kv__r"><span class="kv__k">Default rate</span><span class="kv__v">14.0%</span></div>
+          <div class="kv__r"><span class="kv__k">Completion date</span><span class="kv__v">13 Jan 2026</span></div>
+          <div class="kv__r"><span class="kv__k">Maturity date</span><span class="kv__v">13 Jan 2027</span></div>
+          <div class="kv__r"><span class="kv__k">Status</span><span class="kv__v"><span class="badge fill-active">Part repaid</span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card pcf" data-pcf="PCF · Allocations Grid" style="margin-top:16px">
+      <div class="card__hd"><h2>Funders on this loan</h2><span class="sub">2 participations</span></div>
+      <div class="dl-wrap"><table class="dl">
+        <thead><tr><th>Funder</th><th>Type</th><th class="r">Facility</th><th class="r">Funded</th><th class="r">Repaid</th><th class="r">Outstanding</th><th>Repayment</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr class="cl repaid-row" data-profile><td><div class="fn"><span class="lk">Gianluca Investments</span><span class="idtag">126</span></div></td><td><span class="badge line line-sub">Subordinated</span></td><td class="r num amt">£250,000</td><td class="r num">£240,000</td><td class="r num" style="color:var(--ok-fg);font-weight:600">£240,000</td><td class="r num muted">£0</td><td><div class="prog done"><div class="prog__t"><i class="prog__f" style="--p:100%"></i></div><span class="prog__v">100%</span></div></td><td><div class="statwrap"><span class="badge fill-repaid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M5 12.5l4 4L19 6"/></svg>Fully repaid</span><span class="noted">noted 12 Jun 2026</span></div></td></tr>
+          <tr class="cl"><td><div class="fn"><span class="lk">Brinkley Holdings Ltd</span><span class="idtag">22</span></div></td><td><span class="badge line line-sub">Subordinated</span></td><td class="r num amt">£50,000</td><td class="r num">£50,000</td><td class="r num muted">£0</td><td class="r num amt">£50,000</td><td><div class="prog zero"><div class="prog__t"><i class="prog__f" style="--p:0%"></i></div><span class="prog__v">0%</span></div></td><td><span class="badge fill-pending">Pending</span></td></tr>
+        </tbody>
+        <tfoot><tr><td>Total - 2 funders</td><td></td><td class="r num">£300,000</td><td class="r num">£290,000</td><td class="r num" style="color:var(--ok-fg)">£240,000</td><td class="r num">£50,000</td><td></td><td></td></tr></tfoot>
+      </table></div>
+    </div>
+
+    <div class="note">Concept mock-up · Loan 2113 LIT-123 · history assembled from Funders (allocations) &amp; FunderTransactions · figures illustrative</div>
+  </div>
+</section>
+
+<section class="screen" id="screen-analytics">
+  <div class="subbar">
+    <button class="cmd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v4h-4"/></svg>Refresh</button>
+    <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9h17M8 3v3M16 3v3"/></svg>FY 2025/26</span>
+    <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 6h16M4 12h16M4 18h16"/></svg>All vehicles</span>
+    <span class="sep"></span>
+    <button class="cmd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v12M12 15l-4-4M12 15l4-4M5 19h14"/></svg>Export charts</button>
+    <div class="subbar__sp"></div>
+    <label class="srch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input placeholder="Search"></label>
+  </div>
+  <div class="pivot" role="tablist">
+    <button aria-selected="true">Allocation</button><button>Capital &amp; repayment</button><button>Maturity profile</button>
+  </div>
+
+  <div class="wrap">
+    <div class="insights">
+      <div class="ins"><div class="ins__ic" style="background:var(--brand-bg);color:var(--brand)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3 3 7.5 12 12l9-4.5L12 3Z"/><path d="M3 12l9 4.5L21 12M3 16.5l9 4.5 9-4.5"/></svg></div><div><div class="ins__t">Seniority weighting</div><div class="ins__v">79% Senior · 21% Subordinated</div></div></div>
+      <div class="ins"><div class="ins__ic" style="background:var(--na-bg);color:var(--na-fg)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><div class="ins__t">Capital deployed</div><div class="ins__v">£2.48m funded · 87% drawn</div></div></div>
+      <div class="ins"><div class="ins__ic" style="background:var(--ok-bg);color:var(--ok-fg)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 11.5l2.5 2.5L21 5"/><path d="M21 12a9 9 0 1 1-4-7.5"/></svg></div><div><div class="ins__t">Repaid to date</div><div class="ins__v">£371k · 2 facilities closed</div></div></div>
+    </div>
+
+    <div class="chartgrid">
+      <div class="card s4 pcf" data-pcf="PCF · Donut Chart"><div class="card__hd"><h2>Allocation by vehicle</h2></div><div class="cardpad"><div class="donut">
+        <div class="donut__c"><svg viewBox="0 0 36 36"><g transform="rotate(-90 18 18)">
+          <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--stroke-2)" stroke-width="4"></circle>
+          <circle class="ring-seg" cx="18" cy="18" r="15.915" fill="none" stroke-width="4" style="--seg:43.77 56.23;stroke:var(--ch-blue);stroke-dashoffset:0"></circle>
+          <circle class="ring-seg" cx="18" cy="18" r="15.915" fill="none" stroke-width="4" style="--seg:26.23 73.77;stroke:var(--ch-teal);stroke-dashoffset:-43.77"></circle>
+          <circle class="ring-seg" cx="18" cy="18" r="15.915" fill="none" stroke-width="4" style="--seg:26.16 73.84;stroke:var(--ch-purple);stroke-dashoffset:-70"></circle>
+          <circle class="ring-seg" cx="18" cy="18" r="15.915" fill="none" stroke-width="4" style="--seg:3.84 96.16;stroke:var(--ch-orange);stroke-dashoffset:-96.16"></circle>
+        </g></svg><div class="donut__hole"><div class="donut__big">£2.87m</div><div class="donut__lab">committed</div></div></div>
+        <ul class="dlegend">
+          <li><span class="sw" style="background:var(--ch-blue)"></span><span class="nm">FC 6 Ltd</span><span class="vl">£1.26m</span><span class="pc">44%</span></li>
+          <li><span class="sw" style="background:var(--ch-teal)"></span><span class="nm">FC 7 Ltd</span><span class="vl">£752k</span><span class="pc">26%</span></li>
+          <li><span class="sw" style="background:var(--ch-purple)"></span><span class="nm">FC 1 Ltd</span><span class="vl">£750k</span><span class="pc">26%</span></li>
+          <li><span class="sw" style="background:var(--ch-orange)"></span><span class="nm">FC Ltd</span><span class="vl">£110k</span><span class="pc">4%</span></li>
+        </ul></div></div></div>
+
+      <div class="card s4 pcf" data-pcf="PCF · Donut Chart"><div class="card__hd"><h2>Allocation by seniority</h2></div><div class="cardpad"><div class="donut">
+        <div class="donut__c"><svg viewBox="0 0 36 36"><g transform="rotate(-90 18 18)">
+          <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--stroke-2)" stroke-width="4"></circle>
+          <circle class="ring-seg" cx="18" cy="18" r="15.915" fill="none" stroke-width="4" style="--seg:78.69 21.31;stroke:var(--ch-blue);stroke-dashoffset:0"></circle>
+          <circle class="ring-seg" cx="18" cy="18" r="15.915" fill="none" stroke-width="4" style="--seg:21.14 78.86;stroke:var(--ch-amber);stroke-dashoffset:-78.69"></circle>
+          <circle class="ring-seg" cx="18" cy="18" r="15.915" fill="none" stroke-width="4" style="--seg:0.17 99.83;stroke:var(--ch-grey);stroke-dashoffset:-99.83"></circle>
+        </g></svg><div class="donut__hole"><div class="donut__big">79%</div><div class="donut__lab">senior</div></div></div>
+        <ul class="dlegend">
+          <li><span class="sw" style="background:var(--ch-blue)"></span><span class="nm">Senior</span><span class="vl">£2.26m</span><span class="pc">79%</span></li>
+          <li><span class="sw" style="background:var(--ch-amber)"></span><span class="nm">Subordinated</span><span class="vl">£606k</span><span class="pc">21%</span></li>
+          <li><span class="sw" style="background:var(--ch-grey)"></span><span class="nm">None</span><span class="vl">£5k</span><span class="pc">&lt;1%</span></li>
+        </ul></div></div></div>
+
+      <div class="card s4 pcf" data-pcf="PCF · Donut Chart"><div class="card__hd"><h2>Allocation by status</h2></div><div class="cardpad"><div class="donut">
+        <div class="donut__c"><svg viewBox="0 0 36 36"><g transform="rotate(-90 18 18)">
+          <circle cx="18" cy="18" r="15.915" fill="none" stroke="var(--stroke-2)" stroke-width="4"></circle>
+          <circle class="ring-seg" cx="18" cy="18" r="15.915" fill="none" stroke-width="4" style="--seg:66.34 33.66;stroke:var(--ch-blue);stroke-dashoffset:0"></circle>
+          <circle class="ring-seg" cx="18" cy="18" r="15.915" fill="none" stroke-width="4" style="--seg:24.76 75.24;stroke:var(--ch-amber);stroke-dashoffset:-66.34"></circle>
+          <circle class="ring-seg" cx="18" cy="18" r="15.915" fill="none" stroke-width="4" style="--seg:8.89 91.11;stroke:var(--ch-green);stroke-dashoffset:-91.10"></circle>
+        </g></svg><div class="donut__hole"><div class="donut__big">11</div><div class="donut__lab">allocations</div></div></div>
+        <ul class="dlegend">
+          <li><span class="sw" style="background:var(--ch-blue)"></span><span class="nm">Active</span><span class="vl">£1.90m</span><span class="pc">66%</span></li>
+          <li><span class="sw" style="background:var(--ch-amber)"></span><span class="nm">Pending</span><span class="vl">£710k</span><span class="pc">25%</span></li>
+          <li><span class="sw" style="background:var(--ch-green)"></span><span class="nm">Fully repaid</span><span class="vl">£255k</span><span class="pc">9%</span></li>
+        </ul></div></div></div>
+
+      <div class="card s7 pcf" data-pcf="PCF · Exposure Bars"><div class="card__hd"><h2>Top funders by exposure</h2><span class="sub">committed facility</span></div><div class="cardpad">
+        <div class="hbars">
+          <div class="hbar top"><div class="nm"><span class="rk">1</span>Gianluca Investments</div><div class="tr"><i class="fl" style="--w:100%"></i></div><div class="vl">£1,900,000 <small>66%</small></div></div>
+          <div class="hbar"><div class="nm"><span class="rk">2</span>Deborah Meyer</div><div class="tr"><i class="fl" style="--w:26.4%"></i></div><div class="vl">£501,000 <small>17%</small></div></div>
+          <div class="hbar"><div class="nm"><span class="rk">3</span>David Ingram</div><div class="tr"><i class="fl" style="--w:13.2%"></i></div><div class="vl">£251,000 <small>9%</small></div></div>
+          <div class="hbar"><div class="nm"><span class="rk">4</span>Bridgeport Land Ltd</div><div class="tr"><i class="fl" style="--w:2.9%"></i></div><div class="vl">£55,000 <small>2%</small></div></div>
+          <div class="hbar"><div class="nm"><span class="rk">5</span>Dancastle Associates</div><div class="tr"><i class="fl" style="--w:2.9%"></i></div><div class="vl">£55,000 <small>2%</small></div></div>
+          <div class="hbar"><div class="nm"><span class="rk">6</span>Brinkley Holdings Ltd</div><div class="tr"><i class="fl" style="--w:2.6%"></i></div><div class="vl">£50,000 <small>2%</small></div></div>
+          <div class="hbar"><div class="nm"><span class="rk">7</span>Bridgeport Investments</div><div class="tr"><i class="fl" style="--w:2.6%"></i></div><div class="vl">£50,000 <small>2%</small></div></div>
+          <div class="hbar"><div class="nm"><span class="rk">8</span>David Papa</div><div class="tr"><i class="fl" style="--w:0.3%"></i></div><div class="vl">£5,000 <small>&lt;1%</small></div></div>
+        </div>
+      </div></div>
+
+      <div class="card s5 pcf" data-pcf="PCF · Capital Position"><div class="card__hd"><h2>Capital position</h2><span class="sub">of £2.87m committed</span></div><div class="cardpad">
+        <div class="sbar"><i style="background:var(--ok-strong);--w:12.9%"></i><i style="background:var(--brand);--w:73.6%"></i><i style="background:var(--ch-grey);--w:13.5%"></i></div>
+        <div class="legend" style="flex-direction:column;gap:11px">
+          <span><i style="background:var(--ok-strong)"></i>Repaid &amp; returned <b style="margin-left:auto">£370,542</b><span class="pc" style="color:var(--fg-3);width:42px;text-align:right">13%</span></span>
+          <span><i style="background:var(--brand)"></i>Outstanding (deployed) <b style="margin-left:auto">£2,111,000</b><span class="pc" style="color:var(--fg-3);width:42px;text-align:right">74%</span></span>
+          <span><i style="background:var(--ch-grey)"></i>Undrawn / additional <b style="margin-left:auto">£385,458</b><span class="pc" style="color:var(--fg-3);width:42px;text-align:right">13%</span></span>
+        </div>
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--stroke-2);font-size:12.5px;color:var(--fg-2)">£2.48m funded of £2.87m committed, <b style="color:var(--fg)">87% drawn</b>.</div>
+      </div></div>
+
+      <div class="card s12 pcf" data-pcf="PCF · Maturity Ladder"><div class="card__hd"><h2>Maturity ladder</h2><span class="sub">outstanding capital maturing, by tranche</span></div><div class="cardpad">
+        <div class="colchart" style="--ch-h:200px">
+          <div class="yax"><span>£750k</span><span>£500k</span><span>£250k</span><span>£0</span></div>
+          <div><div class="plot g3"><div class="cols">
+            <div class="col"><div class="colstack"><i class="seg" style="--sh:100%;background:var(--ch-blue)"></i></div></div>
+            <div class="col"><div class="colstack"><i class="seg" style="--sh:26.67%;background:var(--ch-blue)"></i></div></div>
+            <div class="col"><div class="colstack"><i class="seg" style="--sh:6.67%;background:var(--ch-amber)"></i><i class="seg" style="--sh:43.33%;background:var(--ch-blue)"></i></div></div>
+            <div class="col"><div class="colstack"><i class="seg" style="--sh:4%;background:var(--ch-amber)"></i><i class="seg" style="--sh:7.33%;background:var(--ch-blue)"></i></div></div>
+            <div class="col"><div class="colstack"><i class="seg" style="--sh:26.67%;background:var(--ch-amber)"></i><i class="seg" style="--sh:66.8%;background:var(--ch-blue)"></i></div></div>
+          </div></div>
+          <div class="xax">
+            <div class="xc"><div class="xd">31 Dec 26</div><div class="xv">£750k</div></div>
+            <div class="xc"><div class="xd">12 Jan 27</div><div class="xv">£200k</div></div>
+            <div class="xc"><div class="xd">13 Jan 27</div><div class="xv">£375k</div></div>
+            <div class="xc"><div class="xd">14 Jan 27</div><div class="xv">£85k</div></div>
+            <div class="xc"><div class="xd">15 Jan 27</div><div class="xv">£701k</div></div>
+          </div></div>
+        </div>
+        <div class="clegend"><span><i style="background:var(--ch-blue)"></i>Senior</span><span><i style="background:var(--ch-amber)"></i>Subordinated</span><span style="color:var(--fg-3)">£1.36m of £2.11m outstanding matures in Jan 2027</span></div>
+      </div></div>
+
+      <div class="card s12 pcf" data-pcf="PCF · Capital Flow"><div class="card__hd"><h2>Capital flow by month</h2><span class="sub">transfers in (deployments) vs out (repayments)</span></div><div class="cardpad">
+        <div class="colchart" style="--ch-h:210px">
+          <div class="yax"><span>£2.0m</span><span>£1.5m</span><span>£1.0m</span><span>£0.5m</span><span>£0</span></div>
+          <div><div class="plot g4"><div class="cols">
+            <div class="col"><div class="colgrp"><i class="gbar" style="--sh:91.55%;background:var(--ch-rose)"></i><i class="gbar" style="--sh:0%;background:var(--ch-tealx)"></i></div></div>
+            <div class="col"><div class="colgrp"><i class="gbar" style="--sh:16.28%;background:var(--ch-rose)"></i><i class="gbar" style="--sh:0%;background:var(--ch-tealx)"></i></div></div>
+            <div class="col"><div class="colgrp"><i class="gbar" style="--sh:15%;background:var(--ch-rose)"></i><i class="gbar" style="--sh:0%;background:var(--ch-tealx)"></i></div></div>
+            <div class="col"><div class="colgrp"><i class="gbar" style="--sh:2%;background:var(--ch-rose)"></i><i class="gbar" style="--sh:0%;background:var(--ch-tealx)"></i></div></div>
+            <div class="col"><div class="colgrp"><i class="gbar" style="--sh:0%;background:var(--ch-rose)"></i><i class="gbar" style="--sh:6.28%;background:var(--ch-tealx)"></i></div></div>
+            <div class="col"><div class="colgrp"><i class="gbar" style="--sh:0%;background:var(--ch-rose)"></i><i class="gbar" style="--sh:12.25%;background:var(--ch-tealx)"></i></div></div>
+          </div></div>
+          <div class="xax">
+            <div class="xc"><div class="xd">Jan</div><div class="xv in">+£1.83m</div></div>
+            <div class="xc"><div class="xd">Feb</div><div class="xv in">+£326k</div></div>
+            <div class="xc"><div class="xd">Mar</div><div class="xv in">+£300k</div></div>
+            <div class="xc"><div class="xd">Apr</div><div class="xv in">+£25k</div></div>
+            <div class="xc"><div class="xd">May</div><div class="xv out">-£126k</div></div>
+            <div class="xc"><div class="xd">Jun</div><div class="xv out">-£245k</div></div>
+          </div></div>
+        </div>
+        <div class="clegend"><span><i style="background:var(--ch-rose)"></i>Capital in (deployed)</span><span><i style="background:var(--ch-tealx)"></i>Capital out (repaid)</span><span style="color:var(--fg-3)">Most capital deployed in Jan 2026; repayments begin May 2026</span></div>
+      </div></div>
+    </div>
+    <div class="note">Concept mock-up · portfolio analytics · figures illustrative · all charts derived from Funders &amp; FunderTransactions lists</div>
+  </div>
+</section>
+
+<div class="pcfpanel" aria-hidden="true">
+  <div class="pcfpanel__hd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 21 12 12 21 3 12 12 3Z"/></svg>PCF controls to build<span class="ct">12</span></div>
+  <div class="pcfpanel__b">
+    <div class="pcfgrp">Shared</div>
+    <div class="pcfpanel__i"><span class="n">1</span>KPI Tiles</div>
+    <div class="pcfpanel__i"><span class="n">2</span>Allocations Grid</div>
+    <div class="pcfpanel__i"><span class="n">3</span>Transaction Ledger</div>
+    <div class="pcfgrp">Funder view</div>
+    <div class="pcfpanel__i"><span class="n">4</span>Funder Header</div>
+    <div class="pcfpanel__i"><span class="n">5</span>Repayment Tracker</div>
+    <div class="pcfpanel__i"><span class="n">6</span>Allocation Donut</div>
+    <div class="pcfgrp">Loan view</div>
+    <div class="pcfpanel__i"><span class="n">7</span>Loan Header</div>
+    <div class="pcfpanel__i"><span class="n">8</span>Loan History Timeline</div>
+    <div class="pcfpanel__i"><span class="n">9</span>Loan Summary</div>
+    <div class="pcfgrp">Analytics &amp; overview</div>
+    <div class="pcfpanel__i"><span class="n">10</span>Exposure / Capital Position bars</div>
+    <div class="pcfpanel__i"><span class="n">11</span>Maturity Ladder / Capital Flow</div>
+    <div class="pcfpanel__i"><span class="n">12</span>Maturity Watch</div>
+  </div>
+  <div class="pcfpanel__ft">Toggle with the PCF controls button</div>
+</div>
+
+<script>
+(function(){
+  var screens={overview:document.getElementById('screen-overview'),profile:document.getElementById('screen-profile'),loan:document.getElementById('screen-loan'),analytics:document.getElementById('screen-analytics')};
+  var tabs=document.querySelectorAll('.seg [data-screen]');
+  function show(name){
+    Object.keys(screens).forEach(function(k){screens[k].classList.toggle('is-active',k===name);});
+    tabs.forEach(function(t){t.setAttribute('aria-selected',t.dataset.screen===name);});
+    window.scrollTo({top:0,behavior:'smooth'});replay();
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){show(t.dataset.screen);});});
+  document.querySelectorAll('[data-go]').forEach(function(el){el.addEventListener('click',function(e){e.preventDefault();show(el.dataset.go);});});
+  document.querySelectorAll('[data-profile]').forEach(function(r){r.addEventListener('click',function(){show('profile');});});
+  document.querySelectorAll('[data-loan]').forEach(function(el){el.addEventListener('click',function(e){e.stopPropagation();show('loan');});});
+
+  document.querySelectorAll('[data-grp]').forEach(function(hd){
+    var body=hd.parentElement.querySelector('.grp__body');body.style.maxHeight=body.scrollHeight+'px';
+    hd.addEventListener('click',function(){var g=hd.parentElement;
+      if(g.classList.contains('closed')){g.classList.remove('closed');body.style.maxHeight=body.scrollHeight+'px';}
+      else{body.style.maxHeight=body.scrollHeight+'px';requestAnimationFrame(function(){g.classList.add('closed');body.style.maxHeight='0px';});}});
+  });
+
+  var x=document.querySelector('[data-dismiss]');if(x)x.addEventListener('click',function(){document.getElementById('repayMsg').style.display='none';});
+  var v=document.querySelector('[data-scrollrepaid]');if(v)v.addEventListener('click',function(e){e.preventDefault();
+    var row=document.getElementById('repaidAlloc');row.scrollIntoView({behavior:'smooth',block:'center'});
+    row.animate([{background:'#DFF3D6'},{background:'#FBFDF9'}],{duration:1400,easing:'ease'});});
+
+  var pcf=document.getElementById('pcfToggle');
+  if(pcf)pcf.addEventListener('click',function(){var on=document.body.classList.toggle('show-pcf');pcf.setAttribute('aria-pressed',on);});
+
+  function replay(){document.body.classList.remove('is-ready');
+    requestAnimationFrame(function(){requestAnimationFrame(function(){document.body.classList.add('is-ready');});});}
+  window.addEventListener('load',replay);replay();
+})();
+</script>
+</body>
+</html>
