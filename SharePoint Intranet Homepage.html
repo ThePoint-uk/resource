@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contoso Central — SharePoint Intranet Homepage</title>
+<style>
+  /* ============================================================
+     Fluent-style design tokens (SharePoint modern experience)
+     ============================================================ */
+  :root{
+    --theme-primary:#0f6cbd;
+    --theme-dark:#0c5aa0;
+    --theme-darker:#094a84;
+    --theme-light:#deecf9;
+    --theme-lighter:#eff6fc;
+    --accent:#e8a33d;
+    --neutral-bg:#f5f4f2;
+    --neutral-card:#ffffff;
+    --neutral-alt:#faf9f8;
+    --text-primary:#242424;
+    --text-secondary:#605e5c;
+    --text-tertiary:#8a8886;
+    --divider:#e1dfdd;
+    --shadow-2:0 1.6px 3.6px rgba(0,0,0,.10),0 .3px .9px rgba(0,0,0,.08);
+    --shadow-8:0 6.4px 14.4px rgba(0,0,0,.13),0 1.2px 3.6px rgba(0,0,0,.10);
+    --shadow-16:0 12.8px 28.8px rgba(0,0,0,.14),0 2.4px 7.4px rgba(0,0,0,.10);
+    --radius:8px;
+    --font:'Segoe UI','Segoe UI Web (West European)',-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--font);background:var(--neutral-bg);color:var(--text-primary);font-size:14px;line-height:1.45;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:var(--font);cursor:pointer;border:none;background:none;}
+  img{max-width:100%;display:block;}
+  svg{display:block;}
+  ::selection{background:var(--theme-light);}
+
+  /* ============================================================
+     Microsoft 365 suite bar
+     ============================================================ */
+  .suitebar{height:48px;background:#0f6cbd;background:linear-gradient(90deg,#0c5aa0,#0f6cbd 40%,#1183d6);display:flex;align-items:center;padding:0 16px 0 0;position:sticky;top:0;z-index:120;color:#fff;}
+  .waffle{width:48px;height:48px;display:grid;place-items:center;transition:background .15s;}
+  .waffle:hover{background:rgba(255,255,255,.12);}
+  .suitebar .brand{font-size:16px;font-weight:600;letter-spacing:.2px;padding:0 12px 0 4px;white-space:nowrap;}
+  .suitebar .brand span{font-weight:300;opacity:.9;}
+  .m365-search{flex:1;max-width:640px;margin:0 auto;position:relative;}
+  .m365-search input{width:100%;height:32px;border:none;border-radius:4px;background:rgba(255,255,255,.92);padding:0 12px 0 36px;font-family:var(--font);font-size:14px;color:#323130;outline:none;transition:background .15s, box-shadow .15s;}
+  .m365-search input:focus{background:#fff;box-shadow:var(--shadow-8);}
+  .m365-search .s-ico{position:absolute;left:10px;top:7px;opacity:.55;}
+  .suite-actions{display:flex;align-items:center;gap:2px;margin-left:auto;}
+  .suite-btn{width:44px;height:48px;display:grid;place-items:center;color:#fff;transition:background .15s;position:relative;}
+  .suite-btn:hover{background:rgba(255,255,255,.12);}
+  .suite-btn .dot{position:absolute;top:10px;right:9px;width:8px;height:8px;border-radius:50%;background:#e8a33d;border:2px solid #0f6cbd;}
+  .avatar{width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#7bb7e8,#0c5aa0);display:grid;place-items:center;font-size:13px;font-weight:600;margin-left:8px;border:2px solid rgba(255,255,255,.65);cursor:pointer;}
+
+  /* ============================================================
+     SharePoint app bar (left rail)
+     ============================================================ */
+  .shell{display:flex;}
+  .appbar{width:48px;background:var(--neutral-alt);border-right:1px solid var(--divider);position:sticky;top:48px;height:calc(100vh - 48px);display:flex;flex-direction:column;align-items:center;padding-top:8px;gap:2px;z-index:110;flex-shrink:0;}
+  .appbar button{width:40px;height:40px;border-radius:6px;display:grid;place-items:center;color:var(--text-secondary);transition:background .15s,color .15s;}
+  .appbar button:hover{background:#edebe9;color:var(--theme-primary);}
+  .appbar button.active{color:var(--theme-primary);position:relative;}
+  .appbar button.active::before{content:'';position:absolute;left:-4px;top:10px;bottom:10px;width:3px;border-radius:3px;background:var(--theme-primary);}
+  .main-col{flex:1;min-width:0;}
+
+  /* ============================================================
+     Site header + hub navigation
+     ============================================================ */
+  .sitehead{background:#fff;border-bottom:1px solid var(--divider);position:sticky;top:48px;z-index:100;}
+  .sitehead-inner{max-width:1360px;margin:0 auto;padding:14px 32px 0;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  .sitelogo{width:48px;height:48px;border-radius:6px;background:conic-gradient(from 210deg at 60% 40%,#0f6cbd,#31a8d9,#7bd0c1,#0f6cbd);display:grid;place-items:center;color:#fff;font-weight:700;font-size:20px;box-shadow:var(--shadow-2);flex-shrink:0;}
+  .sitetitle h1{font-size:20px;font-weight:600;line-height:1.2;}
+  .sitetitle .hub-tag{font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px;margin-top:2px;}
+  .hub-pill{background:var(--theme-lighter);color:var(--theme-dark);border:1px solid var(--theme-light);border-radius:10px;padding:0 8px;font-size:11px;font-weight:600;line-height:18px;}
+  .head-actions{margin-left:auto;display:flex;gap:8px;align-items:center;}
+  .btn{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border-radius:4px;font-size:13px;font-weight:600;transition:all .15s;border:1px solid transparent;}
+  .btn-outline{border-color:#c8c6c4;color:var(--text-primary);background:#fff;}
+  .btn-outline:hover{border-color:var(--theme-primary);color:var(--theme-primary);}
+  .btn-primary{background:var(--theme-primary);color:#fff;}
+  .btn-primary:hover{background:var(--theme-dark);}
+  .hubnav{max-width:1360px;margin:0 auto;padding:6px 32px 0;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;}
+  .hubnav::-webkit-scrollbar{display:none;}
+  .hubnav a{padding:9px 14px 11px;font-size:14px;color:var(--text-primary);border-bottom:2.5px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:5px;transition:color .15s;}
+  .hubnav a:hover{color:var(--theme-primary);}
+  .hubnav a.current{color:var(--theme-primary);font-weight:600;border-bottom-color:var(--theme-primary);}
+  .hubnav .chev{opacity:.6;}
+
+  /* ============================================================
+     Emergency / announcement banner
+     ============================================================ */
+  .alertbar{background:linear-gradient(90deg,#fff4e5,#fff9f0);border-bottom:1px solid #f3ddbd;}
+  .alertbar-inner{max-width:1360px;margin:0 auto;padding:9px 32px;display:flex;align-items:center;gap:12px;font-size:13px;}
+  .alertbar .badge{background:var(--accent);color:#3d2a05;font-weight:700;font-size:11px;letter-spacing:.5px;border-radius:3px;padding:2px 8px;text-transform:uppercase;flex-shrink:0;}
+  .alertbar a{color:var(--theme-dark);font-weight:600;text-decoration:underline;}
+  .alertbar .close{margin-left:auto;color:var(--text-secondary);width:24px;height:24px;border-radius:4px;display:grid;place-items:center;}
+  .alertbar .close:hover{background:rgba(0,0,0,.06);}
+
+  /* ============================================================
+     Canvas / sections
+     ============================================================ */
+  .canvas{max-width:1360px;margin:0 auto;padding:24px 32px 0;}
+  .section{margin-bottom:28px;}
+  .wp-title{display:flex;align-items:baseline;gap:12px;margin-bottom:14px;}
+  .wp-title h2{font-size:20px;font-weight:600;}
+  .wp-title .see-all{margin-left:auto;font-size:13px;font-weight:600;color:var(--theme-primary);display:flex;align-items:center;gap:4px;}
+  .wp-title .see-all:hover{text-decoration:underline;}
+
+  /* ============================================================
+     Hero web part — 1 large tile + 4 tiles
+     ============================================================ */
+  .hero{display:grid;grid-template-columns:1.6fr 1fr 1fr;grid-template-rows:220px 220px;gap:8px;border-radius:var(--radius);overflow:hidden;}
+  .hero-tile{position:relative;overflow:hidden;border-radius:var(--radius);color:#fff;display:flex;align-items:flex-end;isolation:isolate;}
+  .hero-tile.big{grid-row:span 2;}
+  .hero-art{position:absolute;inset:0;transition:transform .6s cubic-bezier(.2,.7,.3,1);z-index:-2;}
+  .hero-tile:hover .hero-art{transform:scale(1.05);}
+  .hero-tile::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(9,30,54,.86) 0%,rgba(9,30,54,.35) 45%,rgba(9,30,54,.05) 75%);z-index:-1;}
+  .hero-body{padding:20px;width:100%;}
+  .hero-kicker{font-size:11px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:#ffd591;margin-bottom:6px;}
+  .hero-tile h3{font-size:16px;font-weight:600;line-height:1.3;text-shadow:0 1px 3px rgba(0,0,0,.35);}
+  .hero-tile.big h3{font-size:26px;max-width:26ch;}
+  .hero-tile p{font-size:13px;opacity:.9;margin-top:6px;max-width:52ch;display:none;}
+  .hero-tile.big p{display:block;}
+  .hero-cta{display:inline-flex;align-items:center;gap:6px;margin-top:14px;height:32px;padding:0 16px;background:#fff;color:var(--theme-darker);border-radius:4px;font-size:13px;font-weight:600;transition:transform .15s, box-shadow .15s;}
+  .hero-cta:hover{transform:translateY(-1px);box-shadow:var(--shadow-8);}
+  .hero-link{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:12.5px;font-weight:600;color:#cde4f9;}
+  .hero-tile:hover .hero-link{color:#fff;text-decoration:underline;}
+
+  /* ============================================================
+     Greeting strip
+     ============================================================ */
+  .greet{background:linear-gradient(115deg,#ffffff 0%,#f2f8fe 55%,#e7f2fc 100%);border:1px solid var(--divider);border-radius:var(--radius);box-shadow:var(--shadow-2);padding:20px 24px;display:flex;align-items:center;gap:22px;flex-wrap:wrap;}
+  .greet .me{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#7bb7e8,#0c5aa0);display:grid;place-items:center;color:#fff;font-weight:600;font-size:19px;flex-shrink:0;box-shadow:var(--shadow-2);}
+  .greet h2{font-size:21px;font-weight:600;}
+  .greet .sub{color:var(--text-secondary);font-size:13px;margin-top:2px;}
+  .greet-chips{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;}
+  .chip{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--divider);border-radius:20px;padding:6px 14px;font-size:12.5px;color:var(--text-secondary);box-shadow:var(--shadow-2);transition:transform .15s,border-color .15s;}
+  .chip:hover{transform:translateY(-1px);border-color:var(--theme-primary);}
+  .chip b{color:var(--text-primary);font-weight:600;}
+  .chip .n{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--theme-primary);color:#fff;font-size:11px;font-weight:700;}
+  .chip.warn .n{background:var(--accent);color:#3d2a05;}
+
+  /* ============================================================
+     Apps (quick links) web part
+     ============================================================ */
+  .apps{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:12px;}
+  .app{background:var(--neutral-card);border:1px solid var(--divider);border-radius:var(--radius);padding:18px 10px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:transform .18s,box-shadow .18s,border-color .18s;}
+  .app:hover{transform:translateY(-3px);box-shadow:var(--shadow-8);border-color:transparent;}
+  .app-ico{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;color:#fff;box-shadow:var(--shadow-2);}
+  .app span{font-size:12.5px;font-weight:600;line-height:1.25;}
+  .app small{font-size:11px;color:var(--text-tertiary);margin-top:-6px;}
+
+  /* ============================================================
+     Two-column layout
+     ============================================================ */
+  .cols{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:24px;align-items:start;}
+
+  /* ============================================================
+     Hub news web part
+     ============================================================ */
+  .news-filter{display:flex;gap:6px;margin-left:8px;}
+  .news-filter button{font-size:12.5px;font-weight:600;color:var(--text-secondary);padding:4px 12px;border-radius:14px;transition:all .15s;}
+  .news-filter button:hover{background:#edebe9;}
+  .news-filter button.on{background:var(--theme-primary);color:#fff;}
+  .news-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .news-card{background:var(--neutral-card);border:1px solid var(--divider);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform .18s,box-shadow .18s;}
+  .news-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-8);}
+  .news-card.lead{grid-column:span 2;flex-direction:row;min-height:230px;}
+  .news-art{position:relative;height:140px;overflow:hidden;flex-shrink:0;}
+  .news-card.lead .news-art{height:auto;width:46%;}
+  .news-art>div{position:absolute;inset:0;transition:transform .6s cubic-bezier(.2,.7,.3,1);}
+  .news-card:hover .news-art>div{transform:scale(1.06);}
+  .site-badge{position:absolute;left:12px;top:12px;background:rgba(255,255,255,.94);color:var(--theme-darker);font-size:11px;font-weight:700;padding:3px 9px;border-radius:3px;box-shadow:var(--shadow-2);z-index:1;}
+  .news-body{padding:16px 18px 14px;display:flex;flex-direction:column;flex:1;}
+  .news-card.lead .news-body{padding:22px 24px;justify-content:center;}
+  .news-body h3{font-size:15px;font-weight:600;line-height:1.35;}
+  .news-card.lead .news-body h3{font-size:21px;}
+  .news-body h3 a:hover{color:var(--theme-primary);}
+  .news-body .desc{font-size:13px;color:var(--text-secondary);margin-top:7px;display:none;}
+  .news-card.lead .desc{display:block;}
+  .news-meta{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:12px;font-size:12px;color:var(--text-tertiary);}
+  .news-meta .a-dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;}
+  .news-meta b{color:var(--text-secondary);font-weight:600;}
+  .news-stats{margin-left:auto;display:flex;gap:12px;align-items:center;}
+  .stat{display:flex;align-items:center;gap:4px;color:var(--text-tertiary);font-size:12px;transition:color .15s;}
+  button.stat:hover, button.stat.liked{color:#d13438;}
+
+  /* ============================================================
+     Sidebar cards (events, links, engage, birthdays)
+     ============================================================ */
+  .side-card{background:var(--neutral-card);border:1px solid var(--divider);border-radius:var(--radius);box-shadow:var(--shadow-2);margin-bottom:24px;overflow:hidden;}
+  .side-card .sc-head{display:flex;align-items:center;padding:16px 18px 0;}
+  .side-card .sc-head h2{font-size:16px;font-weight:600;}
+  .side-card .sc-head a{margin-left:auto;font-size:12.5px;font-weight:600;color:var(--theme-primary);}
+  .side-card .sc-head a:hover{text-decoration:underline;}
+  .event{display:flex;gap:14px;padding:14px 18px;border-bottom:1px solid #f0efed;transition:background .15s;}
+  .event:last-of-type{border-bottom:none;}
+  .event:hover{background:var(--neutral-alt);}
+  .date-tile{width:46px;flex-shrink:0;border-radius:6px;overflow:hidden;text-align:center;border:1px solid var(--divider);background:#fff;box-shadow:var(--shadow-2);align-self:flex-start;}
+  .date-tile .m{background:var(--theme-primary);color:#fff;font-size:10px;font-weight:700;letter-spacing:1px;padding:2px 0;text-transform:uppercase;}
+  .date-tile .d{font-size:18px;font-weight:600;padding:3px 0 4px;color:var(--text-primary);}
+  .event h4{font-size:13.5px;font-weight:600;line-height:1.3;}
+  .event h4 a:hover{color:var(--theme-primary);}
+  .event .ev-meta{font-size:12px;color:var(--text-tertiary);margin-top:3px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+  .ev-type{font-size:10.5px;font-weight:700;border-radius:3px;padding:1px 6px;letter-spacing:.3px;}
+  .ev-type.teams{background:#e8ebfa;color:#464eb8;}
+  .ev-type.office{background:#e6f4ea;color:#1e7b34;}
+  .ev-type.social{background:#fdeef4;color:#b4256e;}
+  .quicklinks{list-style:none;padding:8px 0 10px;}
+  .quicklinks a{display:flex;align-items:center;gap:12px;padding:9px 18px;font-size:13.5px;font-weight:500;color:var(--text-primary);transition:background .15s;}
+  .quicklinks a:hover{background:var(--theme-lighter);color:var(--theme-dark);}
+  .quicklinks .ql-ico{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:#fff;flex-shrink:0;}
+  .engage-post{padding:14px 18px;border-bottom:1px solid #f0efed;}
+  .engage-post:last-of-type{border-bottom:none;}
+  .engage-top{display:flex;gap:10px;align-items:center;margin-bottom:8px;}
+  .engage-top .a-dot{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff;}
+  .engage-top b{font-size:13px;}
+  .engage-top small{display:block;color:var(--text-tertiary);font-size:11.5px;}
+  .engage-post p{font-size:13px;color:var(--text-secondary);}
+  .engage-acts{display:flex;gap:16px;margin-top:8px;}
+  .bday{display:flex;align-items:center;gap:12px;padding:10px 18px;}
+  .bday .a-dot{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;}
+  .bday b{font-size:13.5px;display:block;}
+  .bday small{color:var(--text-tertiary);font-size:12px;}
+  .bday .cake{margin-left:auto;font-size:16px;}
+  .pad-b{padding-bottom:10px;}
+
+  /* ============================================================
+     Documents web part
+     ============================================================ */
+  .doc-table{width:100%;border-collapse:collapse;background:var(--neutral-card);border:1px solid var(--divider);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-2);}
+  .doc-table th{font-size:12px;text-align:left;color:var(--text-secondary);font-weight:600;padding:12px 18px;border-bottom:1px solid var(--divider);background:var(--neutral-alt);}
+  .doc-table td{padding:11px 18px;font-size:13.5px;border-bottom:1px solid #f0efed;}
+  .doc-table tr:last-child td{border-bottom:none;}
+  .doc-table tbody tr{transition:background .15s;cursor:pointer;}
+  .doc-table tbody tr:hover{background:var(--theme-lighter);}
+  .doc-name{display:flex;align-items:center;gap:10px;font-weight:600;}
+  .f-ico{width:26px;height:26px;border-radius:5px;display:grid;place-items:center;color:#fff;font-size:10px;font-weight:700;flex-shrink:0;}
+  .f-w{background:#185abd;} .f-x{background:#107c41;} .f-p{background:#c43e1c;} .f-pdf{background:#b30b00;}
+  .muted{color:var(--text-tertiary);font-size:12.5px;}
+
+  /* ============================================================
+     Spotlight web part
+     ============================================================ */
+  .spot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .spot{background:var(--neutral-card);border:1px solid var(--divider);border-radius:var(--radius);padding:22px 16px 18px;text-align:center;transition:transform .18s,box-shadow .18s;}
+  .spot:hover{transform:translateY(-3px);box-shadow:var(--shadow-8);}
+  .spot .a-dot{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;font-size:22px;font-weight:600;color:#fff;box-shadow:var(--shadow-2);}
+  .spot b{font-size:14.5px;display:block;}
+  .spot .role{font-size:12.5px;color:var(--text-secondary);margin-top:2px;}
+  .spot .tag{display:inline-block;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:.4px;border-radius:10px;padding:3px 10px;background:var(--theme-lighter);color:var(--theme-dark);text-transform:uppercase;}
+  .spot .tag.new{background:#e6f4ea;color:#1e7b34;}
+  .spot .tag.anniv{background:#fdeef4;color:#b4256e;}
+
+  /* ============================================================
+     Footer
+     ============================================================ */
+  .hubfoot{background:#093a5e;color:#cfe2f2;margin-top:44px;}
+  .hubfoot-inner{max-width:1360px;margin:0 auto;padding:36px 32px 24px;display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px;}
+  .hubfoot h4{color:#fff;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;}
+  .hubfoot ul{list-style:none;}
+  .hubfoot li{margin-bottom:8px;font-size:13px;}
+  .hubfoot a:hover{color:#fff;text-decoration:underline;}
+  .foot-brand{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .foot-brand .sitelogo{width:40px;height:40px;font-size:16px;}
+  .foot-brand b{color:#fff;font-size:17px;}
+  .hubfoot .blurb{font-size:12.5px;opacity:.8;max-width:36ch;}
+  .foot-base{border-top:1px solid rgba(255,255,255,.15);}
+  .foot-base-inner{max-width:1360px;margin:0 auto;padding:14px 32px;display:flex;gap:20px;font-size:12px;opacity:.75;flex-wrap:wrap;}
+  .foot-base-inner span:last-child{margin-left:auto;}
+
+  /* ============================================================
+     Back-to-top + responsive
+     ============================================================ */
+  #toTop{position:fixed;right:24px;bottom:24px;width:42px;height:42px;border-radius:50%;background:var(--theme-primary);color:#fff;box-shadow:var(--shadow-16);display:grid;place-items:center;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;transform:translateY(8px);z-index:130;}
+  #toTop.show{opacity:1;pointer-events:auto;transform:none;}
+  #toTop:hover{background:var(--theme-dark);}
+
+  @media (max-width:1080px){
+    .hero{grid-template-columns:1fr 1fr;grid-template-rows:260px 180px 180px;}
+    .hero-tile.big{grid-column:span 2;grid-row:span 1;}
+    .cols{grid-template-columns:1fr;}
+    .spot-grid{grid-template-columns:repeat(2,1fr);}
+    .hubfoot-inner{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width:720px){
+    .appbar{display:none;}
+    .canvas,.sitehead-inner,.hubnav,.alertbar-inner{padding-left:16px;padding-right:16px;}
+    .m365-search{display:none;}
+    .hero{grid-template-columns:1fr;grid-template-rows:240px repeat(4,150px);}
+    .hero-tile.big{grid-column:span 1;}
+    .news-grid{grid-template-columns:1fr;}
+    .news-card.lead{grid-column:span 1;flex-direction:column;}
+    .news-card.lead .news-art{width:100%;height:170px;}
+    .greet-chips{margin-left:0;}
+    .doc-table .hide-sm{display:none;}
+    .spot-grid{grid-template-columns:1fr 1fr;}
+    .hubfoot-inner{grid-template-columns:1fr;}
+    .head-actions{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ Microsoft 365 suite bar ══════════════ -->
+<header class="suitebar">
+  <button class="waffle" title="App launcher" aria-label="App launcher">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="#fff"><circle cx="2.5" cy="2.5" r="1.9"/><circle cx="9" cy="2.5" r="1.9"/><circle cx="15.5" cy="2.5" r="1.9"/><circle cx="2.5" cy="9" r="1.9"/><circle cx="9" cy="9" r="1.9"/><circle cx="15.5" cy="9" r="1.9"/><circle cx="2.5" cy="15.5" r="1.9"/><circle cx="9" cy="15.5" r="1.9"/><circle cx="15.5" cy="15.5" r="1.9"/></svg>
+  </button>
+  <div class="brand">Contoso <span>| SharePoint</span></div>
+  <div class="m365-search">
+    <svg class="s-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#323130" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
+    <input type="search" placeholder="Search across Contoso — people, files, sites, news…" aria-label="Search" />
+  </div>
+  <div class="suite-actions">
+    <button class="suite-btn" title="Notifications"><span class="dot"></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></button>
+    <button class="suite-btn" title="Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+    <button class="suite-btn" title="Help"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></button>
+    <div class="avatar" title="Lee Hanson — lee@contoso.com">LH</div>
+  </div>
+</header>
+
+<div class="shell">
+  <!-- ══════════════ SharePoint app bar ══════════════ -->
+  <nav class="appbar" aria-label="SharePoint app bar">
+    <button class="active" title="Home"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg></button>
+    <button title="My sites"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button>
+    <button title="My news"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0V9"/><path d="M12 6h6M12 10h6M12 14h6M12 18h6"/></svg></button>
+    <button title="My files"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M13 2v7h7"/></svg></button>
+    <button title="My lists"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+    <button title="Create"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></button>
+  </nav>
+
+  <div class="main-col">
+
+    <!-- ══════════════ Site header + hub nav ══════════════ -->
+    <div class="sitehead">
+      <div class="sitehead-inner">
+        <div class="sitelogo">C</div>
+        <div class="sitetitle">
+          <h1>Contoso Central</h1>
+          <div class="hub-tag"><span class="hub-pill">HUB</span> Your gateway to everything Contoso</div>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-outline"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.6-9.5-9A5.5 5.5 0 0 1 12 6.6 5.5 5.5 0 0 1 21.5 12c-2.5 4.4-9.5 9-9.5 9z"/></svg> Follow</button>
+          <button class="btn btn-primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg> Share</button>
+        </div>
+      </div>
+      <nav class="hubnav" aria-label="Hub navigation">
+        <a class="current" href="#">Home</a>
+        <a href="#news">News</a>
+        <a href="#">Departments <svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></a>
+        <a href="#">Policies &amp; Resources <svg class="chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></a>
+        <a href="#apps">Tools &amp; Apps</a>
+        <a href="#">Wellbeing</a>
+        <a href="#">Social Club</a>
+        <a href="#">About Contoso</a>
+      </nav>
+    </div>
+
+    <!-- ══════════════ Announcement bar ══════════════ -->
+    <div class="alertbar" id="alertbar">
+      <div class="alertbar-inner">
+        <span class="badge">Notice</span>
+        <span>Planned maintenance: the Expenses app will be unavailable this Saturday 06:00–10:00. <a href="#">Read the IT service notice →</a></span>
+        <button class="close" title="Dismiss" onclick="document.getElementById('alertbar').style.display='none'">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <main class="canvas">
+
+      <!-- ══════════════ Hero banner web part ══════════════ -->
+      <section class="section" aria-label="Hero banner">
+        <div class="hero">
+          <a class="hero-tile big" href="#">
+            <div class="hero-art" style="background:
+              radial-gradient(120% 90% at 85% 10%,rgba(255,213,145,.35),transparent 55%),
+              radial-gradient(90% 120% at 10% 90%,rgba(49,168,217,.5),transparent 60%),
+              linear-gradient(135deg,#0c5aa0 0%,#1183d6 55%,#31a8d9 100%);"></div>
+            <div class="hero-body">
+              <div class="hero-kicker">Strategy 2027</div>
+              <h3>One Contoso: our new three-year strategy has launched</h3>
+              <p>Discover the five priorities shaping how we grow, the investments behind them, and what they mean for your team.</p>
+              <span class="hero-cta">Explore the strategy
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </span>
+            </div>
+          </a>
+          <a class="hero-tile" href="#">
+            <div class="hero-art" style="background:
+              radial-gradient(100% 100% at 80% 20%,rgba(255,255,255,.25),transparent 55%),
+              linear-gradient(140deg,#7a3c9c,#b4256e);"></div>
+            <div class="hero-body">
+              <div class="hero-kicker">People</div>
+              <h3>Annual engagement survey — have your say by Friday</h3>
+              <span class="hero-link">Take the survey <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            </div>
+          </a>
+          <a class="hero-tile" href="#">
+            <div class="hero-art" style="background:
+              radial-gradient(110% 100% at 20% 15%,rgba(255,255,255,.22),transparent 50%),
+              linear-gradient(140deg,#1e7b34,#5bb75b);"></div>
+            <div class="hero-body">
+              <div class="hero-kicker">Sustainability</div>
+              <h3>Net-zero update: Q2 emissions down 12%</h3>
+              <span class="hero-link">Read the report <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            </div>
+          </a>
+          <a class="hero-tile" href="#">
+            <div class="hero-art" style="background:
+              radial-gradient(120% 90% at 75% 80%,rgba(255,255,255,.2),transparent 55%),
+              linear-gradient(140deg,#b95a00,#e8a33d);"></div>
+            <div class="hero-body">
+              <div class="hero-kicker">Workplace</div>
+              <h3>The new Manchester office opens 1 September</h3>
+              <span class="hero-link">Take a look inside <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            </div>
+          </a>
+          <a class="hero-tile" href="#">
+            <div class="hero-art" style="background:
+              radial-gradient(100% 110% at 30% 20%,rgba(255,255,255,.2),transparent 50%),
+              linear-gradient(140deg,#094a84,#31627f);"></div>
+            <div class="hero-body">
+              <div class="hero-kicker">Learning</div>
+              <h3>AI Essentials: new learning pathway now live for everyone</h3>
+              <span class="hero-link">Start learning <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- ══════════════ Greeting web part ══════════════ -->
+      <section class="section" aria-label="Welcome">
+        <div class="greet">
+          <div class="me">LH</div>
+          <div>
+            <h2 id="greeting">Good morning, Lee 👋</h2>
+            <div class="sub" id="today">It's a great day to make things happen.</div>
+          </div>
+          <div class="greet-chips">
+            <a class="chip" href="#"><span class="n">3</span> <span>Tasks <b>due today</b></span></a>
+            <a class="chip" href="#"><span class="n">5</span> <span>Unread <b>approvals</b></span></a>
+            <a class="chip warn" href="#"><span class="n">!</span> <span>Timesheet <b>due Friday</b></span></a>
+            <a class="chip" href="#">☀️ <span>Leeds <b>21°C</b></span></a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════ Apps web part ══════════════ -->
+      <section class="section" id="apps" aria-label="My apps">
+        <div class="wp-title">
+          <h2>My apps</h2>
+          <a class="see-all" href="#">Open app catalogue
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+        <div class="apps">
+          <a class="app" href="#">
+            <span class="app-ico" style="background:linear-gradient(135deg,#28527a,#0f6cbd)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></span>
+            <span>Outlook</span>
+          </a>
+          <a class="app" href="#">
+            <span class="app-ico" style="background:linear-gradient(135deg,#464eb8,#7b83eb)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+            <span>Teams</span>
+          </a>
+          <a class="app" href="#">
+            <span class="app-ico" style="background:linear-gradient(135deg,#b4256e,#e2549b)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+            <span>HR Hub</span>
+          </a>
+          <a class="app" href="#">
+            <span class="app-ico" style="background:linear-gradient(135deg,#1e7b34,#5bb75b)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg></span>
+            <span>Expenses</span>
+          </a>
+          <a class="app" href="#">
+            <span class="app-ico" style="background:linear-gradient(135deg,#b95a00,#e8a33d)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></svg></span>
+            <span>Book leave</span>
+          </a>
+          <a class="app" href="#">
+            <span class="app-ico" style="background:linear-gradient(135deg,#8a1c1c,#d13438)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg></span>
+            <span>Timesheets</span>
+          </a>
+          <a class="app" href="#">
+            <span class="app-ico" style="background:linear-gradient(135deg,#31627f,#31a8d9)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M14.7 6.3a5 5 0 0 0-7 7L3 18v3h3l4.7-4.7a5 5 0 0 0 7-7z"/><path d="m16 8 5-5"/></svg></span>
+            <span>IT Helpdesk</span>
+          </a>
+          <a class="app" href="#">
+            <span class="app-ico" style="background:linear-gradient(135deg,#5c2e91,#9a6ad6)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg></span>
+            <span>Learning</span>
+          </a>
+          <a class="app" href="#">
+            <span class="app-ico" style="background:linear-gradient(135deg,#0c5aa0,#7bb7e8)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 18v3"/><path d="m7 12 3-3 2.5 2.5L17 7"/></svg></span>
+            <span>Power BI</span>
+          </a>
+          <a class="app" href="#">
+            <span class="app-ico" style="background:linear-gradient(135deg,#333,#666)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.5 1.5M16.9 16.9l1.5 1.5M18.4 5.6l-1.5 1.5M7.1 16.9l-1.5 1.5"/></svg></span>
+            <span>Room booking</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ══════════════ Two-column zone ══════════════ -->
+      <div class="cols">
+
+        <!-- ── Left: Hub news + documents ── -->
+        <div>
+          <section class="section" id="news" aria-label="Hub news">
+            <div class="wp-title">
+              <h2>Hub news</h2>
+              <div class="news-filter" role="tablist">
+                <button class="on">All</button>
+                <button>Corporate</button>
+                <button>My department</button>
+                <button>Saved</button>
+              </div>
+              <a class="see-all" href="#">See all
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+
+            <div class="news-grid">
+              <article class="news-card lead">
+                <div class="news-art">
+                  <div style="background:
+                    radial-gradient(100% 120% at 85% 15%,rgba(255,213,145,.5),transparent 55%),
+                    radial-gradient(120% 100% at 15% 85%,rgba(15,108,189,.55),transparent 60%),
+                    linear-gradient(130deg,#094a84,#1183d6 60%,#31a8d9);"></div>
+                  <span class="site-badge">Corporate Comms</span>
+                </div>
+                <div class="news-body">
+                  <h3><a href="#">Contoso named one of the UK's Top 50 Best Places to Work for the third year running</a></h3>
+                  <p class="desc">The award reflects record engagement scores and our investment in flexible working, wellbeing and career development. CEO Amara Osei shares what's next — and thanks the teams who made it happen.</p>
+                  <div class="news-meta">
+                    <span class="a-dot" style="background:#b4256e">AO</span>
+                    <span><b>Amara Osei</b> · 2 hours ago · 4 min read</span>
+                    <span class="news-stats">
+                      <button class="stat like"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.6-9.5-9A5.5 5.5 0 0 1 12 6.6 5.5 5.5 0 0 1 21.5 12c-2.5 4.4-9.5 9-9.5 9z"/></svg> <span class="ln">128</span></button>
+                      <span class="stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-9 8.4 8.5 8.5 0 0 1-3.4-.7L3 21l1.8-5.6a8.38 8.38 0 0 1-.7-3.4 8.5 8.5 0 0 1 8.4-8.5 8.38 8.38 0 0 1 8.5 8z"/></svg> 34</span>
+                    </span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="news-card">
+                <div class="news-art">
+                  <div style="background:
+                    radial-gradient(110% 100% at 20% 20%,rgba(255,255,255,.28),transparent 50%),
+                    linear-gradient(135deg,#1e7b34,#7bd0c1);"></div>
+                  <span class="site-badge">Finance</span>
+                </div>
+                <div class="news-body">
+                  <h3><a href="#">Half-year results: revenue up 9% as new markets deliver</a></h3>
+                  <div class="news-meta">
+                    <span class="a-dot" style="background:#1e7b34">JP</span>
+                    <span><b>James Park</b> · Yesterday</span>
+                    <span class="news-stats">
+                      <button class="stat like"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.6-9.5-9A5.5 5.5 0 0 1 12 6.6 5.5 5.5 0 0 1 21.5 12c-2.5 4.4-9.5 9-9.5 9z"/></svg> <span class="ln">56</span></button>
+                    </span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="news-card">
+                <div class="news-art">
+                  <div style="background:
+                    radial-gradient(100% 110% at 80% 20%,rgba(255,255,255,.25),transparent 50%),
+                    linear-gradient(135deg,#5c2e91,#c46fd4);"></div>
+                  <span class="site-badge">IT &amp; Digital</span>
+                </div>
+                <div class="news-body">
+                  <h3><a href="#">Copilot rollout begins — what to expect and how to get access</a></h3>
+                  <div class="news-meta">
+                    <span class="a-dot" style="background:#5c2e91">RN</span>
+                    <span><b>Rachel Ngo</b> · Yesterday</span>
+                    <span class="news-stats">
+                      <button class="stat like"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.6-9.5-9A5.5 5.5 0 0 1 12 6.6 5.5 5.5 0 0 1 21.5 12c-2.5 4.4-9.5 9-9.5 9z"/></svg> <span class="ln">92</span></button>
+                    </span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="news-card">
+                <div class="news-art">
+                  <div style="background:
+                    radial-gradient(120% 90% at 70% 75%,rgba(255,255,255,.22),transparent 55%),
+                    linear-gradient(135deg,#b95a00,#ffca6b);"></div>
+                  <span class="site-badge">People &amp; Culture</span>
+                </div>
+                <div class="news-body">
+                  <h3><a href="#">Summer volunteering week: 400 hours pledged so far</a></h3>
+                  <div class="news-meta">
+                    <span class="a-dot" style="background:#b95a00">DK</span>
+                    <span><b>Dev Kapoor</b> · 2 days ago</span>
+                    <span class="news-stats">
+                      <button class="stat like"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.6-9.5-9A5.5 5.5 0 0 1 12 6.6 5.5 5.5 0 0 1 21.5 12c-2.5 4.4-9.5 9-9.5 9z"/></svg> <span class="ln">41</span></button>
+                    </span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="news-card">
+                <div class="news-art">
+                  <div style="background:
+                    radial-gradient(100% 100% at 25% 80%,rgba(255,255,255,.2),transparent 50%),
+                    linear-gradient(135deg,#8a1c1c,#e2549b);"></div>
+                  <span class="site-badge">Health &amp; Safety</span>
+                </div>
+                <div class="news-body">
+                  <h3><a href="#">Refreshed fire evacuation procedures for all UK sites</a></h3>
+                  <div class="news-meta">
+                    <span class="a-dot" style="background:#8a1c1c">MB</span>
+                    <span><b>Maria Bell</b> · 3 days ago</span>
+                    <span class="news-stats">
+                      <button class="stat like"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.6-9.5-9A5.5 5.5 0 0 1 12 6.6 5.5 5.5 0 0 1 21.5 12c-2.5 4.4-9.5 9-9.5 9z"/></svg> <span class="ln">17</span></button>
+                    </span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- ── Documents web part ── -->
+          <section class="section" aria-label="Popular documents">
+            <div class="wp-title">
+              <h2>Popular documents</h2>
+              <a class="see-all" href="#">Document centre
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+            </div>
+            <table class="doc-table">
+              <thead><tr><th>Name</th><th class="hide-sm">Owner</th><th class="hide-sm">Modified</th><th>Views</th></tr></thead>
+              <tbody>
+                <tr><td><span class="doc-name"><span class="f-ico f-pdf">PDF</span> Employee Handbook 2026</span></td><td class="hide-sm muted">People &amp; Culture</td><td class="hide-sm muted">2 days ago</td><td class="muted">1,284</td></tr>
+                <tr><td><span class="doc-name"><span class="f-ico f-w">W</span> Hybrid Working Policy v3.2</span></td><td class="hide-sm muted">People &amp; Culture</td><td class="hide-sm muted">1 week ago</td><td class="muted">947</td></tr>
+                <tr><td><span class="doc-name"><span class="f-ico f-x">X</span> Expense Claim Template</span></td><td class="hide-sm muted">Finance</td><td class="hide-sm muted">3 weeks ago</td><td class="muted">812</td></tr>
+                <tr><td><span class="doc-name"><span class="f-ico f-p">P</span> Contoso Brand Toolkit</span></td><td class="hide-sm muted">Marketing</td><td class="hide-sm muted">1 month ago</td><td class="muted">655</td></tr>
+                <tr><td><span class="doc-name"><span class="f-ico f-pdf">PDF</span> IT Security Essentials Guide</span></td><td class="hide-sm muted">IT &amp; Digital</td><td class="hide-sm muted">1 month ago</td><td class="muted">598</td></tr>
+              </tbody>
+            </table>
+          </section>
+        </div>
+
+        <!-- ── Right: sidebar ── -->
+        <aside>
+          <!-- Events web part -->
+          <div class="side-card" aria-label="Upcoming events">
+            <div class="sc-head"><h2>Upcoming events</h2><a href="#">See all</a></div>
+            <div style="height:10px"></div>
+            <div class="event">
+              <div class="date-tile"><div class="m">Jul</div><div class="d">28</div></div>
+              <div>
+                <h4><a href="#">All-hands: Strategy 2027 deep-dive</a></h4>
+                <div class="ev-meta"><span class="ev-type teams">Teams live</span> 10:00–11:00</div>
+              </div>
+            </div>
+            <div class="event">
+              <div class="date-tile"><div class="m">Jul</div><div class="d">30</div></div>
+              <div>
+                <h4><a href="#">Lunch &amp; learn: Getting started with Copilot</a></h4>
+                <div class="ev-meta"><span class="ev-type teams">Teams</span> 12:30–13:15</div>
+              </div>
+            </div>
+            <div class="event">
+              <div class="date-tile"><div class="m">Aug</div><div class="d">05</div></div>
+              <div>
+                <h4><a href="#">Wellbeing Wednesday: chair yoga</a></h4>
+                <div class="ev-meta"><span class="ev-type office">Leeds · Studio 2</span> 12:00</div>
+              </div>
+            </div>
+            <div class="event">
+              <div class="date-tile"><div class="m">Aug</div><div class="d">14</div></div>
+              <div>
+                <h4><a href="#">Contoso Summer Social 🎉</a></h4>
+                <div class="ev-meta"><span class="ev-type social">Social</span> Roundhay Park · from 15:00</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick links web part -->
+          <div class="side-card" aria-label="Quick links">
+            <div class="sc-head"><h2>Quick links</h2><a href="#">Edit</a></div>
+            <ul class="quicklinks">
+              <li><a href="#"><span class="ql-ico" style="background:#0f6cbd"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span> Policies &amp; procedures A–Z</a></li>
+              <li><a href="#"><span class="ql-ico" style="background:#b4256e"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a7 7 0 0 1 14 0v1"/></svg></span> Find a colleague</a></li>
+              <li><a href="#"><span class="ql-ico" style="background:#1e7b34"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span> Payroll &amp; benefits</a></li>
+              <li><a href="#"><span class="ql-ico" style="background:#b95a00"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M10.3 4.3a2 2 0 0 1 3.4 0l8 13.8a2 2 0 0 1-1.7 2.9H4a2 2 0 0 1-1.7-2.9z"/><path d="M12 9v4M12 17h.01"/></svg></span> Report an incident</a></li>
+              <li><a href="#"><span class="ql-ico" style="background:#5c2e91"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span> Give feedback on the intranet</a></li>
+              <li><a href="#"><span class="ql-ico" style="background:#31627f"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M2 12h20M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg></span> Travel &amp; office locations</a></li>
+            </ul>
+          </div>
+
+          <!-- Viva Engage web part -->
+          <div class="side-card" aria-label="Viva Engage highlights">
+            <div class="sc-head"><h2>Viva Engage</h2><a href="#">Open community</a></div>
+            <div style="height:6px"></div>
+            <div class="engage-post">
+              <div class="engage-top">
+                <span class="a-dot" style="background:#31627f">TW</span>
+                <div><b>Tom Whitely</b><small>#wins · 1h</small></div>
+              </div>
+              <p>Huge congratulations to the Bristol team on going live with the Aurora project — six months of brilliant work! 🚀</p>
+              <div class="engage-acts">
+                <button class="stat like"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.6-9.5-9A5.5 5.5 0 0 1 12 6.6 5.5 5.5 0 0 1 21.5 12c-2.5 4.4-9.5 9-9.5 9z"/></svg> <span class="ln">24</span></button>
+                <span class="stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-9 8.4 8.5 8.5 0 0 1-3.4-.7L3 21l1.8-5.6a8.38 8.38 0 0 1-.7-3.4 8.5 8.5 0 0 1 8.4-8.5 8.38 8.38 0 0 1 8.5 8z"/></svg> 7</span>
+              </div>
+            </div>
+            <div class="engage-post">
+              <div class="engage-top">
+                <span class="a-dot" style="background:#b4256e">SC</span>
+                <div><b>Sofia Cruz</b><small>#ask-the-exec · 3h</small></div>
+              </div>
+              <p>Question for Friday's AMA: how will the new strategy change our approach to partnerships in Europe?</p>
+              <div class="engage-acts">
+                <button class="stat like"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.6-9.5-9A5.5 5.5 0 0 1 12 6.6 5.5 5.5 0 0 1 21.5 12c-2.5 4.4-9.5 9-9.5 9z"/></svg> <span class="ln">11</span></button>
+                <span class="stat"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-9 8.4 8.5 8.5 0 0 1-3.4-.7L3 21l1.8-5.6a8.38 8.38 0 0 1-.7-3.4 8.5 8.5 0 0 1 8.4-8.5 8.38 8.38 0 0 1 8.5 8z"/></svg> 3</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Celebrations -->
+          <div class="side-card pad-b" aria-label="Celebrations">
+            <div class="sc-head"><h2>Celebrations</h2><a href="#">See all</a></div>
+            <div style="height:8px"></div>
+            <div class="bday"><span class="a-dot" style="background:#e8a33d;color:#3d2a05">PR</span><div><b>Priya Raman</b><small>Birthday today</small></div><span class="cake">🎂</span></div>
+            <div class="bday"><span class="a-dot" style="background:#1e7b34">OA</span><div><b>Olu Adeyemi</b><small>10 years at Contoso</small></div><span class="cake">🏅</span></div>
+            <div class="bday"><span class="a-dot" style="background:#5c2e91">EF</span><div><b>Emma Fitzgerald</b><small>Birthday tomorrow</small></div><span class="cake">🎂</span></div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- ══════════════ Spotlight web part ══════════════ -->
+      <section class="section" aria-label="People spotlight">
+        <div class="wp-title">
+          <h2>People spotlight</h2>
+          <a class="see-all" href="#">Meet more colleagues
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+        <div class="spot-grid">
+          <div class="spot"><span class="a-dot" style="background:radial-gradient(circle at 30% 30%,#e2549b,#b4256e)">NA</span><b>Nadia Ahmed</b><div class="role">Product Designer · Leeds</div><span class="tag new">New starter</span></div>
+          <div class="spot"><span class="a-dot" style="background:radial-gradient(circle at 30% 30%,#7bb7e8,#0c5aa0)">CM</span><b>Callum Moore</b><div class="role">Field Engineer · Glasgow</div><span class="tag">Employee of the month</span></div>
+          <div class="spot"><span class="a-dot" style="background:radial-gradient(circle at 30% 30%,#7bd0c1,#1e7b34)">LB</span><b>Lena Baptiste</b><div class="role">Finance Partner · London</div><span class="tag anniv">15-year anniversary</span></div>
+          <div class="spot"><span class="a-dot" style="background:radial-gradient(circle at 30% 30%,#ffca6b,#b95a00)">JS</span><b>Jakub Sikora</b><div class="role">Warehouse Lead · Manchester</div><span class="tag new">New starter</span></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ══════════════ Hub footer ══════════════ -->
+    <footer class="hubfoot">
+      <div class="hubfoot-inner">
+        <div>
+          <div class="foot-brand"><div class="sitelogo">C</div><b>Contoso Central</b></div>
+          <p class="blurb">One place for the news, tools and people that power Contoso — wherever you work.</p>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul><li><a href="#">About Contoso</a></li><li><a href="#">Leadership</a></li><li><a href="#">Strategy 2027</a></li><li><a href="#">Sustainability</a></li></ul>
+        </div>
+        <div>
+          <h4>Support</h4>
+          <ul><li><a href="#">IT Helpdesk</a></li><li><a href="#">HR queries</a></li><li><a href="#">Facilities</a></li><li><a href="#">Intranet feedback</a></li></ul>
+        </div>
+        <div>
+          <h4>Popular</h4>
+          <ul><li><a href="#">Book annual leave</a></li><li><a href="#">Submit expenses</a></li><li><a href="#">Policy library</a></li><li><a href="#">Office locations</a></li></ul>
+        </div>
+      </div>
+      <div class="foot-base">
+        <div class="foot-base-inner">
+          <span>© 2026 Contoso Ltd</span>
+          <span><a href="#">Privacy</a></span>
+          <span><a href="#">Accessibility</a></span>
+          <span>Built on Microsoft 365 · SharePoint Online</span>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<button id="toTop" title="Back to top" aria-label="Back to top">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m18 15-6-6-6 6"/></svg>
+</button>
+
+<script>
+(function(){
+  // Personalised, time-aware greeting
+  var name='Lee';
+  var now=new Date(), h=now.getHours();
+  var word = h<5 ? 'Hello, night owl' : h<12 ? 'Good morning' : h<17 ? 'Good afternoon' : 'Good evening';
+  var emoji = h<5 ? '🌙' : h<12 ? '👋' : h<17 ? '☀️' : '🌆';
+  document.getElementById('greeting').textContent = word+', '+name+' '+emoji;
+  var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('today').textContent =
+    days[now.getDay()]+' '+now.getDate()+' '+months[now.getMonth()]+' · Here’s what’s happening across Contoso today.';
+
+  // Like buttons
+  document.querySelectorAll('button.stat.like').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.preventDefault();
+      var n=btn.querySelector('.ln'), v=parseInt(n.textContent,10);
+      var on=btn.classList.toggle('liked');
+      n.textContent = on ? v+1 : v-1;
+      btn.querySelector('svg path').setAttribute('fill', on ? 'currentColor' : 'none');
+    });
+  });
+
+  // News filter pills (visual only)
+  var pills=document.querySelectorAll('.news-filter button');
+  pills.forEach(function(p){
+    p.addEventListener('click',function(){
+      pills.forEach(function(x){x.classList.remove('on');});
+      p.classList.add('on');
+    });
+  });
+
+  // Back to top
+  var top=document.getElementById('toTop');
+  window.addEventListener('scroll',function(){
+    top.classList.toggle('show', window.scrollY>600);
+  },{passive:true});
+  top.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+})();
+</script>
+</body>
+</html>
