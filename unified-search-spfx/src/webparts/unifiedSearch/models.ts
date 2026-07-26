@@ -6,9 +6,21 @@ export type SearchScope = 'tenant' | 'hub' | 'site';
 
 export type SortMode = 'relevance' | 'newest' | 'oldest';
 
+export interface IPromotedResult {
+  title: string;
+  description?: string;
+  linkUrl?: string;
+  buttonText?: string;
+}
+
 export interface IUnifiedSearchConfig {
   filterPanelPosition: FilterPanelPosition;
   pageSize: number;
+  enablePromoted: boolean;
+  /** Display title of the SharePoint list holding promoted results. */
+  promotedListTitle: string;
+  /** Absolute web URL hosting the list; empty string = the current site. */
+  promotedWebUrl: string;
   showFiles: boolean;
   showMail: boolean;
   showCalendar: boolean;

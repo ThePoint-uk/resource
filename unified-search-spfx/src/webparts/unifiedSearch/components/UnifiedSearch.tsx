@@ -8,9 +8,10 @@ import { IReadonlyTheme } from '@microsoft/sp-component-base';
 import {
   IUnifiedSearchConfig, VerticalKey, VERTICALS, isVerticalEnabled, SortMode,
   IFileResult, IMailResult, IEventResult, ISiteResult, IPersonResult,
-  ISearchPage, IZeroState, ISuggestions
+  ISearchPage, IZeroState, ISuggestions, IPromotedResult
 } from '../models';
 import { GraphSearchService } from '../services/GraphSearchService';
+import { PromotedResultsService } from '../services/PromotedResultsService';
 import { PeopleService } from '../services/PeopleService';
 import { FileService } from '../services/FileService';
 import { getClassNames } from './styles';
@@ -26,6 +27,7 @@ export interface IUnifiedSearchProps {
   searchService: GraphSearchService;
   peopleService: PeopleService;
   fileService: FileService;
+  promotedService: PromotedResultsService;
   userDisplayName: string;
   isEditMode: boolean;
 }
@@ -68,6 +70,7 @@ export const UnifiedSearch: React.FunctionComponent<IUnifiedSearchProps> = props
   const [eventsPage, setEventsPage] = React.useState<ISearchPage<IEventResult> | undefined>(undefined);
   const [sitesPage, setSitesPage] = React.useState<ISearchPage<ISiteResult> | undefined>(undefined);
   const [people, setPeople] = React.useState<IPersonResult[] | undefined>(undefined);
+  const [promoted, setPromoted] = React.useState<IPromotedResult[]>([]);
 
   const [loading, setLoading] = React.useState<boolean>(false);
   const [errors, setErrors] = React.useState<IVerticalErrors>({});
@@ -208,6 +211,12 @@ export const UnifiedSearch: React.FunctionComponent<IUnifiedSearchProps> = props
       });
   };
 
+  const fetchPromoted = (activeQuery: string, token: number): void => {
+    props.promotedService.getMatches(activeQuery, config.promotedListTitle, config.promotedWebUrl)
+      .then(matches => { if (runToken.current === token) { setPromoted(matches); } })
+      .catch(() => { /* promoted results are optional */ });
+  };
+
   const runSearch = (activeQuery: string): void => {
     runToken.current += 1;
     const token = runToken.current;
@@ -215,11 +224,13 @@ export const UnifiedSearch: React.FunctionComponent<IUnifiedSearchProps> = props
     setSpelling(undefined);
     setFilesPage(undefined); setPoliciesPage(undefined); setMailPage(undefined);
     setEventsPage(undefined); setSitesPage(undefined); setPeople(undefined);
+    setPromoted([]);
     if (!activeQuery) { setLoading(false); return; }
 
     setLoading(true);
     const work: Promise<void>[] = [];
     const track = (fn: () => void): void => { work.push(Promise.resolve().then(fn)); };
+    if (config.enablePromoted) { track(() => fetchPromoted(activeQuery, token)); }
     if (config.showFiles) { track(() => fetchFiles(activeQuery, [], sort, token)); }
     if (config.showPolicies) { track(() => fetchPolicies(activeQuery, [], sort, token)); }
     if (config.showMail) { track(() => fetchMail(activeQuery, mailFilters, token)); }
@@ -386,6 +397,30 @@ export const UnifiedSearch: React.FunctionComponent<IUnifiedSearchProps> = props
 
   const renderAll = (): React.ReactNode => (
     <>
+      {promoted.map(promotedResult =>
+        <div className={classNames.answerCard} key={promotedResult.title}>
+          <Text variant="xSmall" styles={{ root: {
+            fontWeight: 700, letterSpacing: '.5px', textTransform: 'uppercase', opacity: .75
+          } }}>
+            <Icon iconName="SingleBookmark" style={{ fontSize: 11, marginRight: 5 }} />
+            Promoted result
+          </Text>
+          <Text variant="large" block styles={{ root: { fontWeight: 600, margin: '6px 0 4px' } }}>
+            {promotedResult.title}
+          </Text>
+          {promotedResult.description &&
+            <Text variant="medium" block styles={{ root: { marginBottom: 10, whiteSpace: 'pre-wrap' } }}>
+              {promotedResult.description}
+            </Text>}
+          {promotedResult.linkUrl &&
+            <DefaultButton
+              primary
+              text={promotedResult.buttonText || 'Open'}
+              iconProps={{ iconName: 'OpenInNewWindow' }}
+              onClick={() => window.open(
+                promotedResult.linkUrl, config.openInNewTab ? '_blank' : '_self', 'noopener')}
+            />}
+        </div>)}
       {config.showPeople && filteredPeople.length > 0 &&
         <div className={classNames.section}>
           {sectionHeader('People', 'People', 'people')}

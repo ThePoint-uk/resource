@@ -21,6 +21,9 @@
       "properties": {
         "filterPanelPosition": "left",
         "pageSize": 10,
+        "enablePromoted": true,
+        "promotedListTitle": "Promoted Results",
+        "promotedWebUrl": "",
         "showFiles": true,
         "showMail": true,
         "showCalendar": true,

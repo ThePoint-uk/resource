@@ -19,6 +19,12 @@ declare interface IUnifiedSearchWebPartStrings {
   SearchScopeLabel: string;
   PoliciesQueryLabel: string;
   PoliciesQueryDescription: string;
+  PromotedGroupName: string;
+  EnablePromotedLabel: string;
+  PromotedListTitleLabel: string;
+  PromotedListTitleDescription: string;
+  PromotedWebUrlLabel: string;
+  PromotedWebUrlDescription: string;
   CopilotRoadmapText: string;
 }
 

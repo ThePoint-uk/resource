@@ -16,6 +16,7 @@ import * as strings from 'UnifiedSearchWebPartStrings';
 import { UnifiedSearch } from './components/UnifiedSearch';
 import { IUnifiedSearchConfig } from './models';
 import { GraphSearchService } from './services/GraphSearchService';
+import { PromotedResultsService } from './services/PromotedResultsService';
 import { PeopleService } from './services/PeopleService';
 import { FileService } from './services/FileService';
 
@@ -28,6 +29,7 @@ export default class UnifiedSearchWebPart extends BaseClientSideWebPart<IUnified
   private _searchService: GraphSearchService;
   private _peopleService: PeopleService;
   private _fileService: FileService;
+  private _promotedService: PromotedResultsService;
 
   protected async onInit(): Promise<void> {
     this._themeProvider = this.context.serviceScope.consume(ThemeProvider.serviceKey);
@@ -44,6 +46,10 @@ export default class UnifiedSearchWebPart extends BaseClientSideWebPart<IUnified
     );
     this._peopleService = new PeopleService(factory);
     this._fileService = new FileService(factory);
+    this._promotedService = new PromotedResultsService(
+      this.context.spHttpClient,
+      this.context.pageContext.web.absoluteUrl
+    );
   }
 
   public render(): void {
@@ -53,6 +59,7 @@ export default class UnifiedSearchWebPart extends BaseClientSideWebPart<IUnified
       searchService: this._searchService,
       peopleService: this._peopleService,
       fileService: this._fileService,
+      promotedService: this._promotedService,
       userDisplayName: this.context.pageContext.user.displayName,
       isEditMode: this.displayMode === 2
     });
@@ -111,6 +118,20 @@ export default class UnifiedSearchWebPart extends BaseClientSideWebPart<IUnified
                   description: strings.PoliciesQueryDescription,
                   multiline: true,
                   rows: 2
+                })
+              ]
+            },
+            {
+              groupName: strings.PromotedGroupName,
+              groupFields: [
+                PropertyPaneToggle('enablePromoted', { label: strings.EnablePromotedLabel }),
+                PropertyPaneTextField('promotedListTitle', {
+                  label: strings.PromotedListTitleLabel,
+                  description: strings.PromotedListTitleDescription
+                }),
+                PropertyPaneTextField('promotedWebUrl', {
+                  label: strings.PromotedWebUrlLabel,
+                  description: strings.PromotedWebUrlDescription
                 })
               ]
             },

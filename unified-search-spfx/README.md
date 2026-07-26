@@ -22,6 +22,7 @@ can already see. Nothing in this solution elevates permissions.
 | Refiners | Dynamic panel, position configurable **left / right / hidden**. Files & Policies use real Graph aggregations (file type, last modified). Mail: received date + attachments. People: department & office facets with counts |
 | Files | Graph hit-highlighted snippets, inline **preview** (Graph preview endpoint, Office/PDF/300+ formats) in a Fluent Panel with previous/next, **Share** (Graph invite) and **Copy link** (organisation view link) |
 | People | Fluent Personas with live **presence**, photos, click-to-**call** (`tel:`), **Teams chat** deep link, **email**, mini org chart (manager + direct reports) you can navigate, department chips that filter results |
+| Promoted results | Keyword-triggered answer cards driven by an ordinary **SharePoint list** — content owners manage them, with per-entry enable switch and publish window; no admin centre, no redeploy |
 | Zero-query | Recent searches, "pick up where you left off" (Graph insights), upcoming calendar |
 | Theming | Inherits the host site design via SPFx `ThemeProvider` — all colours come from Fluent theme tokens, `supportsThemeVariants` + section background aware, `supportsFullBleed` for full-width sections |
 | Copilot | Deliberately not in v1. The property pane documents the roadmap: grounded answer card, natural-language filters and chat-with-results via the Graph / Copilot Retrieval API |
@@ -70,6 +71,36 @@ The package lands at `sharepoint/solution/unified-search.sppkg`.
      (point it at your policy content type or library path)
    - Behaviour: scope (organisation / hub / site), previews, suggestions,
      spelling, open-in-new-tab
+
+## Promoted results (list-driven)
+
+Promoted results are keyword-triggered answer cards shown above results on the
+**All** tab — the equivalent of Microsoft Search bookmarks, but owned by your
+content team in a plain SharePoint list instead of the tenant admin centre.
+
+Provision the list in one command:
+
+```powershell
+./provisioning/Create-PromotedResultsList.ps1 -SiteUrl "https://<tenant>.sharepoint.com/sites/intranet"
+```
+
+| Column | Type | Purpose |
+| --- | --- | --- |
+| Title | Single line | Card headline |
+| Keywords | Multi line | Trigger phrases — one per line or `;`-separated ("annual leave; holiday") |
+| Description | Multi line | Card body text |
+| LinkUrl | Hyperlink | Where the button goes |
+| ButtonText | Single line | Button label (defaults to "Open") |
+| Enabled | Yes/No | Kill switch per entry |
+| StartDate / EndDate | Date | Optional publish window (e.g. only during open enrolment) |
+
+Matching: an exact keyword hit outranks a partial one; the top two matches
+render. The list is cached for five minutes per page session, and a missing or
+inaccessible list fails silently — promoted results are always optional.
+
+In the property pane ("Promoted results" group) set the list title, and
+optionally a different site URL if the list lives on a central site — one list
+can then serve every page that hosts the web part.
 
 ## Project layout
 
