@@ -1,0 +1,12 @@
+# Build artefacts (the packaged .sppkg in sharepoint/solution IS committed)
+node_modules
+lib
+dist
+temp
+release
+sharepoint/solution/debug
+*.log
+.heft
+
+# OS
+.DS_Store

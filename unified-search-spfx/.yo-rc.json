@@ -1,0 +1,21 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.22.2",
+    "sdksVersions": {
+      "@microsoft/teams-js": "2.24.0"
+    },
+    "version": "1.23.2",
+    "libraryName": "unified-search",
+    "libraryId": "0f21f1b2-6f3a-4b6c-9d4e-8a2c5e7d1b9f",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "unified-search",
+    "solutionShortDescription": "Unified Search web part",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart",
+    "template": "react"
+  }
+}

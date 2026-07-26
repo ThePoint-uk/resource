@@ -1,0 +1,50 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "unified-search-client-side-solution",
+    "id": "0f21f1b2-6f3a-4b6c-9d4e-8a2c5e7d1b9f",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "The Point",
+      "websiteUrl": "https://the-point.uk",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": ""
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "Unified delegated search across files, mail, calendar, people, sites and policies."
+      },
+      "longDescription": {
+        "default": "A single search experience for the intranet: Microsoft Graph delegated search across SharePoint, OneDrive, Outlook mail, calendar, people and a configurable policies source, with dynamic refiners, file previews, sharing and actionable people cards. Every query runs as the signed-in user, so results always respect existing permissions."
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "Unified Search web part",
+        "description": "Deploys the Unified Search web part.",
+        "id": "3e2b7a54-9c1d-4f6e-b8a2-7d5c4e3f2a10",
+        "version": "1.0.0.0"
+      }
+    ],
+    "webApiPermissionRequests": [
+      { "resource": "Microsoft Graph", "scope": "Files.Read.All" },
+      { "resource": "Microsoft Graph", "scope": "Sites.Read.All" },
+      { "resource": "Microsoft Graph", "scope": "Mail.Read" },
+      { "resource": "Microsoft Graph", "scope": "Calendars.Read" },
+      { "resource": "Microsoft Graph", "scope": "User.Read.All" },
+      { "resource": "Microsoft Graph", "scope": "People.Read" },
+      { "resource": "Microsoft Graph", "scope": "Presence.Read.All" },
+      { "resource": "Microsoft Graph", "scope": "Files.ReadWrite.All" }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/unified-search.sppkg"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "b8f7c111-2f6c-4e2a-9d3e-6a5b1c9d0f42",
+  "alias": "UnifiedSearchWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "SharePointFullPage"],
+  "supportsThemeVariants": true,
+  "supportsFullBleed": true,
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": { "default": "Advanced" },
+      "title": { "default": "Unified Search" },
+      "description": {
+        "default": "Delegated search across files, mail, calendar, people, sites and policies with dynamic refiners, previews and actionable people cards."
+      },
+      "officeFabricIconFontName": "Search",
+      "properties": {
+        "filterPanelPosition": "left",
+        "pageSize": 10,
+        "showFiles": true,
+        "showMail": true,
+        "showCalendar": true,
+        "showPeople": true,
+        "showSites": true,
+        "showPolicies": true,
+        "enablePreviews": true,
+        "enableSuggestions": true,
+        "enableSpelling": true,
+        "openInNewTab": true,
+        "searchScope": "tenant",
+        "policiesQuery": "(ContentType:Policy OR ContentTypeId:0x0101005A*) IsDocument:1"
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "unified-search-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/unifiedSearch/UnifiedSearchWebPart.js",
+          "manifest": "./src/webparts/unifiedSearch/UnifiedSearchWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "UnifiedSearchWebPartStrings": "lib/webparts/unifiedSearch/loc/{locale}.js"
+  }
+}
