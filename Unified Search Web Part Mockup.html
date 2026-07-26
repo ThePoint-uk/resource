@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Unified Search — SharePoint Web Part Mockup (v1)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css" />
+<style>
+  :root{
+    --brand:#007A45; --brand-dark:#005F36; --brand-soft:#E7F4EC; --brand-softer:#F3FAF5;
+    --bg:#f3f2f1; --panel:#ffffff;
+    --text:#242424; --text-2:#5b6b7d; --text-3:#8a949e;
+    --border:rgba(0,0,0,0.10); --border-2:rgba(0,0,0,0.18);
+    --radius:8px; --radius-lg:12px;
+    --shadow-1:0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-2:0 6px 20px rgba(0,0,0,.14);
+    --font:'Segoe UI','Segoe UI Web (West European)',-apple-system,BlinkMacSystemFont,sans-serif;
+    --mark:#fff3bf;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{background:var(--bg);font-family:var(--font);color:var(--text);font-size:14px;}
+  a{color:var(--brand);text-decoration:none;} a:hover{text-decoration:underline;}
+  mark{background:var(--mark);padding:0 1px;border-radius:2px;}
+  button{font-family:var(--font);}
+  input,select,textarea{font-family:var(--font);}
+  ::placeholder{color:var(--text-3);}
+
+  /* ---------- Suite bar ---------- */
+  .suitebar{background:#0b0b0b;color:#fff;height:48px;display:flex;align-items:center;padding:0 16px;gap:14px;}
+  .suitebar .waffle{font-size:20px;cursor:pointer;opacity:.9;}
+  .suitebar .org{font-weight:600;font-size:15px;letter-spacing:.2px;}
+  .suitebar .org span{opacity:.65;font-weight:400;}
+  .suitebar .grow{flex:1;}
+  .suitebar .icon-btn{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;opacity:.85;padding:6px;}
+  .suitebar .me{width:30px;height:30px;border-radius:50%;background:var(--brand);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;}
+
+  /* ---------- Search hero (full width) ---------- */
+  .hero{background:linear-gradient(135deg,var(--brand-dark),var(--brand));padding:26px 0 0;position:relative;}
+  .hero-inner{max-width:1320px;margin:0 auto;padding:0 24px;}
+  .hero h1{color:#fff;font-size:19px;font-weight:600;margin:0 0 14px;display:flex;align-items:center;gap:10px;}
+  .hero h1 .sub{font-weight:400;font-size:13px;opacity:.75;}
+  .searchwrap{position:relative;}
+  .searchbox{display:flex;align-items:center;background:#fff;border-radius:10px;box-shadow:var(--shadow-1);height:52px;padding:0 8px 0 18px;gap:10px;}
+  .searchbox i.lead{font-size:20px;color:var(--text-2);}
+  .searchbox input{flex:1;border:none;outline:none;font-size:16px;height:100%;background:none;}
+  .searchbox .kbd{border:1px solid var(--border-2);border-radius:5px;font-size:11px;padding:1px 6px;color:var(--text-3);}
+  .searchbox .clear{background:none;border:none;font-size:17px;color:var(--text-3);cursor:pointer;padding:6px;display:none;}
+  .searchbox .go{background:var(--brand);color:#fff;border:none;border-radius:8px;height:38px;padding:0 18px;font-size:14px;font-weight:600;cursor:pointer;}
+  .searchbox .go:hover{background:var(--brand-dark);}
+  .scopechip{display:flex;align-items:center;gap:6px;background:var(--brand-softer);border:1px solid var(--border);color:var(--text-2);font-size:12px;border-radius:6px;padding:5px 10px;cursor:pointer;white-space:nowrap;}
+
+  /* suggestions dropdown */
+  .suggest{position:absolute;top:58px;left:0;right:0;background:#fff;border-radius:10px;box-shadow:var(--shadow-2);z-index:60;overflow:hidden;display:none;}
+  .suggest.open{display:block;}
+  .suggest .sec{padding:8px 0 4px;}
+  .suggest .sec + .sec{border-top:1px solid var(--border);}
+  .suggest .sec h4{margin:2px 16px 4px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);}
+  .suggest .row{display:flex;align-items:center;gap:12px;padding:8px 16px;cursor:pointer;font-size:14px;}
+  .suggest .row:hover,.suggest .row.active{background:var(--brand-softer);}
+  .suggest .row i{font-size:16px;color:var(--text-2);width:20px;text-align:center;}
+  .suggest .row .meta{color:var(--text-3);font-size:12px;margin-left:auto;white-space:nowrap;}
+  .suggest .row .savatar{width:26px;height:26px;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;}
+
+  /* ---------- Vertical tabs ---------- */
+  .verticals{background:transparent;margin-top:18px;}
+  .verticals .tabs{display:flex;gap:2px;max-width:1320px;margin:0 auto;padding:0 24px;overflow-x:auto;}
+  .vtab{background:none;border:none;color:rgba(255,255,255,.8);font-size:14px;padding:10px 16px 12px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:7px;}
+  .vtab i{font-size:16px;}
+  .vtab .cnt{background:rgba(255,255,255,.18);border-radius:10px;font-size:11px;padding:1px 7px;}
+  .vtab:hover{color:#fff;}
+  .vtab.active{color:#fff;font-weight:600;border-bottom-color:#fff;}
+
+  /* ---------- Body layout ---------- */
+  .page{max-width:1320px;margin:0 auto;padding:18px 24px 60px;}
+  .statusline{display:flex;align-items:center;gap:14px;color:var(--text-2);font-size:13px;margin:2px 2px 14px;flex-wrap:wrap;}
+  .statusline .grow{flex:1;}
+  .sortsel{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-2);}
+  .sortsel select{border:1px solid var(--border-2);border-radius:6px;padding:4px 8px;font-size:13px;background:#fff;color:var(--text);}
+  .didyoumean{background:#fff;border:1px solid var(--border);border-left:3px solid var(--brand);border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;font-size:14px;}
+
+  .layout{display:flex;gap:20px;align-items:flex-start;}
+  .layout.filters-right{flex-direction:row-reverse;}
+  .layout.filters-hidden .filters{display:none;}
+  .results{flex:1;min-width:0;}
+
+  /* ---------- Filters panel ---------- */
+  .filters{width:250px;flex-shrink:0;position:sticky;top:14px;}
+  .filters .fcard{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px 10px;margin-bottom:12px;box-shadow:var(--shadow-1);}
+  .filters h3{margin:0 0 10px;font-size:13px;display:flex;align-items:center;gap:8px;}
+  .filters h3 i{font-size:15px;color:var(--brand);}
+  .filters h3 .clearlink{margin-left:auto;font-size:11px;font-weight:400;cursor:pointer;color:var(--brand);}
+  .fopt{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:13px;cursor:pointer;color:var(--text);}
+  .fopt input{accent-color:var(--brand);width:15px;height:15px;cursor:pointer;}
+  .fopt .n{color:var(--text-3);font-size:11px;margin-left:auto;}
+  .fopt:hover{color:var(--brand-dark);}
+  .fhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .filters .applied{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+  .chip{display:inline-flex;align-items:center;gap:6px;background:var(--brand-soft);color:var(--brand-dark);border:1px solid transparent;border-radius:14px;font-size:12px;padding:3px 10px;cursor:pointer;}
+  .chip i{font-size:13px;}
+  .chip:hover{border-color:var(--brand);}
+  .chip.ghost{background:#fff;border:1px solid var(--border-2);color:var(--text-2);}
+  .chip.ghost:hover{border-color:var(--brand);color:var(--brand-dark);}
+  .chip.active{background:var(--brand);color:#fff;}
+
+  /* ---------- Result cards ---------- */
+  .rsec{margin-bottom:26px;}
+  .rsec > h2{font-size:15px;margin:0 0 10px;display:flex;align-items:center;gap:8px;}
+  .rsec > h2 i{font-size:17px;color:var(--brand);}
+  .rsec > h2 .seeall{margin-left:auto;font-size:12px;font-weight:400;cursor:pointer;color:var(--brand);}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-1);}
+  .rlist .card{margin-bottom:10px;}
+
+  /* answer / bookmark */
+  .answer{border-left:4px solid var(--brand);padding:16px 18px;margin-bottom:18px;}
+  .answer .tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--brand-dark);background:var(--brand-soft);border-radius:4px;padding:2px 8px;margin-bottom:8px;}
+  .answer h3{margin:0 0 6px;font-size:16px;}
+  .answer p{margin:0 0 10px;color:var(--text-2);line-height:1.5;}
+  .answer .actions{display:flex;gap:8px;}
+
+  /* file row */
+  .filerow{display:flex;gap:14px;padding:13px 16px;cursor:pointer;position:relative;}
+  .filerow:hover{background:var(--brand-softer);}
+  .ficon{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:19px;color:#fff;flex-shrink:0;}
+  .fmain{flex:1;min-width:0;}
+  .fmain .fname{font-size:14.5px;font-weight:600;color:var(--text);margin:0 0 3px;}
+  .filerow:hover .fname{color:var(--brand-dark);text-decoration:underline;}
+  .fmeta{font-size:12px;color:var(--text-3);display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:4px;}
+  .fmeta b{color:var(--text-2);font-weight:400;}
+  .fsnippet{font-size:13px;color:var(--text-2);line-height:1.45;margin:0;}
+  .fact{display:flex;gap:2px;opacity:0;transition:opacity .12s;align-self:center;}
+  .filerow:hover .fact,.mailrow:hover .fact{opacity:1;}
+  .iconbtn{background:none;border:none;width:32px;height:32px;border-radius:6px;font-size:16px;color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .iconbtn:hover{background:var(--brand-soft);color:var(--brand-dark);}
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;border-radius:4px;padding:1px 7px;}
+  .badge.official{background:var(--brand-soft);color:var(--brand-dark);}
+  .badge.review{background:#fdf6e9;color:#9c640c;}
+  .badge.grey{background:#eef1f5;color:var(--text-2);font-weight:400;}
+
+  /* mail row */
+  .mailrow{display:flex;gap:13px;padding:13px 16px;cursor:pointer;}
+  .mailrow:hover{background:var(--brand-softer);}
+  .mailrow.unread .msub{font-weight:700;}
+  .avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:13px;flex-shrink:0;position:relative;}
+  .avatar .dot{position:absolute;bottom:-1px;right:-1px;width:11px;height:11px;border-radius:50%;border:2px solid #fff;}
+  .dot.available{background:#13a10e;} .dot.busy{background:#d13438;} .dot.away{background:#ffaa44;} .dot.dnd{background:#d13438;}
+  .msub{font-size:14px;margin:0 0 2px;}
+  .mfrom{font-size:12.5px;color:var(--text-2);}
+  .msnip{font-size:13px;color:var(--text-3);margin:2px 0 0;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;}
+  .mdate{font-size:12px;color:var(--text-3);white-space:nowrap;margin-left:auto;text-align:right;flex-shrink:0;}
+  .attach{display:inline-flex;align-items:center;gap:5px;background:#eef1f5;border-radius:5px;font-size:11.5px;color:var(--text-2);padding:2px 8px;margin-top:5px;}
+
+  /* calendar row */
+  .calrow{display:flex;gap:14px;padding:13px 16px;align-items:flex-start;}
+  .calrow:hover{background:var(--brand-softer);}
+  .caldate{width:48px;flex-shrink:0;background:var(--brand-softer);border:1px solid var(--border);border-radius:8px;text-align:center;padding:5px 0 7px;}
+  .caldate .m{font-size:10px;font-weight:700;color:#c0392b;text-transform:uppercase;}
+  .caldate .d{font-size:19px;font-weight:700;line-height:1.1;}
+  .calmain h4{margin:0 0 3px;font-size:14.5px;}
+  .calmeta{font-size:12.5px;color:var(--text-2);display:flex;gap:12px;flex-wrap:wrap;}
+  .calmeta i{font-size:13px;margin-right:3px;}
+  .joinbtn{margin-left:auto;align-self:center;background:#5059c9;color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;gap:6px;align-items:center;flex-shrink:0;}
+  .joinbtn:hover{background:#3d45b0;}
+
+  /* people */
+  .pplgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:12px;}
+  .pcard{padding:18px 16px 14px;text-align:center;cursor:pointer;transition:box-shadow .12s;}
+  .pcard:hover{box-shadow:var(--shadow-2);}
+  .pcard .avatar{width:56px;height:56px;font-size:19px;margin:0 auto 10px;}
+  .pcard h4{margin:0 0 2px;font-size:14.5px;}
+  .pcard .t{font-size:12.5px;color:var(--text-2);margin:0 0 1px;}
+  .pcard .d{font-size:12px;color:var(--text-3);margin:0 0 10px;}
+  .pcard .pacts{display:flex;justify-content:center;gap:4px;border-top:1px solid var(--border);padding-top:9px;}
+  .pplstrip{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;}
+  .pplstrip .pcard{min-width:210px;}
+  .deptchips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;}
+
+  /* sites */
+  .sitegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;}
+  .scard{padding:16px;display:flex;gap:13px;cursor:pointer;}
+  .scard:hover{box-shadow:var(--shadow-2);}
+  .slogo{width:44px;height:44px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;flex-shrink:0;}
+  .scard h4{margin:0 0 3px;font-size:14px;}
+  .scard p{margin:0 0 5px;font-size:12.5px;color:var(--text-2);line-height:1.4;}
+  .scard .sm{font-size:11.5px;color:var(--text-3);}
+
+  /* empty / zero states */
+  .empty{background:var(--panel);border:1px dashed var(--border-2);border-radius:var(--radius-lg);padding:44px 20px;text-align:center;color:var(--text-2);}
+  .empty i{font-size:34px;color:var(--text-3);}
+  .empty h3{margin:10px 0 4px;font-size:16px;color:var(--text);}
+  .zerocols{display:grid;grid-template-columns:1.4fr 1fr;gap:20px;}
+  @media(max-width:900px){.zerocols{grid-template-columns:1fr;}}
+
+  .loadmore{display:block;margin:14px auto 0;background:#fff;border:1px solid var(--border-2);border-radius:20px;padding:8px 22px;font-size:13px;cursor:pointer;color:var(--text-2);}
+  .loadmore:hover{border-color:var(--brand);color:var(--brand-dark);}
+
+  /* ---------- Buttons ---------- */
+  .btn{display:inline-flex;align-items:center;gap:7px;border-radius:6px;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;border:1px solid transparent;}
+  .btn.primary{background:var(--brand);color:#fff;}
+  .btn.primary:hover{background:var(--brand-dark);}
+  .btn.sec{background:#fff;border-color:var(--border-2);color:var(--text);}
+  .btn.sec:hover{border-color:var(--brand);color:var(--brand-dark);}
+  .btn.teams{background:#5059c9;color:#fff;} .btn.teams:hover{background:#3d45b0;}
+
+  /* ---------- Overlays ---------- */
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:100;display:none;}
+  .scrim.open{display:block;}
+
+  /* preview modal */
+  .preview{position:fixed;inset:4% 6%;background:#fff;border-radius:14px;z-index:110;display:none;flex-direction:column;box-shadow:var(--shadow-2);overflow:hidden;}
+  .preview.open{display:flex;}
+  .pv-top{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);}
+  .pv-top .ficon{width:30px;height:30px;font-size:15px;border-radius:6px;}
+  .pv-top h3{margin:0;font-size:15px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .pv-body{flex:1;display:flex;min-height:0;}
+  .pv-frame{flex:1;background:#525659;display:flex;align-items:center;justify-content:center;position:relative;}
+  .pv-frame iframe{width:100%;height:100%;border:none;background:#525659;}
+  .pv-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.92);border:none;width:38px;height:38px;border-radius:50%;font-size:17px;cursor:pointer;box-shadow:var(--shadow-1);color:var(--text);}
+  .pv-nav:hover{background:#fff;}
+  .pv-nav.prev{left:14px;} .pv-nav.next{right:14px;}
+  .pv-side{width:280px;border-left:1px solid var(--border);padding:18px;overflow-y:auto;flex-shrink:0;}
+  .pv-side h4{margin:0 0 12px;font-size:13px;}
+  .pv-side dl{margin:0;font-size:12.5px;}
+  .pv-side dt{color:var(--text-3);margin-top:10px;}
+  .pv-side dd{margin:2px 0 0;color:var(--text);}
+  @media(max-width:860px){.pv-side{display:none;}}
+
+  /* share modal */
+  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:14px;z-index:120;width:440px;max-width:92vw;box-shadow:var(--shadow-2);display:none;}
+  .modal.open{display:block;}
+  .modal .mhead{display:flex;align-items:center;gap:10px;padding:16px 20px 0;}
+  .modal .mhead h3{margin:0;font-size:16px;flex:1;}
+  .modal .mbody{padding:14px 20px 20px;}
+  .modal .field{margin-bottom:12px;}
+  .modal label{font-size:12px;color:var(--text-2);display:block;margin-bottom:5px;}
+  .modal input[type=text],.modal textarea,.modal select{width:100%;border:1px solid var(--border-2);border-radius:7px;padding:9px 11px;font-size:13.5px;outline:none;}
+  .modal input:focus,.modal textarea:focus{border-color:var(--brand);}
+  .linkrow{display:flex;gap:8px;}
+  .linkrow input{flex:1;background:#f4f6f8;color:var(--text-2);}
+
+  /* person flyout */
+  .personcard{position:fixed;z-index:120;width:340px;background:#fff;border-radius:14px;box-shadow:var(--shadow-2);display:none;overflow:hidden;}
+  .personcard.open{display:block;}
+  .pc-top{background:linear-gradient(135deg,var(--brand-dark),var(--brand));height:64px;position:relative;}
+  .pc-close{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.25);color:#fff;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:13px;}
+  .pc-main{padding:0 20px 16px;margin-top:-30px;}
+  .pc-main .avatar{width:64px;height:64px;font-size:22px;border:3px solid #fff;}
+  .pc-main h3{margin:8px 0 1px;font-size:17px;}
+  .pc-main .role{color:var(--text-2);font-size:13px;margin:0 0 2px;}
+  .pc-main .pres{font-size:12px;color:var(--text-3);margin:0 0 12px;display:flex;align-items:center;gap:6px;}
+  .pc-acts{display:flex;gap:8px;margin-bottom:14px;}
+  .pc-acts .btn{flex:1;justify-content:center;padding:8px 4px;}
+  .pc-info{border-top:1px solid var(--border);padding-top:12px;font-size:13px;}
+  .pc-info .irow{display:flex;gap:10px;padding:4px 0;align-items:center;color:var(--text-2);}
+  .pc-info .irow i{color:var(--brand);font-size:15px;width:18px;}
+  .pc-info a{color:var(--brand-dark);}
+  .pc-skills{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+  .pc-org{border-top:1px solid var(--border);margin-top:12px;padding-top:10px;}
+  .pc-org h5{margin:0 0 8px;font-size:11px;text-transform:uppercase;color:var(--text-3);letter-spacing:.4px;}
+  .pc-org .irow{cursor:pointer;} .pc-org .irow:hover{color:var(--brand-dark);}
+
+  /* config panel */
+  .cfgpanel{position:fixed;top:0;right:0;bottom:0;width:380px;max-width:94vw;background:#fff;z-index:130;box-shadow:var(--shadow-2);transform:translateX(105%);transition:transform .22s ease;display:flex;flex-direction:column;}
+  .cfgpanel.open{transform:none;}
+  .cfg-head{display:flex;align-items:center;gap:10px;padding:16px 20px;border-bottom:1px solid var(--border);}
+  .cfg-head h3{margin:0;font-size:15px;flex:1;}
+  .cfg-body{flex:1;overflow-y:auto;padding:6px 20px 30px;}
+  .cfg-body h4{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);margin:22px 0 10px;}
+  .cfgrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;font-size:13.5px;}
+  .cfgrow .hint{display:block;font-size:11.5px;color:var(--text-3);margin-top:1px;}
+  .seg{display:inline-flex;border:1px solid var(--border-2);border-radius:7px;overflow:hidden;}
+  .seg button{background:#fff;border:none;padding:6px 12px;font-size:12.5px;cursor:pointer;color:var(--text-2);}
+  .seg button.on{background:var(--brand);color:#fff;font-weight:600;}
+  .switch{position:relative;width:38px;height:21px;flex-shrink:0;cursor:pointer;}
+  .switch input{opacity:0;width:0;height:0;}
+  .switch .tr{position:absolute;inset:0;background:#c8cdd2;border-radius:12px;transition:.15s;}
+  .switch .tr:before{content:'';position:absolute;width:15px;height:15px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.15s;}
+  .switch input:checked + .tr{background:var(--brand);}
+  .switch input:checked + .tr:before{left:20px;}
+  .switch input:disabled + .tr{opacity:.45;cursor:not-allowed;}
+  .swatches{display:flex;gap:8px;}
+  .swatch{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;}
+  .swatch.on{border-color:var(--text);box-shadow:0 0 0 2px #fff inset;}
+  .roadmap{background:#f4f6f8;border:1px dashed var(--border-2);border-radius:10px;padding:12px 14px;margin-top:6px;}
+  .roadmap .rtag{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:#7a4bd6;background:#f1eafd;border-radius:4px;padding:2px 8px;margin-bottom:8px;}
+  .roadmap p{font-size:12px;color:var(--text-2);margin:8px 0 0;line-height:1.45;}
+
+  /* toast */
+  .toasts{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;}
+  .toast{background:#242424;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;box-shadow:var(--shadow-2);display:flex;gap:9px;align-items:center;animation:toastin .18s ease;}
+  .toast i{color:#6ccb5f;}
+  @keyframes toastin{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  /* config gear floater */
+  .gear{position:fixed;bottom:22px;right:22px;z-index:90;background:var(--text);color:#fff;border:none;border-radius:24px;padding:11px 18px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:var(--shadow-2);display:flex;gap:8px;align-items:center;}
+  .gear:hover{background:#000;}
+  .gear i{font-size:16px;}
+
+  @media(max-width:760px){
+    .filters{display:none;}
+    .hero-inner,.page,.verticals .tabs{padding-left:14px;padding-right:14px;}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="scrim" id="scrim"></div>
+<div class="preview" id="preview"></div>
+<div class="modal" id="sharemodal"></div>
+<div class="personcard" id="personcard"></div>
+<div class="cfgpanel" id="cfgpanel"></div>
+<div class="toasts" id="toasts"></div>
+<button class="gear" id="gearbtn"><i class="ti ti-settings"></i> Configure web part</button>
+
+<script>
+(function(){
+"use strict";
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+
+/* ============================================================
+   MOCK DATA
+   ============================================================ */
+var AVCOLORS=['#0b6a3f','#2c5fa8','#7a4bd6','#c0392b','#9c640c','#0f7b8a','#a83a83','#4a5568'];
+var av=function(i){return AVCOLORS[i%AVCOLORS.length];};
+var initials=function(n){return n.split(' ').map(function(p){return p[0];}).slice(0,2).join('');};
+
+var PEOPLE=[
+ {id:'u1',name:'Priya Raman',title:'Head of Optometry',dept:'Optometry',office:'Guernsey HQ',phone:'+44 1481 700 210',mobile:'+44 7797 410 221',email:'priya.raman@contoso-optical.com',presence:'available',skills:['Clinical governance','OCT','Training'],manager:'u7',reports:['u4','u9']},
+ {id:'u2',name:'Daniel Okafor',title:'Retail Operations Manager',dept:'Retail Operations',office:'Nottingham Support Office',phone:'+44 115 890 4412',mobile:'+44 7700 900 118',email:'daniel.okafor@contoso-optical.com',presence:'busy',skills:['Store openings','Rota planning','P&L'],manager:'u7',reports:['u8']},
+ {id:'u3',name:'Sophie Latham',title:'HR Business Partner',dept:'HR',office:'Nottingham Support Office',phone:'+44 115 890 4290',mobile:'+44 7700 900 341',email:'sophie.latham@contoso-optical.com',presence:'available',skills:['Annual leave','Employee relations','MyHR'],manager:'u10',reports:[]},
+ {id:'u4',name:'James Wu',title:'Senior Optometrist',dept:'Optometry',office:'London — Oxford Street',phone:'+44 20 7100 8832',mobile:'+44 7700 900 552',email:'james.wu@contoso-optical.com',presence:'away',skills:['Paediatric optometry','Glaucoma referral'],manager:'u1',reports:[]},
+ {id:'u5',name:'Amelia Barnes',title:'Marketing Campaign Lead',dept:'Marketing',office:'London — Shoreditch',phone:'+44 20 7100 8790',mobile:'+44 7700 900 663',email:'amelia.barnes@contoso-optical.com',presence:'available',skills:['Campaign planning','Brand','Social'],manager:'u10',reports:[]},
+ {id:'u6',name:'Tom Kowalski',title:'IT Service Desk Lead',dept:'IT',office:'Nottingham Support Office',phone:'+44 115 890 4100',mobile:'+44 7700 900 774',email:'tom.kowalski@contoso-optical.com',presence:'dnd',skills:['M365','Intune','ServiceNow'],manager:'u10',reports:[]},
+ {id:'u7',name:'Rachel Devine',title:'Director of Store Operations',dept:'Retail Operations',office:'Guernsey HQ',phone:'+44 1481 700 118',mobile:'+44 7797 410 500',email:'rachel.devine@contoso-optical.com',presence:'busy',skills:['Strategy','Franchise partners'],manager:null,reports:['u1','u2']},
+ {id:'u8',name:'Harvey Singh',title:'Store Director — Guildford',dept:'Retail Operations',office:'Guildford Store',phone:'+44 1483 300 771',mobile:'+44 7700 900 885',email:'harvey.singh@contoso-optical.com',presence:'available',skills:['Retail leadership','Audiology'],manager:'u2',reports:[]},
+ {id:'u9',name:'Elena Petrova',title:'Audiology Programme Lead',dept:'Optometry',office:'Nottingham Support Office',phone:'+44 115 890 4477',mobile:'+44 7700 900 996',email:'elena.petrova@contoso-optical.com',presence:'available',skills:['Audiology','Rollout planning'],manager:'u1',reports:[]},
+ {id:'u10',name:'Mark Ellison',title:'Chief People & Digital Officer',dept:'Executive',office:'Guernsey HQ',phone:'+44 1481 700 001',mobile:'+44 7797 410 001',email:'mark.ellison@contoso-optical.com',presence:'away',skills:['Leadership','Transformation'],manager:null,reports:['u3','u5','u6']}
+];
+var P=function(id){return PEOPLE.find(function(p){return p.id===id;});};
+
+var FILETYPES={
+ docx:{c:'#2b579a',i:'ti-file-type-docx',label:'Word'},
+ xlsx:{c:'#217346',i:'ti-file-type-xls',label:'Excel'},
+ pptx:{c:'#d24726',i:'ti-file-type-ppt',label:'PowerPoint'},
+ pdf:{c:'#c0392b',i:'ti-file-type-pdf',label:'PDF'}
+};
+
+var FILES=[
+ {id:'f1',name:'Annual Leave Policy 2026',type:'docx',site:'HR Hub',source:'SharePoint',path:'HR Hub › Policies',author:'u3',modified:'2026-07-14',size:'412 KB',version:'4.0',snippet:'All colleagues accrue annual leave from their start date. Requests should be submitted in MyHR at least two weeks in advance. Carry-over of up to five days…'},
+ {id:'f2',name:'Annual Leave Request Form',type:'xlsx',site:'HR Hub',source:'SharePoint',path:'HR Hub › Forms',author:'u3',modified:'2026-06-30',size:'58 KB',version:'2.1',snippet:'Use this form only where MyHR is unavailable. Enter the leave dates, type (annual leave, TOIL, unpaid) and line manager for approval…'},
+ {id:'f3',name:'Store Opening Checklist — Guildford',type:'docx',site:'Retail Operations',source:'SharePoint',path:'Retail Operations › New Stores',author:'u2',modified:'2026-07-21',size:'236 KB',version:'7.0',snippet:'Pre-opening checklist for the Guildford store launch: fit-out sign-off, clinical equipment calibration, colleague onboarding, opening-day rota…'},
+ {id:'f4',name:'FY27 Marketing Budget',type:'xlsx',site:'OneDrive',source:'OneDrive',path:'OneDrive › Amelia Barnes',author:'u5',modified:'2026-07-23',size:'1.2 MB',version:'12.0',snippet:'Draft budget lines for the spring frames campaign, audiology awareness and the home visits service. Media spend split by channel and quarter…'},
+ {id:'f5',name:'Frames Range Launch — Spring Campaign',type:'pptx',site:'Marketing',source:'SharePoint',path:'Marketing › Campaigns',author:'u5',modified:'2026-07-18',size:'8.4 MB',version:'6.0',snippet:'Launch deck for the new designer frames range: audience segments, store POS kit, social plan and the offer mechanics for two-for-one…'},
+ {id:'f6',name:'Eye Test Clinical Protocol v4',type:'pdf',site:'Clinical Governance',source:'SharePoint',path:'Clinical Governance › Protocols',author:'u1',modified:'2026-05-02',size:'2.1 MB',version:'4.0',snippet:'Standard clinical protocol for sight tests including pre-screening, OCT capture, and referral thresholds for glaucoma and diabetic retinopathy…'},
+ {id:'f7',name:'Retail Ops Weekly Update — w/c 20 July',type:'docx',site:'Retail Operations',source:'SharePoint',path:'Retail Operations › Updates',author:'u2',modified:'2026-07-24',size:'188 KB',version:'1.0',snippet:'Trading summary, Guildford opening countdown, rota coverage for the bank holiday, and a reminder on the annual leave freeze for opening week…'},
+ {id:'f8',name:'IT Onboarding Guide',type:'pdf',site:'IT Support',source:'SharePoint',path:'IT Support › Guides',author:'u6',modified:'2026-04-11',size:'3.6 MB',version:'9.0',snippet:'Getting started with your account: multi-factor authentication, Teams, the intranet, store till systems and how to raise a ticket…'},
+ {id:'f9',name:'Customer Experience Survey Results Q2',type:'pptx',site:'Marketing',source:'SharePoint',path:'Marketing › Insight',author:'u5',modified:'2026-07-09',size:'5.9 MB',version:'3.0',snippet:'NPS by region, verbatims on appointment booking, and the impact of the new frames range trial stores on satisfaction…'},
+ {id:'f10',name:'Supply Chain Forecast Q3',type:'xlsx',site:'Finance & Supply',source:'SharePoint',path:'Finance & Supply › Forecasts',author:'u7',modified:'2026-07-02',size:'2.8 MB',version:'5.0',snippet:'Lens and frames stock forecast by distribution centre, with lead times and the contact lens subscription uplift assumptions…'},
+ {id:'f11',name:'Brand Guidelines 2026',type:'pdf',site:'Marketing',source:'SharePoint',path:'Marketing › Brand',author:'u5',modified:'2026-03-19',size:'14.2 MB',version:'2.0',snippet:'Logo usage, colour palette, tone of voice and templates for store, print and digital. Includes the accessibility contrast standards…'},
+ {id:'f12',name:'Audiology Service Rollout Plan',type:'docx',site:'Clinical Governance',source:'SharePoint',path:'Clinical Governance › Audiology',author:'u9',modified:'2026-07-16',size:'520 KB',version:'8.0',snippet:'Phase 2 rollout of the audiology service to 40 stores: equipment, training pathway for hearing care assistants and marketing support…'},
+ {id:'f13',name:'Home Visits Scheduling SOP',type:'docx',site:'Retail Operations',source:'SharePoint',path:'Retail Operations › Home Visits',author:'u8',modified:'2026-06-12',size:'301 KB',version:'3.0',snippet:'Standard operating procedure for booking and routing domiciliary eye test visits, including safeguarding checks and equipment kit lists…'},
+ {id:'f14',name:'Contact Lens Subscription Pricing',type:'xlsx',site:'OneDrive',source:'OneDrive',path:'OneDrive › Rachel Devine',author:'u7',modified:'2026-07-20',size:'764 KB',version:'4.0',snippet:'Proposed price points for the contact lens subscription tiers, competitor benchmark and margin model by lens type…'}
+];
+
+var MAIL=[
+ {id:'m1',from:'u3',subject:'Annual leave carry-over — action needed by 31 July',snippet:'Hi all, a reminder that any annual leave carry-over requests above five days need director approval in MyHR before the end of the month…',date:'2026-07-24',unread:true,attach:null,folder:'Inbox'},
+ {id:'m2',from:'u2',subject:'RE: Guildford store opening — rota and annual leave freeze',snippet:'Thanks Harvey — agreed, we hold all annual leave for opening week. I have attached the final rota for sign-off…',date:'2026-07-23',unread:true,attach:'Guildford-opening-rota.xlsx',folder:'Inbox'},
+ {id:'m3',from:'u5',subject:'FY27 marketing budget — first draft for review',snippet:'Draft attached ahead of Thursday. Main changes: audiology awareness moves to Q2 and we add a test budget for the home visits service…',date:'2026-07-23',unread:false,attach:'FY27-Marketing-Budget.xlsx',folder:'Inbox'},
+ {id:'m4',from:'u1',subject:'Clinical protocol v4 published',snippet:'The updated eye test clinical protocol is now live on the Clinical Governance site. Key change is the OCT capture step for over-60s…',date:'2026-07-21',unread:false,attach:null,folder:'Inbox'},
+ {id:'m5',from:'u6',subject:'Planned maintenance: intranet search, Sat 2 Aug',snippet:'Search services will be briefly unavailable on Saturday between 07:00 and 08:00 while we apply the semantic index update…',date:'2026-07-20',unread:false,attach:null,folder:'Inbox'},
+ {id:'m6',from:'u9',subject:'Audiology rollout — training dates confirmed',snippet:'Phase 2 training dates are confirmed for Nottingham and Guildford. Please share with your hearing care assistants…',date:'2026-07-17',unread:false,attach:'Audiology-training-schedule.pdf',folder:'Inbox'},
+ {id:'m7',from:'u8',subject:'Home visits pilot — week 3 numbers',snippet:'Another strong week: 42 domiciliary visits completed, NPS 78. Two routing issues logged against the scheduling SOP…',date:'2026-07-15',unread:false,attach:null,folder:'Inbox'},
+ {id:'m8',from:'u10',subject:'Welcome our new colleagues — July intake',snippet:'A warm welcome to the 18 colleagues joining support office this month. Onboarding guides are on the IT Support site…',date:'2026-07-14',unread:false,attach:null,folder:'Inbox'}
+];
+
+var EVENTS=[
+ {id:'e1',title:'Guildford store opening — go/no-go review',date:'2026-07-28',start:'10:00',end:'11:00',organizer:'u2',location:'Teams meeting',online:true,attendees:14,rsvp:'Accepted'},
+ {id:'e2',title:'FY27 marketing budget review',date:'2026-07-30',start:'14:00',end:'15:30',organizer:'u5',location:'Shoreditch — Boardroom 2',online:true,attendees:8,rsvp:'Accepted'},
+ {id:'e3',title:'Annual leave policy — line manager briefing',date:'2026-07-31',start:'09:30',end:'10:15',organizer:'u3',location:'Teams meeting',online:true,attendees:120,rsvp:'None'},
+ {id:'e4',title:'Clinical governance board',date:'2026-08-04',start:'13:00',end:'16:00',organizer:'u1',location:'Guernsey HQ — Clinical Suite',online:false,attendees:9,rsvp:'Tentative'},
+ {id:'e5',title:'Audiology phase 2 — training day (Nottingham)',date:'2026-08-06',start:'09:00',end:'17:00',organizer:'u9',location:'Nottingham Support Office',online:false,attendees:24,rsvp:'None'},
+ {id:'e6',title:'Quarterly all-colleague town hall',date:'2026-08-12',start:'11:00',end:'12:00',organizer:'u10',location:'Teams live event',online:true,attendees:1800,rsvp:'Accepted'}
+];
+
+var SITES=[
+ {id:'s1',name:'HR Hub',desc:'Policies, MyHR guides, pay & benefits and everything people-related.',members:1840,hub:'Colleague Hub',activity:'Updated today',c:'#0b6a3f'},
+ {id:'s2',name:'Retail Operations',desc:'Store standards, rotas, new store openings and trading updates.',members:960,hub:'Operations Hub',activity:'Updated today',c:'#2c5fa8'},
+ {id:'s3',name:'Clinical Governance',desc:'Clinical protocols, audits, incident reporting and professional standards.',members:410,hub:'Operations Hub',activity:'Updated 2 days ago',c:'#7a4bd6'},
+ {id:'s4',name:'Marketing',desc:'Campaigns, brand assets, insight and store POS materials.',members:220,hub:'Colleague Hub',activity:'Updated yesterday',c:'#c0392b'},
+ {id:'s5',name:'IT Support',desc:'Self-service guides, service status and how to raise a ticket.',members:2100,hub:'Colleague Hub',activity:'Updated 3 days ago',c:'#0f7b8a'},
+ {id:'s6',name:'Finance & Supply',desc:'Forecasts, supplier information and month-end reporting.',members:180,hub:'Operations Hub',activity:'Updated 4 days ago',c:'#9c640c'}
+];
+
+var POLICIES=[
+ {id:'p1',name:'Annual Leave Policy',cat:'HR',owner:'People Team',effective:'2026-01-01',review:'2026-12-31',status:'Current',version:'4.0',type:'docx',summary:'Entitlement, booking through MyHR, carry-over rules and leave during notice periods.',fileId:'f1'},
+ {id:'p2',name:'Flexible & Hybrid Working Policy',cat:'HR',owner:'People Team',effective:'2025-09-01',review:'2026-09-01',status:'Under review',version:'2.3',type:'pdf',summary:'Eligibility for hybrid working, core hours and how to request a permanent change.'},
+ {id:'p3',name:'Eye Test Clinical Protocol',cat:'Clinical',owner:'Clinical Governance',effective:'2026-05-01',review:'2027-05-01',status:'Current',version:'4.0',type:'pdf',summary:'Mandatory clinical steps for sight tests including OCT capture and referral thresholds.',fileId:'f6'},
+ {id:'p4',name:'Infection Prevention & Control',cat:'Clinical',owner:'Clinical Governance',effective:'2025-11-15',review:'2026-11-15',status:'Current',version:'6.1',type:'pdf',summary:'Store and domiciliary hygiene standards for clinical and audiology equipment.'},
+ {id:'p5',name:'Acceptable Use of IT Policy',cat:'IT',owner:'IT Security',effective:'2026-02-10',review:'2027-02-10',status:'Current',version:'8.0',type:'pdf',summary:'Use of company devices, email, AI tools and personal data on company systems.'},
+ {id:'p6',name:'Data Protection & Privacy Policy',cat:'IT',owner:'IT Security',effective:'2025-06-01',review:'2026-06-01',status:'Under review',version:'5.2',type:'docx',summary:'How colleague and customer data must be handled under UK GDPR.'},
+ {id:'p7',name:'Health & Safety in Stores',cat:'Health & Safety',owner:'Retail Operations',effective:'2026-03-01',review:'2027-03-01',status:'Current',version:'3.0',type:'pdf',summary:'Risk assessments, incident reporting and first-aid requirements for store teams.'},
+ {id:'p8',name:'Expenses & Travel Policy',cat:'Finance',owner:'Finance Team',effective:'2026-01-01',review:'2026-12-31',status:'Current',version:'7.4',type:'docx',summary:'What you can claim, approval limits and how to submit expenses.'}
+];
+
+var TRENDING=['annual leave','guildford opening','audiology rollout','marketing budget','clinical protocol'];
+var RECENT=['expenses policy','harvey singh','frames launch'];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+var state={
+  query:'',
+  vertical:'all',
+  sort:'relevance',
+  filters:{},          // per-vertical: {key:Set}
+  shown:{},            // pagination counters
+  cfg:{
+    filterPos:'left',            // left | right | hidden
+    verticals:{files:true,mail:true,calendar:true,people:true,sites:true,policies:true},
+    pageSize:5,
+    previews:true,
+    suggestions:true,
+    spelling:true,
+    scope:'Entire organisation',
+    openIn:'Browser',
+    density:'Comfortable',
+    brand:'#007A45'
+  }
+};
+var previewList=[], previewIdx=0, suggestIdx=-1;
+
+var VERTICALS=[
+  {key:'all',label:'All',icon:'ti-search'},
+  {key:'files',label:'Files',icon:'ti-files'},
+  {key:'mail',label:'Mail',icon:'ti-mail'},
+  {key:'calendar',label:'Calendar',icon:'ti-calendar-event'},
+  {key:'people',label:'People',icon:'ti-users'},
+  {key:'sites',label:'Sites',icon:'ti-world'},
+  {key:'policies',label:'Policies',icon:'ti-shield-check'}
+];
+
+/* ============================================================
+   SEARCH / MATCH HELPERS
+   ============================================================ */
+function tokens(q){return q.toLowerCase().split(/\s+/).filter(Boolean);}
+function matchScore(hay,q){
+  var t=tokens(q); if(!t.length) return 1;
+  hay=hay.toLowerCase(); var score=0;
+  for(var i=0;i<t.length;i++){ if(hay.indexOf(t[i])===-1) return 0; score+= (hay.split(t[i]).length-1); }
+  return score;
+}
+function hi(text,q){
+  var out=esc(text); var t=tokens(q);
+  t.sort(function(a,b){return b.length-a.length;});
+  for(var i=0;i<t.length;i++){
+    var re=new RegExp('('+t[i].replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
+    out=out.replace(re,'\u0001$1\u0002');
+  }
+  return out.split('\u0001').join('<mark>').split('\u0002').join('</mark>');
+}
+function fmtDate(d){
+  var dt=new Date(d+'T00:00:00');
+  return dt.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+}
+function relDate(d){
+  var today=new Date('2026-07-26T00:00:00'); var dt=new Date(d+'T00:00:00');
+  var diff=Math.round((today-dt)/86400000);
+  if(diff===0) return 'Today'; if(diff===1) return 'Yesterday';
+  if(diff<7) return diff+' days ago';
+  return fmtDate(d);
+}
+function dateBucket(d){
+  var today=new Date('2026-07-26T00:00:00'); var dt=new Date(d+'T00:00:00');
+  var diff=(today-dt)/86400000;
+  if(diff<=1) return '24h'; if(diff<=7) return 'week'; if(diff<=30) return 'month'; return 'older';
+}
+var SPELLFIX={'anual':'annual','buget':'budget','polcy':'policy','guildfrod':'guildford','calender':'calendar'};
+function spellSuggestion(q){
+  if(!state.cfg.spelling) return null;
+  var t=q.toLowerCase().split(/\s+/); var changed=false;
+  var fixed=t.map(function(w){ if(SPELLFIX[w]){changed=true;return SPELLFIX[w];} return w;});
+  return changed?fixed.join(' '):null;
+}
+
+/* filtered result getters -------------------------------------------------- */
+function fset(vk,key){ state.filters[vk]=state.filters[vk]||{}; state.filters[vk][key]=state.filters[vk][key]||new Set(); return state.filters[vk][key]; }
+function fhas(vk,key,val){ var s=(state.filters[vk]||{})[key]; return s&&s.has(val); }
+function factive(vk){ var f=state.filters[vk]||{}; return Object.keys(f).some(function(k){return f[k].size;}); }
+
+function baseFiles(q){ return FILES.map(function(f){ var s=matchScore(f.name+' '+f.snippet+' '+f.site+' '+P(f.author).name+' '+FILETYPES[f.type].label,q); return s?{item:f,score:s+ (matchScore(f.name,q)?4:0)}:null; }).filter(Boolean); }
+function filteredFiles(q){
+  var rows=baseFiles(q).filter(function(r){
+    var f=r.item;
+    if(fset('files','type').size && !fhas('files','type',f.type)) return false;
+    if(fset('files','source').size && !fhas('files','source',f.source)) return false;
+    if(fset('files','author').size && !fhas('files','author',f.author)) return false;
+    if(fset('files','date').size){ var b=dateBucket(f.modified);
+      var ok=false; fset('files','date').forEach(function(sel){ if(sel==='24h'&&b==='24h')ok=true; if(sel==='week'&&(b==='24h'||b==='week'))ok=true; if(sel==='month'&&b!=='older')ok=true; });
+      if(!ok) return false; }
+    return true;
+  });
+  return sortRows(rows,'modified','name');
+}
+function baseMail(q){ return MAIL.map(function(m){ var s=matchScore(m.subject+' '+m.snippet+' '+P(m.from).name,q); return s?{item:m,score:s}:null; }).filter(Boolean); }
+function filteredMail(q){
+  var rows=baseMail(q).filter(function(r){ var m=r.item;
+    if(fset('mail','from').size && !fhas('mail','from',m.from)) return false;
+    if(fset('mail','attach').size && !m.attach) return false;
+    if(fset('mail','date').size){ var b=dateBucket(m.date); var ok=false;
+      fset('mail','date').forEach(function(sel){ if(sel==='24h'&&b==='24h')ok=true; if(sel==='week'&&(b==='24h'||b==='week'))ok=true; if(sel==='month'&&b!=='older')ok=true; });
+      if(!ok) return false; }
+    return true; });
+  return sortRows(rows,'date','subject');
+}
+function baseEvents(q){ return EVENTS.map(function(e){ var s=matchScore(e.title+' '+e.location+' '+P(e.organizer).name,q); return s?{item:e,score:s}:null; }).filter(Boolean); }
+function filteredEvents(q){
+  var rows=baseEvents(q).filter(function(r){ var e=r.item;
+    if(fset('calendar','online').size && !e.online) return false;
+    if(fset('calendar','organizer').size && !fhas('calendar','organizer',e.organizer)) return false;
+    return true; });
+  rows.sort(function(a,b){return a.item.date<b.item.date?-1:1;});
+  return rows;
+}
+function basePeople(q){ return PEOPLE.map(function(p){ var s=matchScore(p.name+' '+p.title+' '+p.dept+' '+p.office+' '+p.skills.join(' '),q); return s?{item:p,score:s+(matchScore(p.name,q)?4:0)}:null; }).filter(Boolean); }
+function filteredPeople(q){
+  var rows=basePeople(q).filter(function(r){ var p=r.item;
+    if(fset('people','dept').size && !fhas('people','dept',p.dept)) return false;
+    if(fset('people','office').size && !fhas('people','office',p.office)) return false;
+    return true; });
+  if(state.sort==='az') rows.sort(function(a,b){return a.item.name.localeCompare(b.item.name);});
+  else rows.sort(function(a,b){return b.score-a.score;});
+  return rows;
+}
+function baseSites(q){ return SITES.map(function(s0){ var s=matchScore(s0.name+' '+s0.desc+' '+s0.hub,q); return s?{item:s0,score:s}:null; }).filter(Boolean); }
+function basePolicies(q){ return POLICIES.map(function(p){ var s=matchScore(p.name+' '+p.summary+' '+p.cat+' '+p.owner,q); return s?{item:p,score:s+(matchScore(p.name,q)?4:0)}:null; }).filter(Boolean); }
+function filteredPolicies(q){
+  var rows=basePolicies(q).filter(function(r){ var p=r.item;
+    if(fset('policies','cat').size && !fhas('policies','cat',p.cat)) return false;
+    if(fset('policies','status').size && !fhas('policies','status',p.status)) return false;
+    return true; });
+  rows.sort(function(a,b){return b.score-a.score;});
+  return rows;
+}
+function sortRows(rows,dateField,nameField){
+  if(state.sort==='newest') rows.sort(function(a,b){return a.item[dateField]<b.item[dateField]?1:-1;});
+  else if(state.sort==='oldest') rows.sort(function(a,b){return a.item[dateField]>b.item[dateField]?1:-1;});
+  else if(state.sort==='az') rows.sort(function(a,b){return a.item[nameField].localeCompare(b.item[nameField]);});
+  else rows.sort(function(a,b){return b.score-a.score;});
+  return rows;
+}
+function counts(q){
+  return {files:filteredFiles(q).length,mail:filteredMail(q).length,calendar:filteredEvents(q).length,
+          people:filteredPeople(q).length,sites:baseSites(q).length,policies:filteredPolicies(q).length};
+}
+
+/* ============================================================
+   RENDER — shell
+   ============================================================ */
+var app=document.getElementById('app');
+function render(){
+  var q=state.query;
+  var c=counts(q);
+  var total=c.files+c.mail+c.calendar+c.people+c.sites+c.policies;
+  var h='';
+  h+='<div class="suitebar"><i class="ti ti-grid-dots waffle"></i><div class="org">Specsavers <span>| Colleague Hub</span></div><div class="grow"></div>'
+   + '<button class="icon-btn"><i class="ti ti-bell"></i></button><button class="icon-btn"><i class="ti ti-help-circle"></i></button>'
+   + '<div class="me">LH</div></div>';
+
+  h+='<div class="hero"><div class="hero-inner">'
+   + '<h1><i class="ti ti-search"></i> Search <span class="sub">Unified search web part · v1 mockup</span></h1>'
+   + '<div class="searchwrap">'
+   + '<div class="searchbox">'
+   +   '<i class="ti ti-search lead"></i>'
+   +   '<input id="qinput" type="text" placeholder="Search files, mail, events, people, sites and policies…" value="'+esc(q)+'" autocomplete="off" />'
+   +   '<button class="clear" id="qclear" style="'+(q?'display:block':'')+'" title="Clear"><i class="ti ti-x"></i></button>'
+   +   '<span class="kbd">/</span>'
+   +   '<div class="scopechip" title="Search scope (configurable)"><i class="ti ti-world-search"></i> '+esc(state.cfg.scope)+' <i class="ti ti-chevron-down"></i></div>'
+   +   '<button class="go" id="qgo">Search</button>'
+   + '</div>'
+   + '<div class="suggest" id="suggest"></div>'
+   + '</div></div>';
+
+  h+='<div class="verticals"><div class="tabs">';
+  VERTICALS.forEach(function(v){
+    if(v.key!=='all' && !state.cfg.verticals[v.key]) return;
+    var n = v.key==='all'? total : c[v.key];
+    h+='<button class="vtab'+(state.vertical===v.key?' active':'')+'" data-v="'+v.key+'"><i class="ti '+v.icon+'"></i>'+v.label
+      + (q?'<span class="cnt">'+n+'</span>':'')+'</button>';
+  });
+  h+='</div></div></div>';
+
+  h+='<div class="page">'+renderBody(q,c,total)+'</div>';
+  app.innerHTML=h;
+  wireShell();
+}
+
+function renderBody(q,c,total){
+  var h='';
+  if(!q){ return renderZeroState(); }
+
+  var sp=spellSuggestion(q);
+  if(sp){ h+='<div class="didyoumean"><i class="ti ti-bulb" style="color:var(--brand)"></i> Did you mean <a href="#" id="dymlink"><b>'+esc(sp)+'</b></a>? Showing results for "<i>'+esc(q)+'</i>".</div>'; }
+
+  var vc = state.vertical==='all'? total : c[state.vertical];
+  h+='<div class="statusline"><span><b>'+vc+'</b> result'+(vc===1?'':'s')+' for “'+esc(q)+'” <span style="color:var(--text-3)">(0.'+(31+q.length%40)+' s)</span></span>'
+   + '<div class="grow"></div>'
+   + '<div class="sortsel"><i class="ti ti-arrows-sort"></i> Sort '
+   + '<select id="sortsel"><option value="relevance"'+(state.sort==='relevance'?' selected':'')+'>Relevance</option>'
+   + '<option value="newest"'+(state.sort==='newest'?' selected':'')+'>Newest</option>'
+   + '<option value="oldest"'+(state.sort==='oldest'?' selected':'')+'>Oldest</option>'
+   + '<option value="az"'+(state.sort==='az'?' selected':'')+'>Name A–Z</option></select></div>'
+   + '<span class="chip ghost" id="fpostoggle" title="Move filter panel"><i class="ti ti-layout-sidebar'+(state.cfg.filterPos==='right'?'-right':'')+'"></i> Filters: '+state.cfg.filterPos+'</span>'
+   + '</div>';
+
+  h+='<div class="layout filters-'+state.cfg.filterPos+'">';
+  h+='<div class="filters">'+renderFilters(q)+'</div>';
+  h+='<div class="results">'+renderResults(q,c,total)+'</div>';
+  h+='</div>';
+  return h;
+}
+
+/* ============================================================
+   RENDER — zero-query state
+   ============================================================ */
+function renderZeroState(){
+  var h='<div class="zerocols">';
+  h+='<div>';
+  h+='<div class="rsec"><h2><i class="ti ti-flame"></i> Trending across the organisation</h2><div class="deptchips">';
+  TRENDING.forEach(function(t){ h+='<span class="chip ghost trendq" data-q="'+esc(t)+'"><i class="ti ti-trending-up"></i> '+esc(t)+'</span>'; });
+  h+='</div></div>';
+
+  h+='<div class="rsec"><h2><i class="ti ti-history"></i> Your recent searches</h2><div class="deptchips">';
+  RECENT.forEach(function(t){ h+='<span class="chip ghost trendq" data-q="'+esc(t)+'"><i class="ti ti-clock"></i> '+esc(t)+'</span>'; });
+  h+='</div></div>';
+
+  h+='<div class="rsec"><h2><i class="ti ti-sparkles"></i> Picked up where you left off</h2><div class="card rlist">';
+  [FILES[3],FILES[6],FILES[4]].forEach(function(f){ h+=fileRow(f,'');});
+  h+='</div></div>';
+  h+='</div>';
+
+  h+='<div>';
+  h+='<div class="rsec"><h2><i class="ti ti-users"></i> People you work with</h2><div class="pplgrid" style="grid-template-columns:1fr 1fr;">';
+  [PEOPLE[1],PEOPLE[2],PEOPLE[4],PEOPLE[7]].forEach(function(p,i){ h+=personCard(p,'',i);});
+  h+='</div></div>';
+  h+='<div class="rsec"><h2><i class="ti ti-calendar-event"></i> Coming up</h2><div class="card rlist">';
+  EVENTS.slice(0,2).forEach(function(e){ h+=calRow(e,'');});
+  h+='</div></div>';
+  h+='</div>';
+  h+='</div>';
+  return h;
+}
+
+/* ============================================================
+   RENDER — filters (dynamic per vertical)
+   ============================================================ */
+function checkboxList(vk,key,items){
+  var h='';
+  items.forEach(function(it){
+    var checked=fhas(vk,key,it.val)?' checked':'';
+    h+='<label class="fopt"><input type="checkbox" class="fchk" data-vk="'+vk+'" data-key="'+key+'" data-val="'+esc(it.val)+'"'+checked+' /> '+esc(it.label)+'<span class="n">'+it.n+'</span></label>';
+  });
+  return h;
+}
+function tally(rows,fn){
+  var m={}; rows.forEach(function(r){ var k=fn(r.item); if(k!=null){m[k]=(m[k]||0)+1;} }); return m;
+}
+function renderFilters(q){
+  var v=state.vertical; var h='';
+  var applied=[];
+  var f=state.filters[v]||{};
+  Object.keys(f).forEach(function(key){ f[key].forEach(function(val){ applied.push({key:key,val:val}); }); });
+  if(applied.length){
+    h+='<div class="fcard"><div class="fhead"><h3 style="margin:0"><i class="ti ti-filter"></i> Applied</h3><span class="clearlink" id="clearall">Clear all</span></div><div class="applied">';
+    applied.forEach(function(a){
+      var label=a.val;
+      if(a.key==='author'||a.key==='from'||a.key==='organizer'){var p=P(a.val); label=p?p.name:a.val;}
+      if(a.key==='attach') label='Has attachments'; if(a.key==='online') label='Online meetings';
+      if(a.key==='date') label={'24h':'Past 24 hours','week':'Past week','month':'Past month'}[a.val]||a.val;
+      h+='<span class="chip rmchip" data-vk="'+v+'" data-key="'+a.key+'" data-val="'+esc(a.val)+'">'+esc(label)+' <i class="ti ti-x"></i></span>';
+    });
+    h+='</div></div>';
+  }
+
+  if(v==='files'||v==='all'){
+    var rows=baseFiles(q);
+    var byType=tally(rows,function(f){return f.type;});
+    var bySource=tally(rows,function(f){return f.source;});
+    var byAuthor=tally(rows,function(f){return f.author;});
+    h+='<div class="fcard"><h3><i class="ti ti-file"></i> File type</h3>'
+      + checkboxList('files','type',Object.keys(FILETYPES).filter(function(t){return byType[t];}).map(function(t){return {val:t,label:FILETYPES[t].label,n:byType[t]};}))+'</div>';
+    h+='<div class="fcard"><h3><i class="ti ti-calendar"></i> Last modified</h3>'
+      + checkboxList('files','date',[{val:'24h',label:'Past 24 hours'},{val:'week',label:'Past week'},{val:'month',label:'Past month'}].map(function(d){
+          var n=rows.filter(function(r){var b=dateBucket(r.item.modified);
+            return d.val==='24h'?b==='24h':d.val==='week'?(b==='24h'||b==='week'):b!=='older';}).length;
+          return {val:d.val,label:d.label,n:n};}))+'</div>';
+    h+='<div class="fcard"><h3><i class="ti ti-database"></i> Source</h3>'
+      + checkboxList('files','source',Object.keys(bySource).map(function(s){return {val:s,label:s,n:bySource[s]};}))+'</div>';
+    h+='<div class="fcard"><h3><i class="ti ti-user-edit"></i> Author</h3>'
+      + checkboxList('files','author',Object.keys(byAuthor).map(function(a){return {val:a,label:P(a).name,n:byAuthor[a]};}))+'</div>';
+  }
+  if(v==='mail'){
+    var mrows=baseMail(q);
+    var byFrom=tally(mrows,function(m){return m.from;});
+    h+='<div class="fcard"><h3><i class="ti ti-calendar"></i> Received</h3>'
+      + checkboxList('mail','date',[{val:'24h',label:'Past 24 hours'},{val:'week',label:'Past week'},{val:'month',label:'Past month'}].map(function(d){
+          var n=mrows.filter(function(r){var b=dateBucket(r.item.date);
+            return d.val==='24h'?b==='24h':d.val==='week'?(b==='24h'||b==='week'):b!=='older';}).length;
+          return {val:d.val,label:d.label,n:n};}))+'</div>';
+    h+='<div class="fcard"><h3><i class="ti ti-user"></i> From</h3>'
+      + checkboxList('mail','from',Object.keys(byFrom).map(function(a){return {val:a,label:P(a).name,n:byFrom[a]};}))+'</div>';
+    h+='<div class="fcard"><h3><i class="ti ti-paperclip"></i> Other</h3>'
+      + checkboxList('mail','attach',[{val:'yes',label:'Has attachments',n:mrows.filter(function(r){return r.item.attach;}).length}])+'</div>';
+  }
+  if(v==='calendar'){
+    var erows=baseEvents(q);
+    var byOrg=tally(erows,function(e){return e.organizer;});
+    h+='<div class="fcard"><h3><i class="ti ti-video"></i> Meeting type</h3>'
+      + checkboxList('calendar','online',[{val:'yes',label:'Online (Teams)',n:erows.filter(function(r){return r.item.online;}).length}])+'</div>';
+    h+='<div class="fcard"><h3><i class="ti ti-user"></i> Organiser</h3>'
+      + checkboxList('calendar','organizer',Object.keys(byOrg).map(function(a){return {val:a,label:P(a).name,n:byOrg[a]};}))+'</div>';
+  }
+  if(v==='people'){
+    var prow=basePeople(q);
+    var byDept=tally(prow,function(p){return p.dept;});
+    var byOff=tally(prow,function(p){return p.office;});
+    h+='<div class="fcard"><h3><i class="ti ti-building"></i> Department</h3>'
+      + checkboxList('people','dept',Object.keys(byDept).map(function(d){return {val:d,label:d,n:byDept[d]};}))+'</div>';
+    h+='<div class="fcard"><h3><i class="ti ti-map-pin"></i> Office</h3>'
+      + checkboxList('people','office',Object.keys(byOff).map(function(d){return {val:d,label:d,n:byOff[d]};}))+'</div>';
+  }
+  if(v==='policies'){
+    var porow=basePolicies(q);
+    var byCat=tally(porow,function(p){return p.cat;});
+    var bySt=tally(porow,function(p){return p.status;});
+    h+='<div class="fcard"><h3><i class="ti ti-category"></i> Category</h3>'
+      + checkboxList('policies','cat',Object.keys(byCat).map(function(d){return {val:d,label:d,n:byCat[d]};}))+'</div>';
+    h+='<div class="fcard"><h3><i class="ti ti-status-change"></i> Status</h3>'
+      + checkboxList('policies','status',Object.keys(bySt).map(function(d){return {val:d,label:d,n:bySt[d]};}))+'</div>';
+  }
+  if(v==='sites'){
+    h+='<div class="fcard"><h3><i class="ti ti-info-circle"></i> Sites</h3><div style="font-size:12.5px;color:var(--text-2);line-height:1.5;">Site results are ranked by relevance and your activity. Hub and template filters can be enabled in configuration.</div></div>';
+  }
+  if(v==='all'){
+    h+='<div class="fcard"><h3><i class="ti ti-adjustments"></i> Tip</h3><div style="font-size:12.5px;color:var(--text-2);line-height:1.5;">Filters apply per result type. Open a tab (e.g. <b>People</b>) for that type’s dedicated filters — the panel adapts automatically.</div></div>';
+  }
+  return h;
+}
+
+/* ============================================================
+   RENDER — result rows
+   ============================================================ */
+function fileRow(f,q){
+  var ft=FILETYPES[f.type];
+  return '<div class="filerow openpv" data-f="'+f.id+'">'
+   + '<div class="ficon" style="background:'+ft.c+'"><i class="ti '+ft.i+'"></i></div>'
+   + '<div class="fmain">'
+   +   '<p class="fname">'+hi(f.name,q)+'</p>'
+   +   '<div class="fmeta"><b>'+esc(f.path)+'</b> · Modified '+relDate(f.modified)+' by '+esc(P(f.author).name)+' · '+f.size
+   +   (f.source==='OneDrive'?' <span class="badge grey"><i class="ti ti-cloud"></i> OneDrive</span>':'')+'</div>'
+   +   '<p class="fsnippet">'+hi(f.snippet,q)+'</p>'
+   + '</div>'
+   + '<div class="fact">'
+   +   (state.cfg.previews?'<button class="iconbtn openpv" data-f="'+f.id+'" title="Preview"><i class="ti ti-eye"></i></button>':'')
+   +   '<button class="iconbtn doshare" data-f="'+f.id+'" title="Share"><i class="ti ti-share-3"></i></button>'
+   +   '<button class="iconbtn docopy" data-f="'+f.id+'" title="Copy link"><i class="ti ti-link"></i></button>'
+   + '</div></div>';
+}
+function mailRow(m,q){
+  var p=P(m.from);
+  return '<div class="mailrow'+(m.unread?' unread':'')+'" data-m="'+m.id+'">'
+   + '<div class="avatar" style="background:'+av(PEOPLE.indexOf(p))+'">'+initials(p.name)+'</div>'
+   + '<div style="flex:1;min-width:0;">'
+   +   '<p class="msub">'+hi(m.subject,q)+'</p>'
+   +   '<div class="mfrom">'+esc(p.name)+' · '+esc(m.folder)+'</div>'
+   +   '<p class="msnip">'+hi(m.snippet,q)+'</p>'
+   +   (m.attach?'<span class="attach"><i class="ti ti-paperclip"></i> '+esc(m.attach)+'</span>':'')
+   + '</div>'
+   + '<div class="mdate">'+relDate(m.date)+'<div class="fact" style="justify-content:flex-end;margin-top:6px;"><button class="iconbtn" title="Open in Outlook"><i class="ti ti-external-link"></i></button></div></div>'
+   + '</div>';
+}
+function calRow(e,q){
+  var dt=new Date(e.date+'T00:00:00'); var p=P(e.organizer);
+  return '<div class="calrow" data-e="'+e.id+'">'
+   + '<div class="caldate"><div class="m">'+dt.toLocaleDateString('en-GB',{month:'short'})+'</div><div class="d">'+dt.getDate()+'</div></div>'
+   + '<div class="calmain" style="flex:1;min-width:0;">'
+   +   '<h4>'+hi(e.title,q)+'</h4>'
+   +   '<div class="calmeta"><span><i class="ti ti-clock"></i>'+e.start+'–'+e.end+'</span>'
+   +   '<span><i class="ti '+(e.online?'ti-video':'ti-map-pin')+'"></i>'+esc(e.location)+'</span>'
+   +   '<span><i class="ti ti-user"></i>'+esc(p.name)+'</span>'
+   +   '<span><i class="ti ti-users"></i>'+e.attendees+'</span>'
+   +   (e.rsvp!=='None'?'<span class="badge grey">'+e.rsvp+'</span>':'')
+   +   '</div></div>'
+   + (e.online?'<button class="joinbtn"><i class="ti ti-brand-teams"></i> Join</button>':'')
+   + '</div>';
+}
+function personCard(p,q,i){
+  var idx=PEOPLE.indexOf(p);
+  return '<div class="card pcard openperson" data-p="'+p.id+'">'
+   + '<div class="avatar" style="background:'+av(idx)+'">'+initials(p.name)+'<span class="dot '+p.presence+'"></span></div>'
+   + '<h4>'+hi(p.name,q)+'</h4><p class="t">'+hi(p.title,q)+'</p><p class="d"><i class="ti ti-building" style="font-size:11px"></i> '+hi(p.dept,q)+' · '+esc(p.office)+'</p>'
+   + '<div class="pacts">'
+   +  '<button class="iconbtn actcall" data-p="'+p.id+'" title="Call '+esc(p.name)+'"><i class="ti ti-phone"></i></button>'
+   +  '<button class="iconbtn actteams" data-p="'+p.id+'" title="Message on Teams"><i class="ti ti-brand-teams"></i></button>'
+   +  '<button class="iconbtn actmail" data-p="'+p.id+'" title="Email"><i class="ti ti-mail"></i></button>'
+   +  '<button class="iconbtn openperson" data-p="'+p.id+'" title="Profile"><i class="ti ti-id-badge-2"></i></button>'
+   + '</div></div>';
+}
+function siteCard(s,q){
+  return '<div class="card scard"><div class="slogo" style="background:'+s.c+'">'+esc(s.name.split(' ').map(function(w){return w[0];}).slice(0,2).join(''))+'</div>'
+   + '<div><h4>'+hi(s.name,q)+'</h4><p>'+hi(s.desc,q)+'</p><div class="sm"><i class="ti ti-users"></i> '+s.members.toLocaleString('en-GB')+' members · '+esc(s.hub)+' · '+esc(s.activity)+'</div></div></div>';
+}
+function policyRow(p,q){
+  var ft=FILETYPES[p.type];
+  return '<div class="filerow'+(p.fileId?' openpv':'')+'" '+(p.fileId?'data-f="'+p.fileId+'"':'')+'>'
+   + '<div class="ficon" style="background:'+ft.c+'"><i class="ti '+ft.i+'"></i></div>'
+   + '<div class="fmain">'
+   +   '<p class="fname">'+hi(p.name,q)+' <span class="badge official"><i class="ti ti-rosette-discount-check"></i> Official</span> '
+   +   (p.status==='Under review'?'<span class="badge review">Under review</span>':'')+'</p>'
+   +   '<div class="fmeta"><b>'+esc(p.cat)+'</b> · Owned by '+esc(p.owner)+' · v'+p.version+' · Effective '+fmtDate(p.effective)+' · Review due '+fmtDate(p.review)+'</div>'
+   +   '<p class="fsnippet">'+hi(p.summary,q)+'</p>'
+   + '</div>'
+   + '<div class="fact">'
+   +  (p.fileId&&state.cfg.previews?'<button class="iconbtn openpv" data-f="'+p.fileId+'" title="Preview"><i class="ti ti-eye"></i></button>':'')
+   +  '<button class="iconbtn docopy" data-f="'+(p.fileId||p.id)+'" title="Copy link"><i class="ti ti-link"></i></button>'
+   + '</div></div>';
+}
+
+/* ============================================================
+   RENDER — results per vertical
+   ============================================================ */
+function seeAll(vk,label){ return '<span class="seeall govert" data-v="'+vk+'">See all '+label+' <i class="ti ti-arrow-right"></i></span>'; }
+function shownCount(vk){ return state.shown[vk]||state.cfg.pageSize; }
+function loadMoreBtn(vk,total){
+  if(shownCount(vk)>=total) return '';
+  return '<button class="loadmore" data-lm="'+vk+'">Show more ('+(total-shownCount(vk))+' remaining) <i class="ti ti-chevron-down"></i></button>';
+}
+function answerCard(q){
+  var t=q.toLowerCase();
+  if(t.indexOf('leave')>-1||t.indexOf('holiday')>-1){
+    return '<div class="card answer"><span class="tag"><i class="ti ti-bookmark"></i> PROMOTED RESULT</span>'
+     + '<h3>Book annual leave in MyHR</h3>'
+     + '<p>Colleagues book annual leave through <b>MyHR → My Time → Request leave</b>. Requests need line-manager approval and at least two weeks’ notice. Up to five days can be carried over with approval.</p>'
+     + '<div class="actions"><button class="btn primary"><i class="ti ti-external-link"></i> Open MyHR</button>'
+     + '<button class="btn sec openpv" data-f="f1"><i class="ti ti-eye"></i> View policy</button></div></div>';
+  }
+  if(t.indexOf('it')===0||t.indexOf('password')>-1||t.indexOf('ticket')>-1){
+    return '<div class="card answer"><span class="tag"><i class="ti ti-bookmark"></i> PROMOTED RESULT</span>'
+     + '<h3>Need IT help?</h3><p>Raise a ticket in the IT portal or call the service desk on <b>x4100</b>. Password resets are self-service via aka.ms/sspr.</p>'
+     + '<div class="actions"><button class="btn primary"><i class="ti ti-external-link"></i> IT Self-Service Portal</button></div></div>';
+  }
+  return '';
+}
+function renderResults(q,c,total){
+  var v=state.vertical; var h='';
+  if(total===0){
+    return '<div class="empty"><i class="ti ti-search-off"></i><h3>No results for “'+esc(q)+'”</h3>'
+     + '<p>Check the spelling, try fewer keywords, or widen the scope from “'+esc(state.cfg.scope)+'”.</p></div>';
+  }
+  if(v==='all'){
+    h+=answerCard(q);
+    var pr=filteredPeople(q).slice(0,4);
+    if(pr.length && state.cfg.verticals.people){
+      h+='<div class="rsec"><h2><i class="ti ti-users"></i> People'+seeAll('people','people')+'</h2><div class="pplstrip">';
+      pr.forEach(function(r,i){h+=personCard(r.item,q,i);}); h+='</div></div>';
+    }
+    var fr=filteredFiles(q).slice(0,4);
+    if(fr.length && state.cfg.verticals.files){
+      h+='<div class="rsec"><h2><i class="ti ti-files"></i> Files'+seeAll('files','files')+'</h2><div class="card rlist">';
+      fr.forEach(function(r){h+=fileRow(r.item,q);}); h+='</div></div>';
+    }
+    var po=filteredPolicies(q).slice(0,2);
+    if(po.length && state.cfg.verticals.policies){
+      h+='<div class="rsec"><h2><i class="ti ti-shield-check"></i> Policies'+seeAll('policies','policies')+'</h2><div class="card rlist">';
+      po.forEach(function(r){h+=policyRow(r.item,q);}); h+='</div></div>';
+    }
+    var mr=filteredMail(q).slice(0,3);
+    if(mr.length && state.cfg.verticals.mail){
+      h+='<div class="rsec"><h2><i class="ti ti-mail"></i> Mail'+seeAll('mail','mail')+'</h2><div class="card rlist">';
+      mr.forEach(function(r){h+=mailRow(r.item,q);}); h+='</div></div>';
+    }
+    var er=filteredEvents(q).slice(0,2);
+    if(er.length && state.cfg.verticals.calendar){
+      h+='<div class="rsec"><h2><i class="ti ti-calendar-event"></i> Calendar'+seeAll('calendar','events')+'</h2><div class="card rlist">';
+      er.forEach(function(r){h+=calRow(r.item,q);}); h+='</div></div>';
+    }
+    var sr=baseSites(q).slice(0,2);
+    if(sr.length && state.cfg.verticals.sites){
+      h+='<div class="rsec"><h2><i class="ti ti-world"></i> Sites'+seeAll('sites','sites')+'</h2><div class="sitegrid">';
+      sr.forEach(function(r){h+=siteCard(r.item,q);}); h+='</div></div>';
+    }
+    return h;
+  }
+  if(v==='files'){
+    var rows=filteredFiles(q); var n=shownCount('files');
+    if(!rows.length) return emptyVert('files');
+    h+='<div class="card rlist">'; rows.slice(0,n).forEach(function(r){h+=fileRow(r.item,q);}); h+='</div>'+loadMoreBtn('files',rows.length);
+    return h;
+  }
+  if(v==='mail'){
+    var rows2=filteredMail(q); var n2=shownCount('mail');
+    if(!rows2.length) return emptyVert('mail');
+    h+='<div class="card rlist">'; rows2.slice(0,n2).forEach(function(r){h+=mailRow(r.item,q);}); h+='</div>'+loadMoreBtn('mail',rows2.length);
+    return h;
+  }
+  if(v==='calendar'){
+    var rows3=filteredEvents(q);
+    if(!rows3.length) return emptyVert('calendar');
+    h+='<div class="card rlist">'; rows3.forEach(function(r){h+=calRow(r.item,q);}); h+='</div>';
+    return h;
+  }
+  if(v==='people'){
+    var rows4=filteredPeople(q);
+    if(!rows4.length) return emptyVert('people');
+    var byDept=tally(basePeople(q),function(p){return p.dept;});
+    h+='<div class="deptchips"><span class="chip'+(!fset('people','dept').size?' active':'')+' deptchip" data-d="">All departments</span>';
+    Object.keys(byDept).forEach(function(d){
+      h+='<span class="chip'+(fhas('people','dept',d)?' active':' ghost')+' deptchip" data-d="'+esc(d)+'">'+esc(d)+' ('+byDept[d]+')</span>';
+    });
+    h+='</div><div class="pplgrid">';
+    rows4.forEach(function(r,i){h+=personCard(r.item,q,i);}); h+='</div>';
+    return h;
+  }
+  if(v==='sites'){
+    var rows5=baseSites(q);
+    if(!rows5.length) return emptyVert('sites');
+    h+='<div class="sitegrid">'; rows5.forEach(function(r){h+=siteCard(r.item,q);}); h+='</div>';
+    return h;
+  }
+  if(v==='policies'){
+    var rows6=filteredPolicies(q);
+    if(!rows6.length) return emptyVert('policies');
+    h+='<div class="card rlist">'; rows6.forEach(function(r){h+=policyRow(r.item,q);}); h+='</div>';
+    return h;
+  }
+  return h;
+}
+function emptyVert(vk){
+  var lbl=VERTICALS.find(function(v){return v.key===vk;}).label.toLowerCase();
+  return '<div class="empty"><i class="ti ti-filter-off"></i><h3>No '+lbl+' match</h3><p>Try removing a filter or searching different keywords.</p></div>';
+}
+
+/* ============================================================
+   SUGGESTIONS
+   ============================================================ */
+function renderSuggest(q){
+  var el=document.getElementById('suggest');
+  if(!state.cfg.suggestions||!q){el.classList.remove('open');return;}
+  var h=''; suggestIdx=-1;
+  var qs=TRENDING.concat(RECENT).filter(function(t){return t.indexOf(q.toLowerCase())>-1&&t!==q.toLowerCase();}).slice(0,3);
+  if(qs.length){
+    h+='<div class="sec"><h4>Suggested searches</h4>';
+    qs.forEach(function(t){h+='<div class="row srow" data-q="'+esc(t)+'"><i class="ti ti-search"></i>'+hi(t,q)+'</div>';});
+    h+='</div>';
+  }
+  var pp=basePeople(q).slice(0,2);
+  if(pp.length){
+    h+='<div class="sec"><h4>People</h4>';
+    pp.forEach(function(r){var p=r.item;
+      h+='<div class="row prow openperson" data-p="'+p.id+'"><span class="savatar" style="background:'+av(PEOPLE.indexOf(p))+'">'+initials(p.name)+'</span>'+hi(p.name,q)+'<span class="meta">'+esc(p.title)+'</span></div>';});
+    h+='</div>';
+  }
+  var ff=baseFiles(q).slice(0,3);
+  if(ff.length){
+    h+='<div class="sec"><h4>Files</h4>';
+    ff.forEach(function(r){var f=r.item;var ft=FILETYPES[f.type];
+      h+='<div class="row frow openpv" data-f="'+f.id+'"><i class="ti '+ft.i+'" style="color:'+ft.c+'"></i>'+hi(f.name,q)+'<span class="meta">'+relDate(f.modified)+'</span></div>';});
+    h+='</div>';
+  }
+  if(!h){el.classList.remove('open');return;}
+  el.innerHTML=h; el.classList.add('open');
+  el.querySelectorAll('.srow').forEach(function(r){ r.addEventListener('mousedown',function(ev){ev.preventDefault(); doSearch(r.getAttribute('data-q'));}); });
+  el.querySelectorAll('.prow').forEach(function(r){ r.addEventListener('mousedown',function(ev){ev.preventDefault(); el.classList.remove('open'); openPerson(r.getAttribute('data-p'),ev);}); });
+  el.querySelectorAll('.frow').forEach(function(r){ r.addEventListener('mousedown',function(ev){ev.preventDefault(); el.classList.remove('open'); openPreview(r.getAttribute('data-f'));}); });
+}
+
+/* ============================================================
+   PREVIEW / SHARE / PERSON / CONFIG overlays
+   ============================================================ */
+var scrim=document.getElementById('scrim');
+function closeOverlays(){
+  ['preview','sharemodal','personcard','cfgpanel'].forEach(function(id){document.getElementById(id).classList.remove('open');});
+  scrim.classList.remove('open');
+}
+scrim.addEventListener('click',closeOverlays);
+
+function docSrc(f){
+  var brand=state.cfg.brand;
+  var body='';
+  if(f.type==='xlsx'){
+    body='<table><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr>'
+     +'<tr><td class="rn">1</td><td class="hd" colspan="4">'+esc(f.name)+'</td></tr>'
+     +'<tr><td class="rn">2</td><td class="hd">Line</td><td class="hd">Q1</td><td class="hd">Q2</td><td class="hd">Q3</td></tr>'
+     +'<tr><td class="rn">3</td><td>Frames campaign</td><td>£120,000</td><td>£95,000</td><td>£80,000</td></tr>'
+     +'<tr><td class="rn">4</td><td>Audiology awareness</td><td>£40,000</td><td>£85,000</td><td>£60,000</td></tr>'
+     +'<tr><td class="rn">5</td><td>Home visits service</td><td>£25,000</td><td>£30,000</td><td>£45,000</td></tr>'
+     +'<tr><td class="rn">6</td><td class="tot">Total</td><td class="tot">£185,000</td><td class="tot">£210,000</td><td class="tot">£185,000</td></tr></table>';
+    return '<style>body{font-family:Calibri,Segoe UI,sans-serif;background:#e8e8e8;margin:0;padding:26px;display:flex;justify-content:center;}'
+     +'table{background:#fff;border-collapse:collapse;box-shadow:0 2px 12px rgba(0,0,0,.25);font-size:13px;}'
+     +'td,th{border:1px solid #d0d7de;padding:7px 14px;min-width:90px;}th{background:#217346;color:#fff;font-weight:600;}'
+     +'.rn{background:#f0f3f6;color:#888;text-align:center;min-width:30px;}.hd{font-weight:700;background:#eef6f0;}.tot{font-weight:700;border-top:2px solid #217346;}</style>'+body;
+  }
+  if(f.type==='pptx'){
+    return '<style>body{margin:0;background:#3b3b3b;display:flex;align-items:center;justify-content:center;height:100vh;font-family:Segoe UI,sans-serif;}'
+     +'.slide{width:86%;aspect-ratio:16/9;background:linear-gradient(135deg,'+brand+',#0a3d26);border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,.5);color:#fff;display:flex;flex-direction:column;justify-content:center;padding:6%;}'
+     +'h1{font-size:34px;margin:0 0 14px;}p{font-size:16px;opacity:.85;max-width:70%;line-height:1.5;}.n{position:absolute;bottom:4%;right:6%;opacity:.5;font-size:12px;color:#fff;}</style>'
+     +'<div class="slide"><h1>'+esc(f.name)+'</h1><p>'+esc(f.snippet)+'</p></div><div class="n">Slide 1 of 18</div>';
+  }
+  // docx / pdf — Word-like page
+  return '<style>body{margin:0;background:#525659;padding:28px 0;font-family:'+(f.type==='pdf'?'Georgia,serif':'Calibri,Segoe UI,sans-serif')+';display:flex;justify-content:center;}'
+   +'.pg{background:#fff;width:640px;min-height:820px;box-shadow:0 4px 20px rgba(0,0,0,.4);padding:64px 72px;color:#222;}'
+   +'.lh{border-bottom:3px solid '+brand+';padding-bottom:12px;margin-bottom:28px;display:flex;justify-content:space-between;align-items:center;}'
+   +'.lh b{color:'+brand+';font-size:15px;}.lh span{font-size:11px;color:#999;}'
+   +'h1{font-size:22px;margin:0 0 6px;}.meta{font-size:11px;color:#888;margin-bottom:24px;}'
+   +'h2{font-size:14px;color:'+brand+';margin:22px 0 8px;}p{font-size:12.5px;line-height:1.7;margin:0 0 12px;}'
+   +'.ph{background:#eef1f5;border-radius:3px;height:9px;margin:7px 0;}</style>'
+   +'<div class="pg"><div class="lh"><b>SPECSAVERS · INTERNAL</b><span>'+(f.type==='pdf'?'PDF':'DOCUMENT')+' · v'+f.version+'</span></div>'
+   +'<h1>'+esc(f.name)+'</h1><div class="meta">Last modified '+fmtDate(f.modified)+' by '+esc(P(f.author).name)+' · '+esc(f.path)+'</div>'
+   +'<h2>1. Summary</h2><p>'+esc(f.snippet)+'</p>'
+   +'<h2>2. Scope</h2><p>This document applies to all colleagues, stores and support offices. It is reviewed on the schedule shown on the '+esc(f.site)+' site.</p>'
+   +'<div class="ph" style="width:96%"></div><div class="ph" style="width:88%"></div><div class="ph" style="width:92%"></div><div class="ph" style="width:60%"></div>'
+   +'<h2>3. Detail</h2><div class="ph" style="width:94%"></div><div class="ph" style="width:90%"></div><div class="ph" style="width:97%"></div><div class="ph" style="width:75%"></div><div class="ph" style="width:91%"></div><div class="ph" style="width:40%"></div></div>';
+}
+
+function openPreview(fid){
+  var listRows=filteredFiles(state.query);
+  previewList=listRows.length?listRows.map(function(r){return r.item;}):FILES;
+  previewIdx=Math.max(0,previewList.findIndex(function(f){return f.id===fid;}));
+  drawPreview();
+  scrim.classList.add('open');
+  document.getElementById('preview').classList.add('open');
+}
+function drawPreview(){
+  var f=previewList[previewIdx]; var ft=FILETYPES[f.type];
+  var el=document.getElementById('preview');
+  el.innerHTML='<div class="pv-top">'
+   + '<div class="ficon" style="background:'+ft.c+'"><i class="ti '+ft.i+'"></i></div>'
+   + '<h3>'+esc(f.name)+'.'+f.type+'</h3>'
+   + '<button class="btn sec" id="pvshare"><i class="ti ti-share-3"></i> Share</button>'
+   + '<button class="btn sec" id="pvcopy"><i class="ti ti-link"></i> Copy link</button>'
+   + '<button class="btn sec" id="pvdl"><i class="ti ti-download"></i> Download</button>'
+   + '<button class="btn primary" id="pvopen"><i class="ti ti-external-link"></i> Open in '+ft.label+'</button>'
+   + '<button class="iconbtn" id="pvclose" title="Close"><i class="ti ti-x"></i></button>'
+   + '</div>'
+   + '<div class="pv-body">'
+   +  '<div class="pv-frame"><iframe title="Document preview" sandbox="" srcdoc="'+esc(docSrc(f))+'"></iframe>'
+   +   (previewList.length>1?'<button class="pv-nav prev" id="pvprev" title="Previous"><i class="ti ti-chevron-left"></i></button><button class="pv-nav next" id="pvnext" title="Next"><i class="ti ti-chevron-right"></i></button>':'')
+   +  '</div>'
+   +  '<div class="pv-side"><h4>Details</h4><dl>'
+   +   '<dt>Location</dt><dd>'+esc(f.path)+'</dd>'
+   +   '<dt>Modified</dt><dd>'+fmtDate(f.modified)+' by '+esc(P(f.author).name)+'</dd>'
+   +   '<dt>Author</dt><dd>'+esc(P(f.author).name)+'</dd>'
+   +   '<dt>Size</dt><dd>'+f.size+'</dd>'
+   +   '<dt>Version</dt><dd>v'+f.version+' <a href="#" onclick="return false;">(version history)</a></dd>'
+   +   '<dt>Source</dt><dd>'+esc(f.source)+'</dd>'
+   +  '</dl>'
+   +  '<div style="margin-top:16px;font-size:11.5px;color:var(--text-3);line-height:1.5;"><i class="ti ti-info-circle"></i> In production this pane uses the Graph file preview endpoint with the viewer for Office, PDF and 300+ formats.</div>'
+   +  '</div>'
+   + '</div>';
+  document.getElementById('pvclose').onclick=closeOverlays;
+  document.getElementById('pvshare').onclick=function(){openShare(f.id);};
+  document.getElementById('pvcopy').onclick=function(){copyLink(f);};
+  document.getElementById('pvdl').onclick=function(){toast('Downloading '+f.name+'.'+f.type+' (mock)');};
+  document.getElementById('pvopen').onclick=function(){toast('Opening in '+ft.label+' ('+state.cfg.openIn.toLowerCase()+') — mock');};
+  var pv=document.getElementById('pvprev'), nx=document.getElementById('pvnext');
+  if(pv) pv.onclick=function(){previewIdx=(previewIdx-1+previewList.length)%previewList.length;drawPreview();};
+  if(nx) nx.onclick=function(){previewIdx=(previewIdx+1)%previewList.length;drawPreview();};
+}
+
+function fakeLink(f){ return 'https://specsavers.sharepoint.com/'+f.site.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'/'+f.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.'+f.type; }
+function copyLink(f){
+  var url=fakeLink(f);
+  var done=function(){toast('Link copied — people with existing access can view');};
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(done,done); } else { done(); }
+}
+function openShare(fid){
+  var f=FILES.find(function(x){return x.id===fid;})||FILES[0];
+  var el=document.getElementById('sharemodal');
+  el.innerHTML='<div class="mhead"><i class="ti ti-share-3" style="color:var(--brand);font-size:19px;"></i><h3>Share “'+esc(f.name)+'”</h3>'
+   + '<button class="iconbtn" id="shclose"><i class="ti ti-x"></i></button></div>'
+   + '<div class="mbody">'
+   + '<div class="field"><label>Send to</label><input type="text" id="shwho" placeholder="Add a name, group or email" /></div>'
+   + '<div class="field"><label>They can</label><select id="shperm"><option>View</option><option>Edit</option><option>Review (can’t download)</option></select></div>'
+   + '<div class="field"><label>Message (optional)</label><textarea rows="2" placeholder="Add a message"></textarea></div>'
+   + '<div class="field"><label>Copy a link instead</label><div class="linkrow"><input type="text" readonly value="'+esc(fakeLink(f))+'" /><button class="btn sec" id="shcopy"><i class="ti ti-link"></i> Copy</button></div></div>'
+   + '<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px;"><button class="btn sec" id="shcancel">Cancel</button><button class="btn primary" id="shsend"><i class="ti ti-send"></i> Send</button></div>'
+   + '</div>';
+  scrim.classList.add('open'); el.classList.add('open');
+  document.getElementById('shclose').onclick=closeOverlays;
+  document.getElementById('shcancel').onclick=closeOverlays;
+  document.getElementById('shcopy').onclick=function(){copyLink(f);};
+  document.getElementById('shsend').onclick=function(){
+    var who=document.getElementById('shwho').value||'the selected people';
+    var perm=document.getElementById('shperm').value;
+    closeOverlays(); toast('Shared with '+who+' — can '+perm.toLowerCase());
+  };
+}
+
+function openPerson(pid,ev){
+  var p=P(pid); if(!p) return;
+  var idx=PEOPLE.indexOf(p);
+  var el=document.getElementById('personcard');
+  var presLabel={available:'Available',busy:'Busy',away:'Away',dnd:'Do not disturb'}[p.presence];
+  var h='<div class="pc-top"><button class="pc-close" id="pcclose"><i class="ti ti-x"></i></button></div>'
+   + '<div class="pc-main">'
+   + '<div class="avatar" style="background:'+av(idx)+'">'+initials(p.name)+'<span class="dot '+p.presence+'"></span></div>'
+   + '<h3>'+esc(p.name)+'</h3><p class="role">'+esc(p.title)+' · '+esc(p.dept)+'</p>'
+   + '<p class="pres"><span class="dot '+p.presence+'" style="position:static;width:9px;height:9px;border:none;display:inline-block;"></span> '+presLabel+' · '+esc(p.office)+'</p>'
+   + '<div class="pc-acts">'
+   +  '<a class="btn primary" href="tel:'+p.phone.replace(/\s/g,'')+'" title="Call"><i class="ti ti-phone"></i> Call</a>'
+   +  '<a class="btn teams" href="https://teams.microsoft.com/l/chat/0/0?users='+encodeURIComponent(p.email)+'" target="_blank" rel="noopener" title="Chat in Teams"><i class="ti ti-brand-teams"></i> Teams</a>'
+   +  '<a class="btn sec" href="mailto:'+esc(p.email)+'" title="Email"><i class="ti ti-mail"></i> Email</a>'
+   + '</div>'
+   + '<div class="pc-info">'
+   +  '<div class="irow"><i class="ti ti-phone"></i>'+esc(p.phone)+' <span style="color:var(--text-3)">(desk)</span></div>'
+   +  '<div class="irow"><i class="ti ti-device-mobile"></i>'+esc(p.mobile)+'</div>'
+   +  '<div class="irow"><i class="ti ti-mail"></i><a href="mailto:'+esc(p.email)+'">'+esc(p.email)+'</a></div>'
+   +  '<div class="irow"><i class="ti ti-map-pin"></i>'+esc(p.office)+'</div>'
+   +  '<div class="pc-skills">'+p.skills.map(function(s){return '<span class="chip ghost pskill" data-q="'+esc(s)+'">'+esc(s)+'</span>';}).join('')+'</div>'
+   + '</div>';
+  var mgr=p.manager?P(p.manager):null;
+  if(mgr||p.reports.length){
+    h+='<div class="pc-org"><h5>Organisation</h5>';
+    if(mgr) h+='<div class="irow orgjump" data-p="'+mgr.id+'"><i class="ti ti-arrow-up"></i><b>'+esc(mgr.name)+'</b>&nbsp;· '+esc(mgr.title)+'</div>';
+    p.reports.forEach(function(r){var rp=P(r);
+      h+='<div class="irow orgjump" data-p="'+rp.id+'"><i class="ti ti-arrow-down"></i>'+esc(rp.name)+'&nbsp;· '+esc(rp.title)+'</div>';});
+    h+='</div>';
+  }
+  h+='</div>';
+  el.innerHTML=h;
+  // position near click, clamped to viewport
+  var x=Math.min((ev&&ev.clientX||300),window.innerWidth-360), y=Math.min((ev&&ev.clientY||120),window.innerHeight-430);
+  el.style.left=Math.max(10,x)+'px'; el.style.top=Math.max(10,y-40)+'px';
+  el.classList.add('open'); scrim.classList.add('open');
+  document.getElementById('pcclose').onclick=closeOverlays;
+  el.querySelectorAll('.orgjump').forEach(function(r){ r.addEventListener('click',function(e2){ openPerson(r.getAttribute('data-p'),e2); }); });
+  el.querySelectorAll('.pskill').forEach(function(r){ r.addEventListener('click',function(){ closeOverlays(); doSearch(r.getAttribute('data-q')); }); });
+}
+
+/* ============================================================
+   CONFIG PANEL (mock web part property pane)
+   ============================================================ */
+var BRANDS=[{c:'#007A45',n:'Specsavers green'},{c:'#0078d4',n:'SharePoint blue'},{c:'#7a4bd6',n:'Purple'},{c:'#c0392b',n:'Red'},{c:'#0f7b8a',n:'Teal'}];
+function openCfg(){
+  var cfg=state.cfg;
+  var el=document.getElementById('cfgpanel');
+  var h='<div class="cfg-head"><i class="ti ti-settings" style="font-size:18px;color:var(--brand)"></i><h3>Unified Search — web part configuration</h3><button class="iconbtn" id="cfgclose"><i class="ti ti-x"></i></button></div>'
+   + '<div class="cfg-body">'
+   + '<h4>Layout</h4>'
+   + '<div class="cfgrow"><span>Filter panel position<span class="hint">Show the dynamic filters on either side, or hide them</span></span>'
+   +  '<span class="seg" id="segpos">'
+   +   ['left','right','hidden'].map(function(pos){return '<button data-pos="'+pos+'" class="'+(cfg.filterPos===pos?'on':'')+'">'+pos[0].toUpperCase()+pos.slice(1)+'</button>';}).join('')
+   +  '</span></div>'
+   + '<div class="cfgrow"><span>Density</span><span class="seg" id="segden">'
+   +   ['Comfortable','Compact'].map(function(d){return '<button data-den="'+d+'" class="'+(cfg.density===d?'on':'')+'">'+d+'</button>';}).join('')+'</span></div>'
+   + '<div class="cfgrow"><span>Theme colour</span><span class="swatches">'
+   +   BRANDS.map(function(b){return '<span class="swatch'+(cfg.brand===b.c?' on':'')+'" data-c="'+b.c+'" title="'+b.n+'" style="background:'+b.c+'"></span>';}).join('')+'</span></div>'
+
+   + '<h4>Result types (verticals)</h4>';
+  ['files','mail','calendar','people','sites','policies'].forEach(function(vk){
+    var v=VERTICALS.find(function(x){return x.key===vk;});
+    h+='<div class="cfgrow"><span><i class="ti '+v.icon+'" style="color:var(--brand);margin-right:6px;"></i>'+v.label+'</span>'
+     + '<label class="switch"><input type="checkbox" class="cfgvert" data-vk="'+vk+'"'+(cfg.verticals[vk]?' checked':'')+' /><span class="tr"></span></label></div>';
+  });
+
+  h+='<h4>Search behaviour</h4>'
+   + '<div class="cfgrow"><span>Search scope<span class="hint">Delegated Graph search — respects each user’s permissions</span></span>'
+   +  '<select id="cfgscope" style="border:1px solid var(--border-2);border-radius:6px;padding:5px 8px;font-size:12.5px;">'
+   +   ['Entire organisation','Colleague Hub only','Current site'].map(function(s){return '<option'+(cfg.scope===s?' selected':'')+'>'+s+'</option>';}).join('')+'</select></div>'
+   + '<div class="cfgrow"><span>Results per page</span><select id="cfgpage" style="border:1px solid var(--border-2);border-radius:6px;padding:5px 8px;font-size:12.5px;">'
+   +   [5,10,20].map(function(n){return '<option'+(cfg.pageSize===n?' selected':'')+'>'+n+'</option>';}).join('')+'</select></div>'
+   + '<div class="cfgrow"><span>Open documents in</span><span class="seg" id="segopen">'
+   +   ['Browser','Desktop app'].map(function(o){return '<button data-open="'+o+'" class="'+(cfg.openIn===o?'on':'')+'">'+o+'</button>';}).join('')+'</span></div>'
+   + '<div class="cfgrow"><span>File previews<span class="hint">Inline document viewer with share &amp; copy link</span></span>'
+   +  '<label class="switch"><input type="checkbox" id="cfgprev"'+(cfg.previews?' checked':'')+' /><span class="tr"></span></label></div>'
+   + '<div class="cfgrow"><span>Query suggestions<span class="hint">As-you-type suggestions, people and files</span></span>'
+   +  '<label class="switch"><input type="checkbox" id="cfgsugg"'+(cfg.suggestions?' checked':'')+' /><span class="tr"></span></label></div>'
+   + '<div class="cfgrow"><span>Spelling suggestions<span class="hint">“Did you mean…” corrections</span></span>'
+   +  '<label class="switch"><input type="checkbox" id="cfgspell"'+(cfg.spelling?' checked':'')+' /><span class="tr"></span></label></div>'
+
+   + '<h4>Copilot &amp; AI</h4>'
+   + '<div class="roadmap"><span class="rtag"><i class="ti ti-sparkles"></i> ROADMAP — NOT IN V1</span>'
+   + '<div class="cfgrow"><span>Copilot answer card<span class="hint">Grounded answer above results, with citations</span></span>'
+   +  '<label class="switch"><input type="checkbox" disabled /><span class="tr"></span></label></div>'
+   + '<div class="cfgrow"><span>Natural-language filters<span class="hint">“slides from Amelia about frames last month”</span></span>'
+   +  '<label class="switch"><input type="checkbox" disabled /><span class="tr"></span></label></div>'
+   + '<div class="cfgrow"><span>Chat with results<span class="hint">Follow-up questions over the result set</span></span>'
+   +  '<label class="switch"><input type="checkbox" disabled /><span class="tr"></span></label></div>'
+   + '<p>Planned integration via Microsoft Graph / Copilot Retrieval API, so answers stay inside the tenant security boundary and respect the same permissions as search.</p>'
+   + '</div>'
+   + '<div style="height:20px"></div>'
+   + '</div>';
+  el.innerHTML=h; el.classList.add('open'); scrim.classList.add('open');
+  document.getElementById('cfgclose').onclick=closeOverlays;
+  el.querySelectorAll('#segpos button').forEach(function(b){b.onclick=function(){state.cfg.filterPos=b.getAttribute('data-pos');render();openCfg();toast('Filter panel: '+state.cfg.filterPos);};});
+  el.querySelectorAll('#segden button').forEach(function(b){b.onclick=function(){state.cfg.density=b.getAttribute('data-den');openCfg();};});
+  el.querySelectorAll('#segopen button').forEach(function(b){b.onclick=function(){state.cfg.openIn=b.getAttribute('data-open');openCfg();};});
+  el.querySelectorAll('.swatch').forEach(function(s){s.onclick=function(){
+    state.cfg.brand=s.getAttribute('data-c');
+    document.documentElement.style.setProperty('--brand',state.cfg.brand);
+    document.documentElement.style.setProperty('--brand-dark',shade(state.cfg.brand,-0.25));
+    document.documentElement.style.setProperty('--brand-soft',shade(state.cfg.brand,0.85));
+    document.documentElement.style.setProperty('--brand-softer',shade(state.cfg.brand,0.94));
+    render();openCfg();
+  };});
+  el.querySelectorAll('.cfgvert').forEach(function(c){c.onchange=function(){
+    state.cfg.verticals[c.getAttribute('data-vk')]=c.checked;
+    if(!state.cfg.verticals[state.vertical]) state.vertical='all';
+    render();openCfg();
+  };});
+  document.getElementById('cfgscope').onchange=function(e){state.cfg.scope=e.target.value;render();openCfg();};
+  document.getElementById('cfgpage').onchange=function(e){state.cfg.pageSize=+e.target.value;state.shown={};render();openCfg();};
+  document.getElementById('cfgprev').onchange=function(e){state.cfg.previews=e.target.checked;render();openCfg();};
+  document.getElementById('cfgsugg').onchange=function(e){state.cfg.suggestions=e.target.checked;openCfg();};
+  document.getElementById('cfgspell').onchange=function(e){state.cfg.spelling=e.target.checked;render();openCfg();};
+}
+function shade(hex,pct){
+  var n=parseInt(hex.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255;
+  var f=function(c){ return Math.round(pct<0? c*(1+pct) : c+(255-c)*pct); };
+  return '#'+[f(r),f(g),f(b)].map(function(c){return c.toString(16).padStart(2,'0');}).join('');
+}
+
+/* ============================================================
+   TOASTS
+   ============================================================ */
+function toast(msg){
+  var t=document.createElement('div'); t.className='toast';
+  t.innerHTML='<i class="ti ti-circle-check"></i>'+esc(msg);
+  document.getElementById('toasts').appendChild(t);
+  setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){t.remove();},320);},2600);
+}
+
+/* ============================================================
+   WIRING
+   ============================================================ */
+function doSearch(q){
+  state.query=q; state.shown={}; state.filters={};
+  render();
+  var inp=document.getElementById('qinput'); if(inp){inp.focus(); inp.setSelectionRange(q.length,q.length);}
+}
+function wireShell(){
+  var inp=document.getElementById('qinput');
+  var typingTimer;
+  inp.addEventListener('input',function(){
+    document.getElementById('qclear').style.display=inp.value?'block':'none';
+    renderSuggest(inp.value.trim());
+    clearTimeout(typingTimer);
+    typingTimer=setTimeout(function(){ if(inp.value.trim()!==state.query){ state.query=inp.value.trim(); state.shown={}; state.filters={};
+      var v=inp.value; render(); var i2=document.getElementById('qinput'); i2.focus(); i2.setSelectionRange(v.length,v.length); renderSuggest(v.trim()); } },420);
+  });
+  inp.addEventListener('keydown',function(e){
+    var sug=document.getElementById('suggest');
+    var rows=sug.classList.contains('open')?Array.prototype.slice.call(sug.querySelectorAll('.row')):[];
+    if(e.key==='ArrowDown'&&rows.length){e.preventDefault();suggestIdx=Math.min(rows.length-1,suggestIdx+1);rows.forEach(function(r,i){r.classList.toggle('active',i===suggestIdx);});}
+    else if(e.key==='ArrowUp'&&rows.length){e.preventDefault();suggestIdx=Math.max(0,suggestIdx-1);rows.forEach(function(r,i){r.classList.toggle('active',i===suggestIdx);});}
+    else if(e.key==='Enter'){
+      if(suggestIdx>-1&&rows[suggestIdx]){rows[suggestIdx].dispatchEvent(new MouseEvent('mousedown'));}
+      else{doSearch(inp.value.trim());}
+      sug.classList.remove('open');
+    }
+    else if(e.key==='Escape'){sug.classList.remove('open');}
+  });
+  inp.addEventListener('blur',function(){setTimeout(function(){var s=document.getElementById('suggest');if(s)s.classList.remove('open');},180);});
+  document.getElementById('qgo').onclick=function(){doSearch(inp.value.trim());};
+  document.getElementById('qclear').onclick=function(){doSearch('');};
+
+  document.querySelectorAll('.vtab').forEach(function(t){t.onclick=function(){state.vertical=t.getAttribute('data-v');state.shown={};render();};});
+  document.querySelectorAll('.govert').forEach(function(t){t.onclick=function(){state.vertical=t.getAttribute('data-v');state.shown={};render();window.scrollTo({top:0,behavior:'smooth'});};});
+  document.querySelectorAll('.trendq').forEach(function(t){t.onclick=function(){doSearch(t.getAttribute('data-q'));};});
+  var dym=document.getElementById('dymlink'); if(dym){dym.onclick=function(e){e.preventDefault();doSearch(spellSuggestion(state.query));};}
+  var ss=document.getElementById('sortsel'); if(ss){ss.onchange=function(e){state.sort=e.target.value;render();};}
+  var fp=document.getElementById('fpostoggle'); if(fp){fp.onclick=function(){
+    state.cfg.filterPos=state.cfg.filterPos==='left'?'right':'left';render();toast('Filter panel moved to the '+state.cfg.filterPos);};}
+
+  document.querySelectorAll('.fchk').forEach(function(c){c.onchange=function(){
+    var s=fset(c.getAttribute('data-vk'),c.getAttribute('data-key'));
+    var val=c.getAttribute('data-val');
+    if(c.checked)s.add(val);else s.delete(val);
+    state.shown={};render();
+  };});
+  document.querySelectorAll('.rmchip').forEach(function(c){c.onclick=function(){
+    fset(c.getAttribute('data-vk'),c.getAttribute('data-key')).delete(c.getAttribute('data-val'));render();
+  };});
+  var ca=document.getElementById('clearall'); if(ca){ca.onclick=function(){state.filters[state.vertical]={};render();};}
+  document.querySelectorAll('.deptchip').forEach(function(c){c.onclick=function(){
+    var d=c.getAttribute('data-d'); var s=fset('people','dept');
+    if(!d){s.clear();}else if(s.has(d)){s.delete(d);}else{s.add(d);}
+    render();
+  };});
+  document.querySelectorAll('[data-lm]').forEach(function(b){b.onclick=function(){
+    var vk=b.getAttribute('data-lm'); state.shown[vk]=shownCount(vk)+state.cfg.pageSize; render();
+  };});
+
+  document.querySelectorAll('.openpv').forEach(function(r){r.addEventListener('click',function(e){
+    if(e.target.closest('.doshare')||e.target.closest('.docopy'))return;
+    if(!state.cfg.previews){toast('Previews are disabled in configuration');return;}
+    e.stopPropagation(); openPreview(r.getAttribute('data-f'));
+  });});
+  document.querySelectorAll('.doshare').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();openShare(b.getAttribute('data-f'));});});
+  document.querySelectorAll('.docopy').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();
+    var f=FILES.find(function(x){return x.id===b.getAttribute('data-f');}); if(f)copyLink(f); else toast('Link copied');});});
+  document.querySelectorAll('.openperson').forEach(function(r){r.addEventListener('click',function(e){
+    if(e.target.closest('.actcall')||e.target.closest('.actteams')||e.target.closest('.actmail'))return;
+    e.stopPropagation(); openPerson(r.getAttribute('data-p'),e);
+  });});
+  document.querySelectorAll('.actcall').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();
+    var p=P(b.getAttribute('data-p')); toast('Calling '+p.name+' on '+p.phone+' (tel: link in production)');});});
+  document.querySelectorAll('.actteams').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();
+    var p=P(b.getAttribute('data-p')); toast('Opening Teams chat with '+p.name); });});
+  document.querySelectorAll('.actmail').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();
+    var p=P(b.getAttribute('data-p')); toast('New email to '+p.email);});});
+  document.querySelectorAll('.joinbtn').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();toast('Joining Teams meeting (mock)');});});
+}
+
+document.getElementById('gearbtn').onclick=openCfg;
+document.addEventListener('keydown',function(e){
+  if(e.key==='/'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){
+    e.preventDefault(); var i=document.getElementById('qinput'); if(i)i.focus();
+  }
+  if(e.key==='Escape'){closeOverlays();}
+});
+
+/* boot with a demo query so the page opens populated */
+state.query='annual leave';
+render();
+})();
+</script>
+</body>
+</html>
