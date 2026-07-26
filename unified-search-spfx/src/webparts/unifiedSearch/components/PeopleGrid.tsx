@@ -19,7 +19,7 @@ function toPersonaPresence(availability?: PresenceAvailability): PersonaPresence
   }
 }
 
-/** Teams deep links open the Teams client — the web part itself stays SharePoint-hosted. */
+/** Teams deep links open the Teams client; the web part itself stays SharePoint-hosted. */
 function teamsChatUrl(person: IPersonResult): string {
   return `https://teams.microsoft.com/l/chat/0/0?users=${encodeURIComponent(person.mail || person.userPrincipalName || '')}`;
 }

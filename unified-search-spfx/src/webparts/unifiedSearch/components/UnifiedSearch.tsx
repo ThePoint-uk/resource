@@ -186,7 +186,7 @@ export const UnifiedSearch: React.FunctionComponent<IUnifiedSearchProps> = props
       .then(results => {
         if (runToken.current !== token) { return; }
         setPeople(results);
-        // Presence and photos are progressive enhancements — errors are fine.
+        // Presence and photos are progressive enhancements; errors are fine.
         props.peopleService.getPresence(results).then(presenceMap => {
           if (runToken.current === token) {
             setPeople(current => (current || []).map(person => ({
@@ -330,7 +330,7 @@ export const UnifiedSearch: React.FunctionComponent<IUnifiedSearchProps> = props
   const copyLink = (file: IFileResult): void => {
     props.fileService.createViewLink(file)
       .then(url => navigator.clipboard.writeText(url))
-      .then(() => showToast('Link copied — people in your organisation with the link can view.'))
+      .then(() => showToast('Link copied. People in your organisation with the link can view.'))
       .catch(() => {
         navigator.clipboard.writeText(file.webUrl)
           .then(() => showToast('Direct link copied.'))

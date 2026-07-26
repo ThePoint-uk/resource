@@ -25,7 +25,7 @@ export function fmtSize(bytes?: number): string {
 
 /**
  * Graph hit summaries arrive with <c0>…</c0> hit-highlight markers and <ddd/>
- * ellipses. Render them as React nodes — never raw HTML — so nothing from the
+ * ellipses. Render them as React nodes, never raw HTML, so nothing from the
  * index can inject markup.
  */
 export function renderSummary(summary?: string): React.ReactNode {
@@ -156,7 +156,7 @@ export const EventRow: React.FunctionComponent<IEventRowProps> = props => {
         borderRadius: 6, padding: '4px 0 6px'
       }}>
         <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: '#c0392b' }}>
-          {start ? start.toLocaleDateString(undefined, { month: 'short' }) : '—'}
+          {start ? start.toLocaleDateString(undefined, { month: 'short' }) : '-'}
         </div>
         <div style={{ fontSize: 19, fontWeight: 700, lineHeight: 1.1 }}>
           {start ? start.getDate() : ''}
@@ -165,7 +165,7 @@ export const EventRow: React.FunctionComponent<IEventRowProps> = props => {
       <div style={{ flex: 1, minWidth: 0 }}>
         <Text variant="mediumPlus" block styles={{ root: { fontWeight: 600 } }}>{event.subject}</Text>
         <div className={classNames.meta}>
-          {event.start && <span><Icon iconName="Clock" style={{ fontSize: 12 }} /> {fmtTime(event.start)}–{fmtTime(event.end)}</span>}
+          {event.start && <span><Icon iconName="Clock" style={{ fontSize: 12 }} /> {fmtTime(event.start)}-{fmtTime(event.end)}</span>}
           {event.location && <span><Icon iconName={event.isOnline ? 'Video' : 'MapPin'} style={{ fontSize: 12 }} /> {event.location}</span>}
           {event.organizer && <span><Icon iconName="Contact" style={{ fontSize: 12 }} /> {event.organizer}</span>}
         </div>

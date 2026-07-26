@@ -6,14 +6,14 @@ import { IPromotedResult } from '../models';
  * content owners manage them without touching the admin centre or redeploying.
  *
  * Expected list columns (internal names):
- *   Title      (single line)  — card headline
- *   Keywords   (multi line)   — trigger phrases, one per line or ;-separated
- *   Description(multi line)   — card body
- *   LinkUrl    (hyperlink or single line) — where the button goes
- *   ButtonText (single line)  — button label, defaults to "Open"
- *   Enabled    (yes/no)       — kill switch
- *   StartDate  (date, optional) — publish window start
- *   EndDate    (date, optional) — publish window end
+ *   Title      (single line)  - card headline
+ *   Keywords   (multi line)   - trigger phrases, one per line or ;-separated
+ *   Description(multi line)   - card body
+ *   LinkUrl    (hyperlink or single line) - where the button goes
+ *   ButtonText (single line)  - button label, defaults to "Open"
+ *   Enabled    (yes/no)       - kill switch
+ *   StartDate  (date, optional) - publish window start
+ *   EndDate    (date, optional) - publish window end
  *
  * The provisioning script in /provisioning creates this list ready-made.
  */
@@ -111,7 +111,7 @@ export class PromotedResultsService {
         items = (payload.value || []).map(raw => this._toItem(raw)).filter(item => !!item.title);
       }
     } catch {
-      // Missing list or no access: promoted results are optional — fail silent,
+      // Missing list or no access: promoted results are optional, so fail silent,
       // and the cache stops us re-querying on every keystroke.
     }
 

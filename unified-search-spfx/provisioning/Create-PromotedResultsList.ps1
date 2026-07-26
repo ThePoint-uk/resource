@@ -5,7 +5,7 @@
 .DESCRIPTION
   Provisions a standard SharePoint list with the columns the web part expects,
   plus two example entries. Content owners then manage promoted results by
-  editing list items — no admin centre access or redeployment needed.
+  editing list items. No admin centre access or redeployment needed.
 
   Requires PnP.PowerShell:  Install-Module PnP.PowerShell -Scope CurrentUser
 
