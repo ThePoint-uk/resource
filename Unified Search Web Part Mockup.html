@@ -6,22 +6,24 @@
 <title>Unified Search — SharePoint Web Part Mockup (v1)</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css" />
 <style>
+  /* Fluent UI design tokens — neutrals from the Fluent palette, themePrimary
+     slots filled from the host site's theme (SharePoint theme tokens) */
   :root{
-    --brand:#007A45; --brand-dark:#005F36; --brand-soft:#E7F4EC; --brand-softer:#F3FAF5;
-    --bg:#f3f2f1; --panel:#ffffff;
-    --text:#242424; --text-2:#5b6b7d; --text-3:#8a949e;
-    --border:rgba(0,0,0,0.10); --border-2:rgba(0,0,0,0.18);
-    --radius:8px; --radius-lg:12px;
-    --shadow-1:0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
-    --shadow-2:0 6px 20px rgba(0,0,0,.14);
+    --brand:#0078d4; --brand-dark:#005a9e; --brand-soft:#deecf9; --brand-softer:#eff6fc;
+    --bg:#faf9f8; --panel:#ffffff;
+    --text:#323130; --text-2:#605e5c; --text-3:#a19f9d;
+    --border:#edebe9; --border-2:#c8c6c4;
+    --radius:4px; --radius-lg:8px;
+    --shadow-1:0 1.6px 3.6px rgba(0,0,0,.132), 0 0.3px 0.9px rgba(0,0,0,.108);
+    --shadow-2:0 6.4px 14.4px rgba(0,0,0,.132), 0 1.2px 3.6px rgba(0,0,0,.108);
     --font:'Segoe UI','Segoe UI Web (West European)',-apple-system,BlinkMacSystemFont,sans-serif;
-    --mark:#fff3bf;
+    --mark:#fff100;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;}
   body{background:var(--bg);font-family:var(--font);color:var(--text);font-size:14px;}
   a{color:var(--brand);text-decoration:none;} a:hover{text-decoration:underline;}
-  mark{background:var(--mark);padding:0 1px;border-radius:2px;}
+  mark{background:none;color:inherit;font-weight:700;}
   button{font-family:var(--font);}
   input,select,textarea{font-family:var(--font);}
   ::placeholder{color:var(--text-3);}
@@ -41,17 +43,17 @@
   .hero h1{color:#fff;font-size:19px;font-weight:600;margin:0 0 14px;display:flex;align-items:center;gap:10px;}
   .hero h1 .sub{font-weight:400;font-size:13px;opacity:.75;}
   .searchwrap{position:relative;}
-  .searchbox{display:flex;align-items:center;background:#fff;border-radius:10px;box-shadow:var(--shadow-1);height:52px;padding:0 8px 0 18px;gap:10px;}
+  .searchbox{display:flex;align-items:center;background:#fff;border-radius:4px;box-shadow:var(--shadow-1);height:52px;padding:0 8px 0 18px;gap:10px;}
   .searchbox i.lead{font-size:20px;color:var(--text-2);}
   .searchbox input{flex:1;border:none;outline:none;font-size:16px;height:100%;background:none;}
   .searchbox .kbd{border:1px solid var(--border-2);border-radius:5px;font-size:11px;padding:1px 6px;color:var(--text-3);}
   .searchbox .clear{background:none;border:none;font-size:17px;color:var(--text-3);cursor:pointer;padding:6px;display:none;}
-  .searchbox .go{background:var(--brand);color:#fff;border:none;border-radius:8px;height:38px;padding:0 18px;font-size:14px;font-weight:600;cursor:pointer;}
+  .searchbox .go{background:var(--brand);color:#fff;border:none;border-radius:4px;height:38px;padding:0 18px;font-size:14px;font-weight:600;cursor:pointer;}
   .searchbox .go:hover{background:var(--brand-dark);}
   .scopechip{display:flex;align-items:center;gap:6px;background:var(--brand-softer);border:1px solid var(--border);color:var(--text-2);font-size:12px;border-radius:6px;padding:5px 10px;cursor:pointer;white-space:nowrap;}
 
   /* suggestions dropdown */
-  .suggest{position:absolute;top:58px;left:0;right:0;background:#fff;border-radius:10px;box-shadow:var(--shadow-2);z-index:60;overflow:hidden;display:none;}
+  .suggest{position:absolute;top:58px;left:0;right:0;background:#fff;border-radius:4px;border:1px solid var(--border);box-shadow:var(--shadow-2);z-index:60;overflow:hidden;display:none;}
   .suggest.open{display:block;}
   .suggest .sec{padding:8px 0 4px;}
   .suggest .sec + .sec{border-top:1px solid var(--border);}
@@ -62,14 +64,15 @@
   .suggest .row .meta{color:var(--text-3);font-size:12px;margin-left:auto;white-space:nowrap;}
   .suggest .row .savatar{width:26px;height:26px;border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;}
 
-  /* ---------- Vertical tabs ---------- */
-  .verticals{background:transparent;margin-top:18px;}
+  /* ---------- Vertical tabs (Fluent Pivot) ---------- */
+  .verticals{background:#fff;margin-top:22px;border-bottom:1px solid var(--border);}
   .verticals .tabs{display:flex;gap:2px;max-width:1320px;margin:0 auto;padding:0 24px;overflow-x:auto;}
-  .vtab{background:none;border:none;color:rgba(255,255,255,.8);font-size:14px;padding:10px 16px 12px;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:7px;}
+  .vtab{background:none;border:none;color:var(--text-2);font-size:14px;padding:11px 14px 12px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:7px;}
   .vtab i{font-size:16px;}
-  .vtab .cnt{background:rgba(255,255,255,.18);border-radius:10px;font-size:11px;padding:1px 7px;}
-  .vtab:hover{color:#fff;}
-  .vtab.active{color:#fff;font-weight:600;border-bottom-color:#fff;}
+  .vtab .cnt{background:#f3f2f1;color:var(--text-2);border-radius:10px;font-size:11px;padding:1px 7px;}
+  .vtab:hover{color:var(--text);background:#f3f2f1;}
+  .vtab.active{color:var(--brand);font-weight:600;border-bottom-color:var(--brand);}
+  .vtab.active .cnt{background:var(--brand-soft);color:var(--brand-dark);}
 
   /* ---------- Body layout ---------- */
   .page{max-width:1320px;margin:0 auto;padding:18px 24px 60px;}
@@ -130,7 +133,7 @@
   .fsnippet{font-size:13px;color:var(--text-2);line-height:1.45;margin:0;}
   .fact{display:flex;gap:2px;opacity:0;transition:opacity .12s;align-self:center;}
   .filerow:hover .fact,.mailrow:hover .fact{opacity:1;}
-  .iconbtn{background:none;border:none;width:32px;height:32px;border-radius:6px;font-size:16px;color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .iconbtn{background:none;border:none;width:32px;height:32px;border-radius:4px;font-size:16px;color:var(--text-2);cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .iconbtn:hover{background:var(--brand-soft);color:var(--brand-dark);}
   .badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:600;border-radius:4px;padding:1px 7px;}
   .badge.official{background:var(--brand-soft);color:var(--brand-dark);}
@@ -159,7 +162,7 @@
   .calmain h4{margin:0 0 3px;font-size:14.5px;}
   .calmeta{font-size:12.5px;color:var(--text-2);display:flex;gap:12px;flex-wrap:wrap;}
   .calmeta i{font-size:13px;margin-right:3px;}
-  .joinbtn{margin-left:auto;align-self:center;background:#5059c9;color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;gap:6px;align-items:center;flex-shrink:0;}
+  .joinbtn{margin-left:auto;align-self:center;background:#5059c9;color:#fff;border:none;border-radius:4px;padding:7px 14px;font-size:12.5px;font-weight:600;cursor:pointer;display:flex;gap:6px;align-items:center;flex-shrink:0;}
   .joinbtn:hover{background:#3d45b0;}
 
   /* people */
@@ -195,7 +198,7 @@
   .loadmore:hover{border-color:var(--brand);color:var(--brand-dark);}
 
   /* ---------- Buttons ---------- */
-  .btn{display:inline-flex;align-items:center;gap:7px;border-radius:6px;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;border:1px solid transparent;}
+  .btn{display:inline-flex;align-items:center;gap:7px;border-radius:4px;font-size:13px;font-weight:600;padding:8px 15px;cursor:pointer;border:1px solid transparent;}
   .btn.primary{background:var(--brand);color:#fff;}
   .btn.primary:hover{background:var(--brand-dark);}
   .btn.sec{background:#fff;border-color:var(--border-2);color:var(--text);}
@@ -207,7 +210,7 @@
   .scrim.open{display:block;}
 
   /* preview modal */
-  .preview{position:fixed;inset:4% 6%;background:#fff;border-radius:14px;z-index:110;display:none;flex-direction:column;box-shadow:var(--shadow-2);overflow:hidden;}
+  .preview{position:fixed;inset:4% 6%;background:#fff;border-radius:8px;z-index:110;display:none;flex-direction:column;box-shadow:var(--shadow-2);overflow:hidden;}
   .preview.open{display:flex;}
   .pv-top{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--border);}
   .pv-top .ficon{width:30px;height:30px;font-size:15px;border-radius:6px;}
@@ -226,7 +229,7 @@
   @media(max-width:860px){.pv-side{display:none;}}
 
   /* share modal */
-  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:14px;z-index:120;width:440px;max-width:92vw;box-shadow:var(--shadow-2);display:none;}
+  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:8px;z-index:120;width:440px;max-width:92vw;box-shadow:var(--shadow-2);display:none;}
   .modal.open{display:block;}
   .modal .mhead{display:flex;align-items:center;gap:10px;padding:16px 20px 0;}
   .modal .mhead h3{margin:0;font-size:16px;flex:1;}
@@ -239,7 +242,7 @@
   .linkrow input{flex:1;background:#f4f6f8;color:var(--text-2);}
 
   /* person flyout */
-  .personcard{position:fixed;z-index:120;width:340px;background:#fff;border-radius:14px;box-shadow:var(--shadow-2);display:none;overflow:hidden;}
+  .personcard{position:fixed;z-index:120;width:340px;background:#fff;border-radius:8px;box-shadow:var(--shadow-2);display:none;overflow:hidden;}
   .personcard.open{display:block;}
   .pc-top{background:linear-gradient(135deg,var(--brand-dark),var(--brand));height:64px;position:relative;}
   .pc-close{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.25);color:#fff;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:13px;}
@@ -325,16 +328,16 @@ var av=function(i){return AVCOLORS[i%AVCOLORS.length];};
 var initials=function(n){return n.split(' ').map(function(p){return p[0];}).slice(0,2).join('');};
 
 var PEOPLE=[
- {id:'u1',name:'Priya Raman',title:'Head of Optometry',dept:'Optometry',office:'Guernsey HQ',phone:'+44 1481 700 210',mobile:'+44 7797 410 221',email:'priya.raman@contoso-optical.com',presence:'available',skills:['Clinical governance','OCT','Training'],manager:'u7',reports:['u4','u9']},
- {id:'u2',name:'Daniel Okafor',title:'Retail Operations Manager',dept:'Retail Operations',office:'Nottingham Support Office',phone:'+44 115 890 4412',mobile:'+44 7700 900 118',email:'daniel.okafor@contoso-optical.com',presence:'busy',skills:['Store openings','Rota planning','P&L'],manager:'u7',reports:['u8']},
- {id:'u3',name:'Sophie Latham',title:'HR Business Partner',dept:'HR',office:'Nottingham Support Office',phone:'+44 115 890 4290',mobile:'+44 7700 900 341',email:'sophie.latham@contoso-optical.com',presence:'available',skills:['Annual leave','Employee relations','MyHR'],manager:'u10',reports:[]},
- {id:'u4',name:'James Wu',title:'Senior Optometrist',dept:'Optometry',office:'London — Oxford Street',phone:'+44 20 7100 8832',mobile:'+44 7700 900 552',email:'james.wu@contoso-optical.com',presence:'away',skills:['Paediatric optometry','Glaucoma referral'],manager:'u1',reports:[]},
- {id:'u5',name:'Amelia Barnes',title:'Marketing Campaign Lead',dept:'Marketing',office:'London — Shoreditch',phone:'+44 20 7100 8790',mobile:'+44 7700 900 663',email:'amelia.barnes@contoso-optical.com',presence:'available',skills:['Campaign planning','Brand','Social'],manager:'u10',reports:[]},
- {id:'u6',name:'Tom Kowalski',title:'IT Service Desk Lead',dept:'IT',office:'Nottingham Support Office',phone:'+44 115 890 4100',mobile:'+44 7700 900 774',email:'tom.kowalski@contoso-optical.com',presence:'dnd',skills:['M365','Intune','ServiceNow'],manager:'u10',reports:[]},
- {id:'u7',name:'Rachel Devine',title:'Director of Store Operations',dept:'Retail Operations',office:'Guernsey HQ',phone:'+44 1481 700 118',mobile:'+44 7797 410 500',email:'rachel.devine@contoso-optical.com',presence:'busy',skills:['Strategy','Franchise partners'],manager:null,reports:['u1','u2']},
- {id:'u8',name:'Harvey Singh',title:'Store Director — Guildford',dept:'Retail Operations',office:'Guildford Store',phone:'+44 1483 300 771',mobile:'+44 7700 900 885',email:'harvey.singh@contoso-optical.com',presence:'available',skills:['Retail leadership','Audiology'],manager:'u2',reports:[]},
- {id:'u9',name:'Elena Petrova',title:'Audiology Programme Lead',dept:'Optometry',office:'Nottingham Support Office',phone:'+44 115 890 4477',mobile:'+44 7700 900 996',email:'elena.petrova@contoso-optical.com',presence:'available',skills:['Audiology','Rollout planning'],manager:'u1',reports:[]},
- {id:'u10',name:'Mark Ellison',title:'Chief People & Digital Officer',dept:'Executive',office:'Guernsey HQ',phone:'+44 1481 700 001',mobile:'+44 7797 410 001',email:'mark.ellison@contoso-optical.com',presence:'away',skills:['Leadership','Transformation'],manager:null,reports:['u3','u5','u6']}
+ {id:'u1',name:'Priya Raman',title:'Head of Optometry',dept:'Optometry',office:'Guernsey HQ',phone:'+44 1481 700 210',mobile:'+44 7797 410 221',email:'priya.raman@contoso.com',presence:'available',skills:['Clinical governance','OCT','Training'],manager:'u7',reports:['u4','u9']},
+ {id:'u2',name:'Daniel Okafor',title:'Retail Operations Manager',dept:'Retail Operations',office:'Nottingham Support Office',phone:'+44 115 890 4412',mobile:'+44 7700 900 118',email:'daniel.okafor@contoso.com',presence:'busy',skills:['Store openings','Rota planning','P&L'],manager:'u7',reports:['u8']},
+ {id:'u3',name:'Sophie Latham',title:'HR Business Partner',dept:'HR',office:'Nottingham Support Office',phone:'+44 115 890 4290',mobile:'+44 7700 900 341',email:'sophie.latham@contoso.com',presence:'available',skills:['Annual leave','Employee relations','MyHR'],manager:'u10',reports:[]},
+ {id:'u4',name:'James Wu',title:'Senior Optometrist',dept:'Optometry',office:'London — Oxford Street',phone:'+44 20 7100 8832',mobile:'+44 7700 900 552',email:'james.wu@contoso.com',presence:'away',skills:['Paediatric optometry','Glaucoma referral'],manager:'u1',reports:[]},
+ {id:'u5',name:'Amelia Barnes',title:'Marketing Campaign Lead',dept:'Marketing',office:'London — Shoreditch',phone:'+44 20 7100 8790',mobile:'+44 7700 900 663',email:'amelia.barnes@contoso.com',presence:'available',skills:['Campaign planning','Brand','Social'],manager:'u10',reports:[]},
+ {id:'u6',name:'Tom Kowalski',title:'IT Service Desk Lead',dept:'IT',office:'Nottingham Support Office',phone:'+44 115 890 4100',mobile:'+44 7700 900 774',email:'tom.kowalski@contoso.com',presence:'dnd',skills:['M365','Intune','ServiceNow'],manager:'u10',reports:[]},
+ {id:'u7',name:'Rachel Devine',title:'Director of Store Operations',dept:'Retail Operations',office:'Guernsey HQ',phone:'+44 1481 700 118',mobile:'+44 7797 410 500',email:'rachel.devine@contoso.com',presence:'busy',skills:['Strategy','Franchise partners'],manager:null,reports:['u1','u2']},
+ {id:'u8',name:'Harvey Singh',title:'Store Director — Guildford',dept:'Retail Operations',office:'Guildford Store',phone:'+44 1483 300 771',mobile:'+44 7700 900 885',email:'harvey.singh@contoso.com',presence:'available',skills:['Retail leadership','Audiology'],manager:'u2',reports:[]},
+ {id:'u9',name:'Elena Petrova',title:'Audiology Programme Lead',dept:'Optometry',office:'Nottingham Support Office',phone:'+44 115 890 4477',mobile:'+44 7700 900 996',email:'elena.petrova@contoso.com',presence:'available',skills:['Audiology','Rollout planning'],manager:'u1',reports:[]},
+ {id:'u10',name:'Mark Ellison',title:'Chief People & Digital Officer',dept:'Executive',office:'Guernsey HQ',phone:'+44 1481 700 001',mobile:'+44 7797 410 001',email:'mark.ellison@contoso.com',presence:'away',skills:['Leadership','Transformation'],manager:null,reports:['u3','u5','u6']}
 ];
 var P=function(id){return PEOPLE.find(function(p){return p.id===id;});};
 
@@ -424,7 +427,7 @@ var state={
     scope:'Entire organisation',
     openIn:'Browser',
     density:'Comfortable',
-    brand:'#007A45'
+    brand:'#0078d4'
   }
 };
 var previewList=[], previewIdx=0, suggestIdx=-1;
@@ -562,7 +565,7 @@ function render(){
   var c=counts(q);
   var total=c.files+c.mail+c.calendar+c.people+c.sites+c.policies;
   var h='';
-  h+='<div class="suitebar"><i class="ti ti-grid-dots waffle"></i><div class="org">Specsavers <span>| Colleague Hub</span></div><div class="grow"></div>'
+  h+='<div class="suitebar"><i class="ti ti-grid-dots waffle"></i><div class="org">Contoso <span>| Intranet</span></div><div class="grow"></div>'
    + '<button class="icon-btn"><i class="ti ti-bell"></i></button><button class="icon-btn"><i class="ti ti-help-circle"></i></button>'
    + '<div class="me">LH</div></div>';
 
@@ -1013,7 +1016,7 @@ function docSrc(f){
    +'h1{font-size:22px;margin:0 0 6px;}.meta{font-size:11px;color:#888;margin-bottom:24px;}'
    +'h2{font-size:14px;color:'+brand+';margin:22px 0 8px;}p{font-size:12.5px;line-height:1.7;margin:0 0 12px;}'
    +'.ph{background:#eef1f5;border-radius:3px;height:9px;margin:7px 0;}</style>'
-   +'<div class="pg"><div class="lh"><b>SPECSAVERS · INTERNAL</b><span>'+(f.type==='pdf'?'PDF':'DOCUMENT')+' · v'+f.version+'</span></div>'
+   +'<div class="pg"><div class="lh"><b>CONTOSO · INTERNAL</b><span>'+(f.type==='pdf'?'PDF':'DOCUMENT')+' · v'+f.version+'</span></div>'
    +'<h1>'+esc(f.name)+'</h1><div class="meta">Last modified '+fmtDate(f.modified)+' by '+esc(P(f.author).name)+' · '+esc(f.path)+'</div>'
    +'<h2>1. Summary</h2><p>'+esc(f.snippet)+'</p>'
    +'<h2>2. Scope</h2><p>This document applies to all colleagues, stores and support offices. It is reviewed on the schedule shown on the '+esc(f.site)+' site.</p>'
@@ -1066,7 +1069,7 @@ function drawPreview(){
   if(nx) nx.onclick=function(){previewIdx=(previewIdx+1)%previewList.length;drawPreview();};
 }
 
-function fakeLink(f){ return 'https://specsavers.sharepoint.com/'+f.site.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'/'+f.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.'+f.type; }
+function fakeLink(f){ return 'https://contoso.sharepoint.com/'+f.site.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'/'+f.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.'+f.type; }
 function copyLink(f){
   var url=fakeLink(f);
   var done=function(){toast('Link copied — people with existing access can view');};
@@ -1139,7 +1142,7 @@ function openPerson(pid,ev){
 /* ============================================================
    CONFIG PANEL (mock web part property pane)
    ============================================================ */
-var BRANDS=[{c:'#007A45',n:'Specsavers green'},{c:'#0078d4',n:'SharePoint blue'},{c:'#7a4bd6',n:'Purple'},{c:'#c0392b',n:'Red'},{c:'#0f7b8a',n:'Teal'}];
+var BRANDS=[{c:'#0078d4',n:'Blue (site default)'},{c:'#03787c',n:'Teal'},{c:'#498205',n:'Green'},{c:'#8764b8',n:'Purple'},{c:'#ca5010',n:'Orange'},{c:'#a4262c',n:'Red'}];
 function openCfg(){
   var cfg=state.cfg;
   var el=document.getElementById('cfgpanel');
@@ -1152,7 +1155,7 @@ function openCfg(){
    +  '</span></div>'
    + '<div class="cfgrow"><span>Density</span><span class="seg" id="segden">'
    +   ['Comfortable','Compact'].map(function(d){return '<button data-den="'+d+'" class="'+(cfg.density===d?'on':'')+'">'+d+'</button>';}).join('')+'</span></div>'
-   + '<div class="cfgrow"><span>Theme colour</span><span class="swatches">'
+   + '<div class="cfgrow"><span>Site theme<span class="hint">Inherited from the host site design (Fluent theme tokens). Swatches simulate re-theming.</span></span><span class="swatches">'
    +   BRANDS.map(function(b){return '<span class="swatch'+(cfg.brand===b.c?' on':'')+'" data-c="'+b.c+'" title="'+b.n+'" style="background:'+b.c+'"></span>';}).join('')+'</span></div>'
 
    + '<h4>Result types (verticals)</h4>';
