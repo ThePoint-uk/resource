@@ -1,0 +1,743 @@
+<title>ThePoint MySite</title>
+<style>
+  :root {
+    --accent: #0f5c8c;
+    --accent-rgb: 15, 92, 140;
+    --accent-soft: rgba(15, 92, 140, 0.11);
+    --accent-text: #ffffff;
+    --bg: #f0f3f6;
+    --surface: #ffffff;
+    --surface-2: #f4f6f8;
+    --hover: #e9edf1;
+    --border: #d9dfe5;
+    --text: #1f2933;
+    --text-muted: #5c6b7a;
+    --danger: #b3261e;
+    --good: #2e7d32;
+    --warn: #c77800;
+    --shadow: 0 1.6px 3.6px rgba(20, 35, 50, 0.10), 0 0.3px 0.9px rgba(20, 35, 50, 0.07);
+    --shadow-lg: 0 8px 28px rgba(20, 35, 50, 0.18);
+    --radius: 8px;
+    --suite: #0b3d5c;
+    --font: "Segoe UI", "Segoe UI Web (West European)", -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: Consolas, "Cascadia Code", Menlo, monospace;
+    --columns: 3;
+    --note-yellow: #fff4ce; --note-green: #dff6dd; --note-blue: #deecf9; --note-pink: #fde7e9;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161b21; --surface: #20262e; --surface-2: #2a313a; --hover: #333b45; --border: #3a434e;
+      --text: #eef2f6; --text-muted: #a9b4bf; --danger: #f28b82; --good: #81c995; --warn: #f5b74e;
+      --accent-soft: rgba(var(--accent-rgb), 0.24);
+      --shadow: 0 1.6px 3.6px rgba(0,0,0,0.45), 0 0.3px 0.9px rgba(0,0,0,0.3);
+      --shadow-lg: 0 8px 28px rgba(0,0,0,0.55);
+      --suite: #0b2c42;
+      --note-yellow: #5a4a12; --note-green: #1f4a25; --note-blue: #1d3a55; --note-pink: #55262c;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161b21; --surface: #20262e; --surface-2: #2a313a; --hover: #333b45; --border: #3a434e;
+    --text: #eef2f6; --text-muted: #a9b4bf; --danger: #f28b82; --good: #81c995; --warn: #f5b74e;
+    --accent-soft: rgba(var(--accent-rgb), 0.24);
+    --shadow: 0 1.6px 3.6px rgba(0,0,0,0.45), 0 0.3px 0.9px rgba(0,0,0,0.3);
+    --shadow-lg: 0 8px 28px rgba(0,0,0,0.55);
+    --suite: #0b2c42;
+    --note-yellow: #5a4a12; --note-green: #1f4a25; --note-blue: #1d3a55; --note-pink: #55262c;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.4; }
+  a { color: var(--accent); }
+  button { font-family: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+
+  /* ---------------------------------------------------------- SP chrome */
+  .suite { background: var(--suite); color: #fff; height: 48px; display: flex; align-items: center; padding: 0 16px; gap: 14px; }
+  .suite .waffle { width: 18px; height: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+  .suite .waffle i { background: #fff; border-radius: 1px; display: block; }
+  .suite .brand { font-weight: 600; font-size: 15px; letter-spacing: 0.01em; }
+  .suite .brand span { opacity: 0.8; font-weight: 400; }
+  .suite .spacer { flex: 1; }
+  .suite .me { width: 30px; height: 30px; border-radius: 50%; background: #e8b04b; color: #1f2933; font-weight: 700; display: grid; place-items: center; font-size: 12px; }
+  .sitehdr { background: var(--surface); border-bottom: 1px solid var(--border); }
+  .sitehdr .inner { max-width: 1280px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; gap: 14px; }
+  .sitehdr .logo { width: 44px; height: 44px; border-radius: 6px; background: var(--accent); color: var(--accent-text); display: grid; place-items: center; font-weight: 700; font-size: 18px; }
+  .sitehdr .name { font-size: 18px; font-weight: 600; }
+  .sitehdr nav { display: flex; gap: 20px; margin-left: 24px; font-size: 13px; }
+  .sitehdr nav a { color: var(--text-muted); text-decoration: none; padding: 6px 0; border-bottom: 2px solid transparent; }
+  .sitehdr nav a.active { color: var(--text); border-color: var(--accent); }
+  .page { max-width: 1280px; margin: 0 auto; padding: 20px 24px 56px; }
+  @media (max-width: 720px) { .sitehdr nav { display: none; } .page { padding: 12px 16px 40px; } }
+
+  /* mock property pane */
+  .mocktools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--text-muted); margin-bottom: 14px; padding: 8px 12px; border: 1px dashed var(--border); border-radius: 6px; background: var(--surface); }
+  .mocktools strong { color: var(--text); }
+  .mocktools .grow { flex: 1; }
+  .chipbtn { border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 999px; padding: 4px 10px; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .chipbtn:hover { background: var(--hover); }
+  .chipbtn.on { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+
+  /* ------------------------------------------------------------- header */
+  .wp { font-family: var(--font); }
+  .hdr { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 0 18px; }
+  .hdr.accent, .hdr.gradient { padding: 20px 22px; margin-bottom: 16px; border-radius: var(--radius); color: #fff; }
+  .hdr.accent { background: var(--accent); }
+  .hdr.gradient { background: linear-gradient(120deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 55%, #0a1a26) 100%); }
+  .hdr.accent .greet, .hdr.gradient .greet, .hdr.accent .sub, .hdr.gradient .sub { color: #fff; }
+  .hdr.accent .sub, .hdr.gradient .sub { opacity: 0.85; }
+  .hdrtext { min-width: 0; flex: 1 1 260px; }
+  .eyebrow { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+  .greet { font-size: 24px; font-weight: 700; margin: 0; line-height: 1.2; text-wrap: balance; }
+  .sub { font-size: 13px; color: var(--text-muted); margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .hdrsearch { flex: 1 1 220px; max-width: 360px; position: relative; }
+  .hdrsearch input { width: 100%; height: 34px; border: 1px solid var(--border); border-radius: 4px; padding: 0 10px 0 32px; background: var(--surface); color: var(--text); font: inherit; }
+  .hdrsearch svg { position: absolute; left: 9px; top: 9px; width: 16px; height: 16px; color: var(--text-muted); }
+  .hdractions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .btn { height: 32px; padding: 0 12px; border-radius: 4px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+  .btn:hover { background: var(--hover); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+  .btn.primary:hover { filter: brightness(1.08); }
+  .btn.sm { height: 28px; font-size: 12px; padding: 0 10px; }
+  .btn svg, .ibtn svg { width: 15px; height: 15px; }
+  .hdr.accent .btn:not(.primary), .hdr.gradient .btn:not(.primary), .hdr.accent .ibtn, .hdr.gradient .ibtn { background: rgba(255,255,255,0.92); color: #1f2933; border-color: transparent; }
+  .ibtn { width: 28px; height: 28px; border: none; background: transparent; color: var(--text-muted); border-radius: 4px; display: inline-grid; place-items: center; cursor: pointer; }
+  .ibtn:hover:not(:disabled) { background: var(--hover); color: var(--text); }
+  .ibtn:disabled { opacity: 0.35; cursor: default; }
+  .ibtn.lg { width: 32px; height: 32px; }
+  .ibtn.lg svg { width: 17px; height: 17px; }
+
+  .editbanner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 12px; margin-bottom: 14px; border-radius: var(--radius); background: var(--accent-soft); border: 1px dashed var(--accent); font-size: 12.5px; }
+  .editbanner .t { flex: 1 1 260px; }
+  .editbanner .a { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  /* --------------------------------------------------------------- grid */
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(var(--columns), minmax(0, 1fr)); align-items: start; }
+  .wp.compact .grid { gap: 12px; }
+  @media (max-width: 960px) { .grid { grid-template-columns: repeat(min(var(--columns), 2), minmax(0, 1fr)); } }
+  @media (max-width: 600px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+
+  .w { position: relative; display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius); min-width: 0; grid-column: span var(--span, 1); transition: box-shadow 150ms, opacity 150ms; }
+  @media (max-width: 960px) { .w { grid-column: span min(var(--span, 1), 2); } }
+  @media (max-width: 600px) { .w { grid-column: span 1; } }
+  .wp.shadow .w { box-shadow: var(--shadow); }
+  .wp.outline .w { border: 1px solid var(--border); }
+  .wp.flat .w { background: var(--surface-2); }
+  .wp.editing .w { outline: 1px dashed var(--accent); outline-offset: 2px; }
+  .w.dragging { opacity: 0.35; }
+  .w.before::before, .w.after::after { content: ""; position: absolute; top: 0; bottom: 0; width: 4px; border-radius: 2px; background: var(--accent); }
+  .w.before::before { left: -10px; } .w.after::after { right: -10px; }
+  .whd { display: flex; align-items: center; gap: 8px; padding: 10px 8px 8px 14px; border-bottom: 1px solid var(--border); min-height: 44px; }
+  .wp.compact .whd { padding: 6px 6px 6px 12px; min-height: 36px; }
+  .w.collapsed .whd { border-bottom: none; }
+  .w.collapsed .wbd { display: none; }
+  .wicon { color: var(--accent); width: 17px; height: 17px; flex: 0 0 auto; }
+  .wtitle { flex: 1; min-width: 0; font-size: 14px; font-weight: 600; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wtitle input { font: inherit; font-weight: 600; width: 100%; border: 1px solid var(--accent); border-radius: 4px; padding: 2px 6px; background: var(--surface); color: var(--text); }
+  .wact { display: flex; align-items: center; gap: 0; opacity: 0.65; transition: opacity 120ms; }
+  .w:hover .wact, .w:focus-within .wact { opacity: 1; }
+  .grip { cursor: grab; color: var(--text-muted); width: 26px; height: 28px; display: none; place-items: center; border-radius: 4px; }
+  .grip:hover { background: var(--hover); } .grip:active { cursor: grabbing; }
+  .wp.editing .grip { display: grid; }
+  .editonly { display: none !important; } .wp.editing .editonly { display: inline-flex !important; }
+  .sizes { display: inline-flex; gap: 2px; margin-right: 4px; }
+  .sizes button { font: inherit; font-size: 11px; font-weight: 700; width: 22px; height: 22px; border-radius: 4px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); cursor: pointer; }
+  .sizes button:hover { background: var(--hover); }
+  .sizes button.on { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+  .wbd { padding: 10px 14px 12px; min-width: 0; overflow: hidden; }
+  .wp.compact .wbd { padding: 8px 12px 10px; }
+  .emptygrid { grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: var(--text-muted); border: 1px dashed var(--border); border-radius: var(--radius); }
+
+  /* ------------------------------------------------------ widget innards */
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+  .tabs button { background: none; border: none; padding: 6px 10px; font-size: 12.5px; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; }
+  .tabs button:hover { color: var(--text); }
+  .tabs button.on { color: var(--text); border-color: var(--accent); }
+  .list { display: flex; flex-direction: column; }
+  .row { display: flex; align-items: center; gap: 10px; padding: 7px 4px; border-radius: 6px; color: var(--text); text-decoration: none; min-width: 0; transition: background 120ms; cursor: pointer; border: none; background: transparent; width: 100%; text-align: left; font: inherit; }
+  .wp.compact .row { padding: 4px 4px; gap: 8px; }
+  .row:hover { background: var(--hover); }
+  .ricon { flex: 0 0 auto; width: 32px; height: 32px; border-radius: 6px; background: var(--surface-2); display: grid; place-items: center; }
+  .ricon svg { width: 18px; height: 18px; }
+  .wp.compact .ricon { width: 26px; height: 26px; } .wp.compact .ricon svg { width: 15px; height: 15px; }
+  .rimg { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 6px; object-fit: cover; background: var(--surface-2); }
+  .rbody { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .rt { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rm { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rtr svg { width: 14px; height: 14px; }
+  .rtr { flex: 0 0 auto; font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; font-variant-numeric: tabular-nums; }
+  .sec { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; color: var(--text-muted); padding: 10px 4px 4px; }
+  .foot { display: flex; justify-content: flex-end; padding-top: 8px; font-size: 12px; }
+  .foot a { color: var(--accent); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 2px; }
+  .foot a:hover { text-decoration: underline; }
+  .foot svg { width: 11px; height: 11px; }
+  .pill { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 11px; background: var(--surface-2); color: var(--text-muted); white-space: nowrap; }
+  .pill.acc { background: var(--accent-soft); color: var(--accent); }
+  .pill.good { background: color-mix(in srgb, var(--good) 15%, transparent); color: var(--good); }
+  .pill.warn { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+  .pill svg { width: 11px; height: 11px; }
+  .toolbar { display: flex; align-items: center; gap: 6px; padding-bottom: 8px; flex-wrap: wrap; }
+  .toolbar .sb { flex: 1; height: 30px; border: 1px solid var(--border); border-radius: 4px; padding: 0 8px; background: var(--surface); color: var(--text); font: inherit; font-size: 12.5px; min-width: 120px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+  .tile { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 6px; border-radius: 8px; text-decoration: none; color: var(--text); text-align: center; background: var(--surface-2); border: 1px solid transparent; transition: transform 120ms, box-shadow 120ms; cursor: pointer; }
+  .tile:hover { transform: translateY(-1px); box-shadow: var(--shadow); border-color: var(--border); }
+  .tile .ti { width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; background: var(--surface); font-weight: 700; font-size: 13px; }
+  .tile .ti svg { width: 20px; height: 20px; }
+  .tile .tt { font-size: 11.5px; font-weight: 600; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .avatar { flex: 0 0 auto; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-weight: 600; font-size: 13px; position: relative; }
+  .avatar.sm { width: 28px; height: 28px; font-size: 11px; }
+  .avatar.lg { width: 56px; height: 56px; font-size: 18px; }
+  .avatar.xl { width: 84px; height: 84px; font-size: 26px; }
+  .pres { position: absolute; right: -1px; bottom: -1px; width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--surface); background: #8a8886; }
+  .pres.Available { background: #6bb700; } .pres.Busy, .pres.DoNotDisturb, .pres.InAMeeting { background: #c50f1f; } .pres.Away { background: #ffaa44; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip { padding: 2px 8px; border-radius: 999px; font-size: 11.5px; background: var(--accent-soft); color: var(--accent); }
+  .shimmer { display: flex; gap: 10px; padding: 8px 4px; align-items: center; }
+  .shimmer i { background: linear-gradient(90deg, var(--surface-2) 25%, var(--hover) 50%, var(--surface-2) 75%); background-size: 200% 100%; animation: sh 1.4s infinite; border-radius: 4px; display: block; }
+  .shimmer .c { width: 32px; height: 32px; border-radius: 50%; flex: 0 0 auto; }
+  .shimmer .l { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .shimmer .l i { height: 10px; width: 70%; } .shimmer .l i + i { width: 45%; height: 8px; }
+  @keyframes sh { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .empty { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 22px 12px; color: var(--text-muted); gap: 6px; }
+  .empty svg { width: 28px; height: 28px; color: var(--accent); opacity: 0.8; }
+  .empty b { color: var(--text); }
+  .empty small { max-width: 300px; }
+  .inline { display: flex; gap: 6px; align-items: center; padding-bottom: 8px; }
+  .inline input { flex: 1; min-width: 0; height: 30px; padding: 0 8px; border-radius: 4px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font: inherit; font-size: 13px; }
+  .check { width: 18px; height: 18px; border: 1.5px solid var(--text-muted); border-radius: 3px; flex: 0 0 auto; margin-left: 4px; display: grid; place-items: center; cursor: pointer; background: var(--surface); }
+  .check:hover { border-color: var(--accent); }
+  .check svg { width: 12px; height: 12px; opacity: 0; color: var(--accent-text); }
+  .check.done { background: var(--accent); border-color: var(--accent); } .check.done svg { opacity: 1; }
+  .quota { margin-top: 10px; }
+  .quota .bar { height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+  .quota .bar i { display: block; height: 100%; background: var(--accent); width: 0; border-radius: 2px; }
+  .quota small { font-size: 11.5px; color: var(--text-muted); }
+  .crumbs { font-size: 12px; color: var(--text-muted); padding: 2px 4px 6px; display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+  .crumbs a { color: var(--accent); text-decoration: none; cursor: pointer; } .crumbs b { color: var(--text); }
+  .cal-day { flex: 0 0 auto; width: 32px; height: 32px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; line-height: 1.1; font-weight: 700; }
+  .cal-day.live { background: var(--accent); color: var(--accent-text); }
+  .cal-day small { font-weight: 400; font-size: 9px; }
+  .newscards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+  .newscard { display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; background: var(--surface-2); text-decoration: none; color: var(--text); border: 1px solid transparent; transition: transform 120ms, box-shadow 120ms; cursor: pointer; }
+  .newscard:hover { transform: translateY(-1px); box-shadow: var(--shadow); border-color: var(--border); }
+  .newscard .art { aspect-ratio: 16 / 9; width: 100%; max-width: 100%; }
+  .newscard .nb { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 3px; }
+  .newscard .nt { font-size: 13px; font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .newscard .nm { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hero { display: flex; gap: 14px; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+  .hero .hb { min-width: 0; flex: 1; }
+  .hero .hn { font-size: 17px; font-weight: 700; line-height: 1.2; }
+  .hero .hj { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+  .hero .ha { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; }
+  .fields { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px 12px; margin: 0; }
+  .w[style*="--span: 2"] .fields, .w[style*="--span: 3"] .fields, .w[style*="--span: 4"] .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .field { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; min-width: 0; }
+  .field svg { width: 15px; height: 15px; color: var(--accent); margin-top: 2px; flex: 0 0 auto; }
+  .field .fb { min-width: 0; flex: 1; }
+  .field .fl { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
+  .field .fl svg.lock { width: 10px; height: 10px; color: var(--text-muted); margin: 0; }
+  .field .fv { word-break: break-word; }
+  .field .fv a { text-decoration: none; }
+  .field .fv.none { color: var(--text-muted); }
+  .about { font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+  .tree { display: flex; flex-direction: column; }
+  .node { display: flex; align-items: center; gap: 10px; padding: 6px; border-radius: 8px; border: 1px solid transparent; min-width: 0; }
+  .node:hover { background: var(--hover); }
+  .node.me { background: var(--accent-soft); border-color: var(--accent); }
+  .node .nb { flex: 1; min-width: 0; }
+  .node .nn { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .node .nt { font-size: 11.5px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .node .cnt { font-size: 11px; color: var(--text-muted); padding: 2px 6px; border-radius: 999px; background: var(--surface-2); }
+  .children { border-left: 2px solid var(--border); margin-left: 22px; padding-left: 10px; }
+  .notes { width: 100%; min-height: 140px; resize: vertical; border: none; border-radius: 6px; padding: 10px; color: var(--text); font: inherit; font-size: 13px; line-height: 1.5; }
+  .unread { font-weight: 700; }
+  .toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer; user-select: none; }
+  .toggle i { width: 34px; height: 18px; border-radius: 9px; background: var(--text-muted); position: relative; transition: background 120ms; }
+  .toggle i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; border-radius: 50%; background: #fff; transition: left 120ms; }
+  .toggle.on i { background: var(--accent); } .toggle.on i::after { left: 19px; }
+
+  /* --------------------------------------------------------------- panel */
+  .scrim { position: fixed; inset: 0; background: rgba(10, 20, 30, 0.35); display: none; z-index: 40; }
+  .scrim.open { display: block; }
+  .panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(440px, 100vw); background: var(--surface); box-shadow: var(--shadow-lg); z-index: 50; transform: translateX(105%); transition: transform 200ms ease; display: flex; flex-direction: column; }
+  .panel.open { transform: none; }
+  .panel .ph { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 10px; font-size: 18px; font-weight: 600; }
+  .panel .pb { flex: 1; overflow: auto; padding: 4px 20px 20px; display: flex; flex-direction: column; gap: 12px; }
+  .panel .pf { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+  .fld label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .fld input[type="text"], .fld input[type="number"], .fld select, .fld textarea { width: 100%; height: 32px; border: 1px solid var(--border); border-radius: 4px; padding: 0 8px; background: var(--surface); color: var(--text); font: inherit; font-size: 13px; }
+  .fld textarea { height: auto; padding: 8px; font-family: var(--mono); font-size: 12px; }
+  .fld small { display: block; color: var(--text-muted); font-size: 11.5px; margin-top: 3px; }
+  .cat { display: flex; flex-direction: column; gap: 14px; }
+  .catsec { display: flex; flex-direction: column; gap: 8px; }
+  .catitem { display: flex; gap: 12px; align-items: flex-start; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); text-align: left; font: inherit; color: var(--text); cursor: pointer; width: 100%; transition: border-color 120ms, background 120ms; }
+  .catitem:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+  .catitem:disabled { opacity: 0.55; cursor: default; }
+  .catitem .ci { flex: 0 0 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+  .catitem .ci svg { width: 18px; height: 18px; }
+  .catitem .cb { flex: 1; min-width: 0; }
+  .catitem .ct { font-weight: 600; font-size: 13px; }
+  .catitem .cd { font-size: 12px; color: var(--text-muted); line-height: 1.35; margin-top: 2px; }
+  .catitem .cp { font-size: 10.5px; color: var(--text-muted); margin-top: 4px; font-family: var(--mono); }
+  .status { font-size: 11.5px; color: var(--text-muted); padding-top: 14px; display: flex; gap: 6px; align-items: center; }
+  .status svg { width: 13px; height: 13px; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 6px; font-size: 13px; opacity: 0; transition: opacity 180ms, transform 180ms; z-index: 60; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .msg { border-left: 3px solid var(--good); background: color-mix(in srgb, var(--good) 12%, transparent); padding: 8px 10px; font-size: 12.5px; border-radius: 4px; margin-bottom: 8px; }
+  .msg.warn { border-color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-dash" viewBox="0 0 24 24"><path fill="currentColor" d="M3 3h8v10H3zm10 0h8v6h-8zM3 15h8v6H3zm10-4h8v10h-8z"/></symbol>
+    <symbol id="i-contact" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm0 2c-4 0-8 2-8 5v2h16v-2c0-3-4-5-8-5z"/></symbol>
+    <symbol id="i-group" viewBox="0 0 24 24"><path fill="currentColor" d="M16 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 2c-2.7 0-6 1.3-6 4v2h8.5v-2c0-1.2.5-2.3 1.3-3.2A9 9 0 0 0 8 13zm8 0c-2.7 0-6 1.3-6 4v2h12v-2c0-2.7-3.3-4-6-4z"/></symbol>
+    <symbol id="i-org" viewBox="0 0 24 24"><path fill="currentColor" d="M10 3h4v4h-4zM3 17h4v4H3zm7 0h4v4h-4zm7 0h4v4h-4zM11 7h2v3h6v7h-2v-5H7v5H5v-7h6z"/></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24"><path fill="currentColor" d="M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-7 9c0-3.3 3.1-6 7-6s7 2.7 7 6v1H5z"/><circle cx="19" cy="7" r="2.5" fill="currentColor"/><circle cx="5" cy="7" r="2.5" fill="currentColor"/></symbol>
+    <symbol id="i-teams" viewBox="0 0 24 24"><path fill="currentColor" d="M14 4a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm5 3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM4 9h11v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4zm12 0h5v6a3 3 0 0 1-3 3h-1.2c.1-.6.2-1.3.2-2z"/></symbol>
+    <symbol id="i-apps" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z"/></symbol>
+    <symbol id="i-docs" viewBox="0 0 24 24"><path fill="currentColor" d="M6 2h8l6 6v14H6zm7 1.5V9h5.5zM8 12h8v2H8zm0 4h8v2H8z"/></symbol>
+    <symbol id="i-sp" viewBox="0 0 24 24"><circle cx="9" cy="9" r="6" fill="currentColor"/><circle cx="16" cy="13" r="5" fill="currentColor" opacity=".75"/><circle cx="11" cy="18" r="4" fill="currentColor" opacity=".55"/></symbol>
+    <symbol id="i-onedrive" viewBox="0 0 24 24"><path fill="currentColor" d="M7 18a4 4 0 0 1-.5-8A6 6 0 0 1 18 9a4.5 4.5 0 0 1-.5 9z"/></symbol>
+    <symbol id="i-news" viewBox="0 0 24 24"><path fill="currentColor" d="M3 4h16v14a2 2 0 0 0 4 0V7h-2v11h-1V4H3zm2 2v13h12V6zm2 2h4v4H7zm6 0h4v2h-4zm0 3h4v2h-4zM7 14h10v2H7z"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><path fill="currentColor" d="M7 2h2v2h6V2h2v2h4v18H3V4h4zm-2 7v11h14V9zm2 2h3v3H7zm5 0h3v3h-3z"/></symbol>
+    <symbol id="i-tasks" viewBox="0 0 24 24"><path fill="currentColor" d="M3 5h2v2H3zm4 0h14v2H7zM3 11h2v2H3zm4 0h14v2H7zm-4 6h2v2H3zm4 0h14v2H7z"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><path fill="currentColor" d="M2 5h20v14H2zm2 2v.5l8 5 8-5V7zm0 3v7h16v-7l-8 5z"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path fill="currentColor" d="M10 13.5a4 4 0 0 0 5.6.4l3-3a4 4 0 0 0-5.6-5.6l-1.5 1.5 1.4 1.4L14.4 7a2 2 0 0 1 2.8 2.8l-3 3a2 2 0 0 1-2.8 0zm4-3a4 4 0 0 0-5.6-.4l-3 3a4 4 0 0 0 5.6 5.6l1.5-1.5-1.4-1.4L9.6 17a2 2 0 0 1-2.8-2.8l3-3a2 2 0 0 1 2.8 0z"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24"><path fill="currentColor" d="M4 3h16v12l-6 6H4zm10 16 4-4h-4zM7 8h10v2H7zm0 4h7v2H7z"/></symbol>
+    <symbol id="i-grip" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.6" fill="currentColor"/><circle cx="15" cy="6" r="1.6" fill="currentColor"/><circle cx="9" cy="12" r="1.6" fill="currentColor"/><circle cx="15" cy="12" r="1.6" fill="currentColor"/><circle cx="9" cy="18" r="1.6" fill="currentColor"/><circle cx="15" cy="18" r="1.6" fill="currentColor"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" d="m6 15 6-6 6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" d="m15 6-6 6 6 6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><path fill="currentColor" d="m19.4 13 2-1.2-2-3.5-2.3.8a7 7 0 0 0-1.7-1l-.4-2.4H11l-.4 2.4a7 7 0 0 0-1.7 1l-2.3-.8-2 3.5 2 1.2v2l-2 1.2 2 3.5 2.3-.8a7 7 0 0 0 1.7 1l.4 2.4h4l.4-2.4a7 7 0 0 0 1.7-1l2.3.8 2-3.5-2-1.2zM13 17a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" transform="translate(-1 -2)"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path fill="currentColor" d="M9 3h6l1 2h4v2H4V5h4zm-3 5h12l-1 13H7z"/></symbol>
+    <symbol id="i-rename" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.3V21h3.7L17.8 9.9l-3.7-3.7zM20.7 7a1 1 0 0 0 0-1.4l-2.3-2.3a1 1 0 0 0-1.4 0l-1.8 1.8 3.7 3.7z"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.4" d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="3" d="m5 12 5 5 9-10"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path fill="currentColor" d="M3 17.3V21h3.7L17.8 9.9l-3.7-3.7zM20.7 7a1 1 0 0 0 0-1.4l-2.3-2.3a1 1 0 0 0-1.4 0l-1.8 1.8 3.7 3.7z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path stroke="currentColor" stroke-width="2.2" d="m15 15 6 6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><path fill="currentColor" d="M7 10V7a5 5 0 0 1 10 0v3h2v12H5V10zm2 0h6V7a3 3 0 0 0-6 0z"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path fill="currentColor" d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.6 3.6a1 1 0 0 1-.25 1z"/></symbol>
+    <symbol id="i-mobile" viewBox="0 0 24 24"><path fill="currentColor" d="M7 2h10v20H7zm2 2v14h6V4zm2 15h2v1h-2z"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></symbol>
+    <symbol id="i-work" viewBox="0 0 24 24"><path fill="currentColor" d="M9 4h6v2h5v14H4V6h5zm2 0v2h2V4z"/></symbol>
+    <symbol id="i-id" viewBox="0 0 24 24"><path fill="currentColor" d="M2 5h20v14H2zm2 2v10h16V7zM6 9h5v5H6zm7 1h5v1.5h-5zm0 3h5v1.5h-5z"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2zM9 18h6v2H9zm1 3h4v1h-4z"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path fill="currentColor" d="M12 21s-8-5.3-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.7-8 11-8 11z"/></symbol>
+    <symbol id="i-edu" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3 1 9l11 6 9-4.9V17h2V9zM5 13.2V17c0 2 3.1 4 7 4s7-2 7-4v-3.8l-7 3.8z"/></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24"><path fill="currentColor" d="M3 6h12v12H3zm13 4 5-3v10l-5-3z"/></symbol>
+    <symbol id="i-attach" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="m16.5 6.5-8 8a2.5 2.5 0 0 0 3.5 3.5l8.5-8.5a4.5 4.5 0 0 0-6.4-6.4L5.6 11.6a6.5 6.5 0 0 0 9.2 9.2L20 15.6"/></symbol>
+    <symbol id="i-important" viewBox="0 0 24 24"><path fill="currentColor" d="M11 3h2v11h-2zm0 13h2v3h-2z"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path fill="currentColor" d="M3 5h7l2 2h9v13H3z"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path fill="currentColor" d="M6 2h8l6 6v14H6zm7 1.5V9h5.5z"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path fill="currentColor" d="M7 18a4 4 0 0 1-.5-8A6 6 0 0 1 18 9a4.5 4.5 0 0 1-.5 9z"/></symbol>
+    <symbol id="i-pc" viewBox="0 0 24 24"><path fill="currentColor" d="M2 4h20v13H2zm2 2v9h16V6zm4 12h8v2H8z"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" d="m8 7-5 5 5 5m8-10 5 5-5 5"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" d="M9 14 4 9l5-5M4 9h9a6 6 0 0 1 0 12h-3"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path stroke="currentColor" stroke-width="2" d="M12 2v3m0 14v3M2 12h3m14 0h3M4.9 4.9l2.1 2.1m10 10 2.1 2.1M4.9 19.1 7 17m10-10 2.1-2.1"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path fill="currentColor" d="M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11z"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path fill="currentColor" d="M3 3h14l4 4v14H3zm4 2v5h8V5zm-1 9v5h12v-5z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" d="m12 2 3 6.5 7 .8-5.2 4.8 1.4 7L12 17.5 5.8 21l1.4-7L2 9.3l7-.8z"/></symbol>
+    <symbol id="i-copilot" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 9 9l-7 3 7 3 3 7 3-7 7-3-7-3z"/></symbol>
+  </defs>
+</svg>
+
+<div class="suite">
+  <div class="waffle" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="brand">SharePoint <span>· The Point</span></div>
+  <div class="spacer"></div>
+  <div class="me" title="Lee">LE</div>
+</div>
+<div class="sitehdr">
+  <div class="inner">
+    <div class="logo">TP</div>
+    <div class="name">The Point Intranet</div>
+    <nav><a class="active" href="#">Home</a><a href="#">News</a><a href="#">Departments</a><a href="#">Documents</a><a href="#">Help</a></nav>
+  </div>
+</div>
+
+<div class="page">
+  <div class="mocktools" role="group" aria-label="Page owner settings (property pane)">
+    <strong>Page owner settings</strong>
+    <span>Columns</span>
+    <button class="chipbtn" data-cols="2">2</button><button class="chipbtn on" data-cols="3">3</button><button class="chipbtn" data-cols="4">4</button>
+    <span>Cards</span>
+    <button class="chipbtn on" data-card="shadow">Shadow</button><button class="chipbtn" data-card="outline">Outline</button><button class="chipbtn" data-card="flat">Flat</button>
+    <span>Header</span>
+    <button class="chipbtn on" data-hdr="plain">Plain</button><button class="chipbtn" data-hdr="accent">Accent</button><button class="chipbtn" data-hdr="gradient">Gradient</button>
+    <button class="chipbtn" id="densityBtn">Compact</button>
+    <label class="chipbtn" for="accentPick"><span>Accent</span><input type="color" id="accentPick" value="#0f5c8c" style="width:22px;height:18px;border:none;padding:0;background:none"></label>
+    <span class="grow"></span>
+    <button class="chipbtn" id="lockBtn">Lock layout</button>
+    <button class="chipbtn" id="themeBtn"><svg width="13" height="13"><use href="#i-moon"/></svg> Dark</button>
+  </div>
+
+  <div class="wp shadow" id="wp">
+    <div class="hdr plain" id="hdr">
+      <div class="hdrtext">
+        <h2 class="greet" id="greet">Good morning, Lee</h2>
+        <div class="sub" id="today"></div>
+      </div>
+      <div class="hdrsearch"><svg><use href="#i-search"/></svg><input type="search" id="spsearch" placeholder="Search SharePoint" aria-label="Search SharePoint"></div>
+      <div class="hdractions">
+        <button class="ibtn lg" id="refreshBtn" title="Refresh all widgets" aria-label="Refresh all widgets"><svg><use href="#i-refresh"/></svg></button>
+        <button class="btn" id="customiseBtn"><svg><use href="#i-edit"/></svg> Customise</button>
+        <button class="btn primary" id="doneBtn" hidden><svg><use href="#i-check"/></svg> Done</button>
+      </div>
+    </div>
+    <div class="editbanner" id="banner" hidden>
+      <span class="t"><strong>Customising.</strong> Drag widgets by their handle, change widths with the 1 / 2 / 3 buttons, open settings from the cog, or add more from the catalogue. Changes save automatically.</span>
+      <span class="a">
+        <button class="btn primary sm" id="addBtn"><svg><use href="#i-plus"/></svg> Add widget</button>
+        <button class="btn sm" id="ioBtn"><svg><use href="#i-code"/></svg> Import / export</button>
+        <button class="btn sm" id="resetBtn"><svg><use href="#i-undo"/></svg> Reset</button>
+        <button class="btn sm" id="defaultBtn" title="Page edit mode only: stores this layout as the default for everyone"><svg><use href="#i-save"/></svg> Set as page default</button>
+      </span>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="status" id="status"><svg><use href="#i-pc"/></svg> Layout is saved in this browser.</div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="catalog" aria-label="Add a widget">
+  <div class="ph">Add a widget <button class="ibtn" data-close><svg><use href="#i-close"/></svg></button></div>
+  <div class="pb">
+    <input class="sb" id="catSearch" type="search" placeholder="Search widgets" style="height:32px;border:1px solid var(--border);border-radius:4px;padding:0 8px;background:var(--surface);color:var(--text);font:inherit">
+    <div class="cat" id="catList"></div>
+  </div>
+</aside>
+<aside class="panel" id="settings" aria-label="Widget settings">
+  <div class="ph"><span id="setTitle">Settings</span> <button class="ibtn" data-close><svg><use href="#i-close"/></svg></button></div>
+  <div class="pb" id="setBody"></div>
+  <div class="pf"><button class="btn primary" id="setSave">Save</button><button class="btn" data-close>Cancel</button></div>
+</aside>
+<aside class="panel" id="profileEdit" aria-label="Edit my profile">
+  <div class="ph">Edit my profile <button class="ibtn" data-close><svg><use href="#i-close"/></svg></button></div>
+  <div class="pb" id="profBody"></div>
+  <div class="pf"><button class="btn primary" id="profSave">Save</button><button class="btn" data-close>Cancel</button></div>
+</aside>
+<aside class="panel" id="io" aria-label="Import or export layout">
+  <div class="ph">Import / export layout <button class="ibtn" data-close><svg><use href="#i-close"/></svg></button></div>
+  <div class="pb"><div class="fld"><label for="ioText">Layout JSON</label><textarea id="ioText" rows="18"></textarea><small>Copy this to back up or share your layout, or paste a layout to import it.</small></div></div>
+  <div class="pf"><button class="btn primary" id="ioImport">Import</button><button class="btn" id="ioCopy">Copy</button><button class="btn" data-close>Close</button></div>
+</aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  'use strict';
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const svg = (id, cls = '') => `<svg class="${cls}" aria-hidden="true"><use href="#${id}"/></svg>`;
+  const uid = p => `${p}-${Math.random().toString(36).slice(2, 8)}`;
+  const PAL = ['#0b6e99', '#7b4fb0', '#0f8b8d', '#c85a17', '#a3238e', '#4a8a12', '#8e562e', '#3d5fd6'];
+  const col = n => PAL[([...n].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 0) >>> 0) % PAL.length];
+  const ini = n => n.split(' ').map(p => p[0]).slice(0, 2).join('');
+  const avatar = (p, size = '', pres = '') => `<span class="avatar ${size}" style="background:${col(p.name)}">${ini(p.name)}${pres ? `<span class="pres ${pres}" title="${pres}"></span>` : ''}</span>`;
+  const toast = m => { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 2200); };
+  const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }, del(k) { try { localStorage.removeItem(k); } catch {} } };
+
+  // ------------------------------------------------------------ sample data
+  const ME = { name: 'Lee Ashworth', job: 'Head of Digital Workplace', dept: 'Technology', mail: 'lee@the-point.uk', phone: '+44 20 7946 0810', mobile: '+44 7700 900412', office: 'Manchester · 3rd floor', city: 'Manchester', country: 'United Kingdom', company: 'The Point', empId: 'TP-0142', upn: 'lee@the-point.uk', lang: 'en-GB', hire: '14 Mar 2019', preferred: 'Lee', about: 'I lead the digital workplace team, building SharePoint, Teams and Power Platform solutions that make everyday work simpler. Ask me about intranet design, adoption and anything Microsoft 365.', skills: ['SharePoint', 'SPFx', 'Power Platform', 'Microsoft Graph', 'Adoption'], interests: ['Trail running', 'Photography', 'Coffee'], schools: ['University of Manchester'], projects: ['Intranet relaunch 2024', 'Teams telephony rollout'], responsibilities: ['Digital workplace strategy', 'M365 governance'], mysite: 'https://thepoint.sharepoint.com/sites/digital' };
+  const MANAGER = { name: 'Priya Raman', job: 'Chief Technology Officer', dept: 'Technology', pres: 'Busy' };
+  const CHAIN = [{ name: 'Daniel Okafor', job: 'Chief Executive Officer', dept: 'Executive' }, MANAGER];
+  const PEERS = [{ name: 'Tom Whitfield', job: 'Head of Infrastructure', dept: 'Technology', pres: 'Available' }, { name: 'Sara Lindqvist', job: 'Head of Data & Analytics', dept: 'Technology', pres: 'Away' }, { name: 'Marcus Bell', job: 'Head of Security', dept: 'Technology', pres: 'DoNotDisturb' }];
+  const REPORTS = [{ name: 'Amina Yusuf', job: 'SharePoint Developer', dept: 'Technology', pres: 'Available' }, { name: 'Jack Morley', job: 'Power Platform Developer', dept: 'Technology', pres: 'Available' }, { name: 'Chloe Barnes', job: 'Adoption & Change Lead', dept: 'Technology', pres: 'InAMeeting' }, { name: 'Ravi Patel', job: 'Business Analyst', dept: 'Technology', pres: 'Offline' }];
+  const PEOPLE = [REPORTS[0], { name: 'Hannah Cole', job: 'Internal Comms Manager', dept: 'Marketing', pres: 'Available' }, REPORTS[2], { name: 'George Ellis', job: 'Finance Business Partner', dept: 'Finance', pres: 'Busy' }, PEERS[0], { name: 'Nia Griffiths', job: 'HR Advisor', dept: 'People', pres: 'Away' }];
+  const TEAMS = [{ name: 'Digital Workplace', d: 'Team channel for the DW squad' }, { name: 'Intranet Relaunch', d: 'Project team · go-live 3 Nov' }, { name: 'Technology Leadership', d: 'Heads of and above' }, { name: 'Copilot Champions', d: 'Pilot cohort and adoption tips' }, { name: 'Manchester Office', d: 'Everything about the office' }, { name: 'Social Club', d: 'Runs, quizzes and the Christmas do' }];
+  const APPS_M365 = [['Outlook', '#0f6cbd'], ['Teams', '#5b5fc7'], ['OneDrive', '#0364b8'], ['SharePoint', '#0f7b7b'], ['Word', '#185abd'], ['Excel', '#107c41'], ['PowerPoint', '#c43e1c'], ['OneNote', '#7719aa'], ['Planner', '#31752f'], ['To Do', '#2564cf'], ['Copilot', '#0f6cbd']];
+  const APPS_ENTRA = [['Workday', '#f5a623'], ['Salesforce', '#00a1e0'], ['ServiceNow', '#62d84e'], ['Concur Expenses', '#0a5f8e'], ['Jira', '#0052cc'], ['Miro', '#ffd02f'], ['DocuSign', '#f7b500'], ['Zoom', '#2d8cff']];
+  const DOCS = { used: [['Intranet relaunch – project plan.xlsx', 'Intranet Relaunch', '12 min ago'], ['MySite web part – requirements.docx', 'Digital Workplace', '1 hr ago'], ['Q3 leadership update.pptx', 'Technology Leadership', 'yesterday'], ['Copilot adoption playbook.docx', 'Copilot Champions', 'yesterday'], ['Governance – site provisioning.docx', 'Digital Workplace', '2 days ago'], ['Board pack – Sept 2026.pdf', 'Executive', '3 days ago'], ['Telephony rollout – risks.xlsx', 'Infrastructure', '4 days ago']], shared: [['Brand guidelines 2026.pdf', 'Hannah Cole', '3 hrs ago'], ['Budget forecast FY27.xlsx', 'George Ellis', 'yesterday'], ['Onboarding checklist.docx', 'Nia Griffiths', '2 days ago'], ['Security baseline.pptx', 'Marcus Bell', '5 days ago']], trending: [['Hybrid working policy v3.docx', 'People', '18 views'], ['All-hands recording – Sept.mp4', 'Internal Comms', '41 views'], ['Manchester office map.pdf', 'Facilities', '9 views'], ['Data classification guide.docx', 'Security', '14 views']] };
+  const SITES = { followed: [['Digital Workplace', 'Team site for the DW squad', 'DW'], ['Intranet Relaunch', 'Project site', 'IR'], ['Technology', 'Department hub', 'TE'], ['People & Culture', 'HR policies, benefits, wellbeing', 'PC'], ['Copilot Champions', 'Community site', 'CC']], active: [['Finance', 'Budgets, expenses and forecasts', 'FI'], ['Marketing', 'Brand, campaigns and events', 'MA'], ['Facilities', 'Offices, desks and travel', 'FA'], ['Security', 'Policies and awareness', 'SE'], ['Manchester Office', 'Local site', 'MO'], ['Client Delivery', 'Engagement templates', 'CD']] };
+  const DRIVE = { recent: [['MySite – widget list.docx', 'file', '24 KB · 20 min ago'], ['Notes from Priya 1:1.docx', 'file', '11 KB · yesterday'], ['Expenses – August.xlsx', 'file', '38 KB · 2 days ago'], ['Headshot 2026.jpg', 'file', '1.2 MB · 5 days ago']], root: [['Documents', 'folder', '38 items'], ['Pictures', 'folder', '112 items'], ['Personal', 'folder', '9 items'], ['Notebooks', 'folder', '3 items'], ['MySite – widget list.docx', 'file', '24 KB · 20 min ago'], ['Reading list.xlsx', 'file', '17 KB · 2 wks ago']], Documents: [['Projects', 'folder', '14 items'], ['1:1s', 'folder', '22 items'], ['Notes from Priya 1:1.docx', 'file', '11 KB · yesterday'], ['Expenses – August.xlsx', 'file', '38 KB · 2 days ago']], shared: [['Brand guidelines 2026.pdf', 'file', 'from Hannah Cole · 3 hrs ago'], ['Budget forecast FY27.xlsx', 'file', 'from George Ellis · yesterday'], ['Team offsite photos', 'folder', 'from Chloe Barnes · 1 wk ago']] };
+  const NEWS = [['Intranet relaunch: what changes on 3 November', 'Digital Workplace', 'Hannah Cole', '2 hrs ago', '#0f5c8c'], ['Copilot licences now available for every team', 'Technology', 'Priya Raman', 'yesterday', '#5b5fc7'], ['Manchester office: new quiet floor opens Monday', 'Facilities', 'Owen Price', '2 days ago', '#0f7b7b'], ['Q3 results and what they mean for us', 'Executive', 'Daniel Okafor', '3 days ago', '#c85a17'], ['Wellbeing week: sign up for the lunchtime runs', 'People & Culture', 'Nia Griffiths', '4 days ago', '#4a8a12'], ['Security refresher: spotting a phishing email', 'Security', 'Marcus Bell', '5 days ago', '#a3238e']];
+  const EVENTS = [['Today', [['09:30', '10:00', 'DW squad stand-up', 'Teams meeting', true, false], ['11:00', '12:00', 'Intranet relaunch – content review', 'Room 3.4 · Hannah Cole', true, false], ['14:00', '14:30', '1:1 with Priya', 'Teams meeting', true, false], ['16:00', '17:00', 'Copilot champions drop-in', 'Teams meeting', true, false]]], ['Tomorrow', [['10:00', '11:30', 'Architecture review board', 'Room 2.1 · Tom Whitfield', false, false], ['13:00', '13:45', 'Lunch & learn: SPFx 1.23', 'Teams meeting', true, false]]], ['Thursday 13 Sept', [['', '', 'Wellbeing week – lunchtime run', 'Meet at reception', false, true], ['15:00', '16:00', 'Vendor demo: search analytics', 'Teams meeting', true, false]]]];
+  let TODO = [['Sign off MySite permissions request', 'Due today', true], ['Draft go-live comms with Hannah', 'Due tomorrow', false], ['Review Amina’s pull request', 'Due Fri 12 Sept', false], ['Book Manchester desk for next week', '', false], ['Expenses – August', 'Overdue · 5 Sept', false]];
+  const PLANNER = [['Migrate legacy team sites (wave 3)', 'Intranet Relaunch · Due 26 Sept', 40], ['Write widget catalogue help page', 'Intranet Relaunch · Due 3 Oct', 0], ['Champion onboarding session', 'Copilot Champions · Due 18 Sept', 75]];
+  const MAIL = [['Priya Raman', 'Re: MySite permissions – approved', 'Approved in the admin centre this morning. Directory.Read.All needs a note in the', '9:12', false, true, false], ['Hannah Cole', 'Go-live comms – first draft', 'Attached the draft for the 3 Nov announcement. Can you check the screenshots', '8:40', false, false, true], ['ServiceNow', 'INC0048112 has been assigned to you', 'A user reports the People web part is empty on the Finance hub. Priority 3.', 'yesterday', false, false, false], ['George Ellis', 'FY27 forecast – your lines', 'Please review lines 40-58 before Thursday. I have flagged the Copilot licence', 'yesterday', true, false, true], ['Microsoft 365 Message Center', 'MC912345: Changes to SharePoint news', 'We are rolling out a new news layout to Targeted release tenants.', 'Mon', true, false, false]];
+
+  // ------------------------------------------------------- widget registry
+  const W = {
+    profile: { title: 'My profile', icon: 'i-contact', cat: 'Me', desc: 'Your photo, contact details and about-me information, with in-place editing of the fields you own.', size: 1, once: true, perms: 'User.ReadWrite · Presence.Read', settings: [['allowEdit', 'Allow editing', 'bool', true], ['showPresence', 'Show Teams presence', 'bool', true], ['showWork', 'Show Work tab', 'bool', true], ['showAbout', 'Show About tab', 'bool', true], ['editableFields', 'Editable fields', 'text', 'mobilePhone,businessPhones,preferredName,aboutMe,skills,interests,schools,pastProjects,responsibilities,mySite']], render: rProfile },
+    team: { title: 'My team', icon: 'i-group', cat: 'People', desc: 'Your manager, colleagues who share your manager and your direct reports, with presence and quick actions.', size: 1, once: true, perms: 'User.Read.All · Presence.Read.All', settings: [['showPresence', 'Show Teams presence', 'bool', true], ['showTabs', 'Show tabs', 'bool', true], ['maxPeople', 'People per section', 'num', 8]], render: rTeam },
+    org: { title: 'My organisation', icon: 'i-org', cat: 'People', desc: 'Your reporting line from the top of the organisation down to your direct reports, expandable at every level.', size: 1, once: true, perms: 'User.Read.All', settings: [['showChain', 'Show management chain', 'bool', true], ['expandReports', 'Expand my reports by default', 'bool', true], ['maxDepth', 'Maximum expansion depth', 'num', 3]], render: rOrg },
+    people: { title: 'People I work with', icon: 'i-people', cat: 'People', desc: 'The colleagues you collaborate with most, ranked by Microsoft 365 relevance.', size: 1, once: true, perms: 'People.Read · Presence.Read.All', settings: [['maxPeople', 'Number of people', 'num', 8], ['showPresence', 'Show Teams presence', 'bool', true]], render: rPeople },
+    teams: { title: 'My Teams', icon: 'i-teams', cat: 'People', desc: 'Microsoft Teams you belong to, with deep links straight into each team.', size: 1, once: true, perms: 'Team.ReadBasic.All', settings: [['maxItems', 'Teams to show', 'num', 12], ['showSearch', 'Show search box', 'bool', true]], render: rTeams },
+    apps: { title: 'My apps', icon: 'i-apps', cat: 'Productivity', desc: 'Applications assigned to you in Microsoft Entra (My Apps) alongside Microsoft 365 launch tiles.', size: 1, once: true, perms: 'Directory.Read.All', settings: [['layout', 'Layout', 'choice', 'tiles', ['tiles:Tiles', 'list:List']], ['showSearch', 'Show search box', 'bool', true], ['showEntra', 'Show Entra assigned apps', 'bool', true], ['showM365', 'Show Microsoft 365 apps', 'bool', true]], render: rApps },
+    recentDocs: { title: 'Recent documents', icon: 'i-docs', cat: 'Content', desc: 'Files you have recently used, files shared with you and documents trending around you.', size: 1, once: true, perms: 'Sites.Read.All', settings: [['maxItems', 'Number of items', 'num', 7], ['showTabs', 'Show Recent / Shared / Trending tabs', 'bool', true]], render: rDocs },
+    sites: { title: 'Sites', icon: 'i-sp', cat: 'Content', desc: 'SharePoint sites you follow, recently active sites you can access, and site search.', size: 1, perms: 'Sites.Read.All', settings: [['layout', 'Layout', 'choice', 'list', ['list:List', 'tiles:Tiles']], ['showSearch', 'Show search box', 'bool', true]], render: rSites },
+    onedrive: { title: 'My OneDrive', icon: 'i-onedrive', cat: 'Content', desc: 'Recent files, folder browsing, files shared with you, search and storage usage for your OneDrive.', size: 1, once: true, perms: 'Files.Read.All', settings: [['showSearch', 'Show search box', 'bool', true], ['showQuota', 'Show storage usage', 'bool', true]], render: rDrive },
+    news: { title: 'News', icon: 'i-news', cat: 'Content', desc: 'Latest SharePoint news from across the organisation, this hub or this site.', size: 2, perms: 'SharePoint search', settings: [['maxItems', 'Number of posts', 'num', 6], ['scope', 'Scope', 'choice', 'tenant', ['tenant:Whole organisation', 'hub:This hub', 'site:This site']], ['layout', 'Layout', 'choice', 'auto', ['auto:Automatic', 'cards:Cards', 'list:List']]], render: rNews },
+    calendar: { title: 'My calendar', icon: 'i-cal', cat: 'Productivity', desc: 'Upcoming meetings and events with one-click join for Teams meetings.', size: 1, once: true, perms: 'Calendars.Read', settings: [['days', 'Days to show', 'num', 7], ['maxItems', 'Maximum events', 'num', 15]], render: rCal },
+    tasks: { title: 'My tasks', icon: 'i-tasks', cat: 'Productivity', desc: 'Open Microsoft To Do tasks (add and complete in place) and Planner tasks assigned to you.', size: 1, once: true, perms: 'Tasks.ReadWrite', settings: [['showTodo', 'Show To Do', 'bool', true], ['showPlanner', 'Show Planner', 'bool', true], ['allowAdd', 'Allow adding To Do tasks', 'bool', true]], render: rTasks },
+    mail: { title: 'My inbox', icon: 'i-mail', cat: 'Productivity', desc: 'Latest messages in your inbox with an unread counter.', size: 1, once: true, perms: 'Mail.Read', settings: [['maxItems', 'Messages to show', 'num', 8], ['unreadOnly', 'Unread only', 'bool', false], ['showPreview', 'Show message preview', 'bool', true]], render: rMail },
+    quickLinks: { title: 'Quick links', icon: 'i-link', cat: 'Personal', desc: 'Your own personal bookmarks, shown as a list or tiles.', size: 1, perms: '', settings: [['layout', 'Layout', 'choice', 'list', ['list:List', 'tiles:Tiles']]], render: rLinks },
+    notes: { title: 'Notes', icon: 'i-note', cat: 'Personal', desc: 'A personal sticky note that stays with your dashboard.', size: 1, perms: '', settings: [['colour', 'Colour', 'choice', 'yellow', ['yellow:Yellow', 'green:Green', 'blue:Blue', 'pink:Pink']]], render: rNotes }
+  };
+  const CATS = ['Me', 'People', 'Content', 'Productivity', 'Personal'];
+  const defSettings = t => Object.fromEntries((W[t].settings || []).map(s => [s[0], s[3]]));
+  const DEFAULT = () => ({ widgets: [
+    { id: uid('profile'), type: 'profile', size: 1, settings: defSettings('profile') },
+    { id: uid('calendar'), type: 'calendar', size: 1, settings: defSettings('calendar') },
+    { id: uid('tasks'), type: 'tasks', size: 1, settings: defSettings('tasks') },
+    { id: uid('recentDocs'), type: 'recentDocs', size: 2, settings: defSettings('recentDocs') },
+    { id: uid('quickLinks'), type: 'quickLinks', size: 1, settings: { layout: 'list', links: [['Expenses portal', 'concur.the-point.uk'], ['Book a desk', 'desks.the-point.uk'], ['IT helpdesk', 'servicenow.the-point.uk'], ['Benefits hub', 'thepoint.sharepoint.com/sites/people/benefits']] } },
+    { id: uid('team'), type: 'team', size: 1, settings: defSettings('team') },
+    { id: uid('sites'), type: 'sites', size: 1, settings: defSettings('sites') },
+    { id: uid('onedrive'), type: 'onedrive', size: 1, settings: defSettings('onedrive') },
+    { id: uid('news'), type: 'news', size: 2, settings: defSettings('news') },
+    { id: uid('apps'), type: 'apps', size: 1, settings: defSettings('apps') },
+    { id: uid('mail'), type: 'mail', size: 1, settings: defSettings('mail') },
+    { id: uid('org'), type: 'org', size: 1, settings: defSettings('org') },
+    { id: uid('notes'), type: 'notes', size: 1, settings: { colour: 'yellow', text: 'Go-live checklist\n- permissions approved ✔\n- comms draft (Hannah)\n- champions briefing Thu' } }
+  ] });
+
+  // ---------------------------------------------------------------- state
+  const KEY = 'tpms-mock-layout';
+  let state = store.get(KEY) && Array.isArray(store.get(KEY).widgets) ? store.get(KEY) : DEFAULT();
+  state.widgets = state.widgets.filter(w => W[w.type]);
+  const ui = { edit: false, cols: 3, locked: false, drag: null, over: null, pos: null, tabs: {}, folder: 'root' };
+  const save = () => store.set(KEY, state);
+  const find = id => state.widgets.find(w => w.id === id);
+
+  // ------------------------------------------------------------ renderers
+  const row = (o) => `<a class="row" href="${o.href || '#'}" onclick="return false" title="${esc(o.title)}">${o.lead || (o.icon ? `<span class="ricon">${svg(o.icon)}</span>` : '')}<span class="rbody"><span class="rt">${esc(o.title)}</span>${o.meta ? `<span class="rm">${o.meta}</span>` : ''}</span>${o.tr ? `<span class="rtr">${o.tr}</span>` : ''}</a>`;
+  const foot = (t) => `<div class="foot"><a href="#" onclick="return false">${esc(t)} ${svg('i-right')}</a></div>`;
+  const tabs = (id, list, cur) => `<div class="tabs" role="tablist">${list.map(([k, t]) => `<button role="tab" aria-selected="${cur === k}" class="${cur === k ? 'on' : ''}" data-tab="${k}" data-for="${id}">${esc(t)}</button>`).join('')}</div>`;
+  const docIcon = n => /xlsx|csv/.test(n) ? ['i-file', '#107c41'] : /docx/.test(n) ? ['i-file', '#185abd'] : /pptx/.test(n) ? ['i-file', '#c43e1c'] : /pdf/.test(n) ? ['i-file', '#d13438'] : /mp4/.test(n) ? ['i-video', '#bc1948'] : /jpg|png/.test(n) ? ['i-file', '#8764b8'] : ['i-file', ''];
+  const person = (p, s, badge) => `<div class="row"><span style="position:relative;display:inline-flex">${avatar(p, '', s.showPresence !== false ? (p.pres || 'Offline') : '')}</span><span class="rbody"><span class="rt">${esc(p.name)}${badge ? ` <span class="pill acc">${badge}</span>` : ''}</span><span class="rm">${esc(p.job)} · ${esc(p.dept)}</span></span><span class="rtr"><button class="ibtn" title="Chat in Teams">${svg('i-teams')}</button><button class="ibtn" title="Send email">${svg('i-mail')}</button><button class="ibtn" title="Call">${svg('i-phone')}</button></span></div>`;
+
+  function rProfile(w) {
+    const s = w.settings, t = ui.tabs[w.id] || 'contact';
+    const F = { contact: [['i-mail', 'Email', `<a href="mailto:${ME.mail}">${ME.mail}</a>`, true], ['i-phone', 'Business phone', ME.phone, false], ['i-mobile', 'Mobile', ME.mobile, false], ['i-pin', 'Office', ME.office, true], ['i-pin', 'City', ME.city, true], ['i-pin', 'Country', ME.country, true]], work: [['i-work', 'Job title', ME.job, true], ['i-org', 'Department', ME.dept, true], ['i-id', 'Company', ME.company, true], ['i-id', 'Employee ID', ME.empId, true], ['i-contact', 'Sign-in name', ME.upn, true], ['i-cal', 'Hire date', ME.hire, true]], about: [['i-contact', 'Preferred name', ME.preferred, false], ['i-bulb', 'Skills', chips(ME.skills), false], ['i-heart', 'Interests', chips(ME.interests), false], ['i-edu', 'Schools', chips(ME.schools), false], ['i-tasks', 'Past projects', chips(ME.projects), false], ['i-tasks', 'Responsibilities', chips(ME.responsibilities), false], ['i-link', 'My site', `<a href="#" onclick="return false">${ME.mysite}</a>`, false]] };
+    const list = ['contact'].concat(s.showWork !== false ? ['work'] : [], s.showAbout !== false ? ['about'] : []);
+    const cur = list.includes(t) ? t : 'contact';
+    return `<div class="hero">${avatar(ME, w.size >= 2 ? 'xl' : 'lg', s.showPresence !== false ? 'Available' : '')}<div class="hb"><div class="hn">${esc(ME.name)}</div><div class="hj">${esc(ME.job)} · ${esc(ME.dept)}</div>${s.showPresence !== false ? '<div class="hj"><span class="pill good">Available</span></div>' : ''}<div class="ha">${s.allowEdit !== false ? `<button class="btn primary sm" data-act="editProfile" data-id="${w.id}">${svg('i-edit')} Edit profile</button>` : ''}<button class="btn sm">${svg('i-gear')} My account</button></div></div></div>${w._msg ? `<div class="msg ${w._msg[0]}">${w._msg[1]}</div>` : ''}${tabs(w.id, [['contact', 'Contact'], ['work', 'Work'], ['about', 'About']].filter(x => list.includes(x[0])), cur)}${cur === 'about' && ME.about ? `<div class="sec">About me</div><div class="about" style="margin-bottom:8px">${esc(ME.about)}</div>` : ''}<dl class="fields">${F[cur].map(f => `<div class="field">${svg(f[0])}<div class="fb"><dt class="fl">${f[1]}${f[3] ? `<svg class="lock"><title>Managed by your organisation</title><use href="#i-lock"/></svg>` : ''}</dt><dd class="fv" style="margin:0">${f[2]}</dd></div></div>`).join('')}</dl>`;
+  }
+  const chips = a => `<span class="chips">${a.map(x => `<span class="chip">${esc(x)}</span>`).join('')}</span>`;
+
+  function rTeam(w) {
+    const s = w.settings, t = ui.tabs[w.id] || 'all';
+    const secs = [['manager', 'Manager', [MANAGER], 'Manager'], ['peers', 'Colleagues', PEERS], ['reports', 'Direct reports', REPORTS]];
+    const vis = t === 'all' ? secs : secs.filter(x => x[0] === t);
+    return (s.showTabs !== false ? tabs(w.id, [['all', 'All'], ['manager', 'Manager (1)'], ['peers', `Colleagues (${PEERS.length})`], ['reports', `Direct reports (${REPORTS.length})`]], t) : '') + vis.map(x => `${t === 'all' ? `<div class="sec">${x[1]} · ${x[2].length}</div>` : ''}<div class="list">${x[2].slice(0, Number(s.maxPeople) || 8).map(p => person(p, s, x[3])).join('')}</div>`).join('');
+  }
+  function rOrg(w) {
+    const s = w.settings;
+    const node = (p, me, cnt, exp) => `<div class="node ${me ? 'me' : ''}">${avatar(p, 'sm')}<div class="nb"><div class="nn">${esc(p.name)}${me ? ' (you)' : ''}</div><div class="nt">${esc(p.job)} · ${esc(p.dept)}</div></div>${cnt ? `<span class="cnt">${cnt}</span>` : ''}<button class="ibtn" title="Chat in Teams">${svg('i-teams')}</button>${exp !== undefined ? `<button class="ibtn" data-act="orgToggle" data-id="${w.id}" title="${exp ? 'Collapse' : 'Show reports'}">${svg(exp ? 'i-up' : 'i-down')}</button>` : ''}</div>`;
+    const exp = w._exp !== false && s.expandReports !== false;
+    const chain = s.showChain !== false ? CHAIN : [];
+    return `<div class="tree">${chain.map((p, i) => `<div style="margin-left:${i * 14}px">${node(p, false, i === 1 ? 4 : 5)}</div>`).join('')}<div style="margin-left:${chain.length * 14}px">${node(ME, true, REPORTS.length, exp)}${exp ? `<div class="children">${REPORTS.map(p => node(p)).join('')}</div>` : ''}</div></div>`;
+  }
+  function rPeople(w) { return `<div class="list">${PEOPLE.slice(0, Number(w.settings.maxPeople) || 8).map(p => person(p, w.settings)).join('')}</div>`; }
+  function rTeams(w) {
+    const q = (w._q || '').toLowerCase();
+    return (w.settings.showSearch !== false ? `<div class="toolbar"><input class="sb" data-q="${w.id}" value="${esc(w._q || '')}" placeholder="Find a team"></div>` : '') + `<div class="list">${TEAMS.filter(t => !q || t.name.toLowerCase().includes(q)).map(t => row({ title: t.name, meta: esc(t.d), lead: `<span class="ricon" style="background:#5b5fc7;color:#fff;font-weight:700;font-size:12px">${ini(t.name)}</span>` })).join('')}</div>` + foot('Open Teams');
+  }
+  function rApps(w) {
+    const s = w.settings, q = (w._q || '').toLowerCase();
+    const tile = (n, c, entra) => s.layout === 'list' ? row({ title: n, meta: entra ? 'Entra application' : 'Microsoft 365', lead: `<span class="ricon" style="background:${c};color:#fff;font-weight:700;font-size:12px">${n.slice(0, 2)}</span>` }) : `<a class="tile" href="#" onclick="return false" title="${esc(n)}"><span class="ti" style="background:${c};color:#fff">${n === 'Copilot' ? svg('i-copilot') : n.slice(0, 2)}</span><span class="tt">${esc(n)}</span></a>`;
+    const wrap = h => s.layout === 'list' ? `<div class="list">${h}</div>` : `<div class="tiles">${h}</div>`;
+    const m = APPS_M365.filter(a => !q || a[0].toLowerCase().includes(q)), e = APPS_ENTRA.filter(a => !q || a[0].toLowerCase().includes(q));
+    return (s.showSearch !== false ? `<div class="toolbar"><input class="sb" data-q="${w.id}" value="${esc(w._q || '')}" placeholder="Find an app"></div>` : '') + (s.showM365 !== false && m.length ? `<div class="sec">Microsoft 365</div>${wrap(m.map(a => tile(a[0], a[1])).join(''))}` : '') + (s.showEntra !== false ? `<div class="sec">My applications</div>${e.length ? wrap(e.map(a => tile(a[0], a[1], true)).join('')) : '<div class="empty"><b>No matching apps</b></div>'}` : '') + foot('Open My Apps portal');
+  }
+  function rDocs(w) {
+    const t = ui.tabs[w.id] || 'used';
+    const list = DOCS[t].slice(0, Number(w.settings.maxItems) || 7);
+    return (w.settings.showTabs !== false ? tabs(w.id, [['used', 'Recent'], ['shared', 'Shared with me'], ['trending', 'Trending']], t) : '') + `<div class="list">${list.map(d => { const [ic, c] = docIcon(d[0]); return row({ title: d[0], meta: `${esc(d[1])} · ${esc(d[2])}`, lead: `<span class="ricon" style="color:${c}">${svg(ic)}</span>` }); }).join('')}</div>` + foot('See all my content');
+  }
+  function rSites(w) {
+    const s = w.settings, t = ui.tabs[w.id] || 'followed', q = (w._q || '').toLowerCase();
+    const list = (q ? SITES.followed.concat(SITES.active).filter(x => x[0].toLowerCase().includes(q)) : SITES[t]);
+    const body = s.layout === 'tiles' ? `<div class="tiles">${list.map(x => `<a class="tile" href="#" onclick="return false" title="${esc(x[1])}"><span class="ti" style="background:var(--accent-soft);color:var(--accent)">${x[2]}</span><span class="tt">${esc(x[0])}</span></a>`).join('')}</div>` : `<div class="list">${list.map(x => row({ title: x[0], meta: esc(x[1]), lead: `<span class="ricon" style="background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:12px">${x[2]}</span>` })).join('')}</div>`;
+    return (s.showSearch !== false ? `<div class="toolbar"><input class="sb" data-q="${w.id}" value="${esc(w._q || '')}" placeholder="Search sites"></div>` : '') + (q ? '' : tabs(w.id, [['followed', 'Following'], ['active', 'Recently active']], t)) + (list.length ? body : '<div class="empty"><b>No matching sites</b></div>');
+  }
+  function rDrive(w) {
+    const s = w.settings, t = ui.tabs[w.id] || 'recent';
+    let list = t === 'browse' ? DRIVE[ui.folder] || [] : DRIVE[t];
+    const crumbs = t === 'browse' ? `<div class="crumbs">${ui.folder === 'root' ? '<b>My files</b>' : `<a data-act="folder" data-f="root">My files</a> › <b>${esc(ui.folder)}</b>`}</div>` : '';
+    return (s.showSearch !== false ? `<div class="toolbar"><input class="sb" placeholder="Search my OneDrive"></div>` : '') + tabs(w.id, [['recent', 'Recent'], ['browse', 'My files'], ['shared', 'Shared']], t) + crumbs + `<div class="list">${list.map(f => { const folder = f[1] === 'folder'; const [ic, c] = folder ? ['i-folder', '#dcb67a'] : docIcon(f[0]); return row({ title: f[0], meta: esc(f[2]), lead: `<span class="ricon ${folder ? 'fold' : ''}" data-act="${folder && DRIVE[f[0]] ? 'folder' : ''}" data-f="${esc(f[0])}" style="color:${c}">${svg(ic)}</span>`, tr: folder ? svg('i-right') : '' }); }).join('')}</div>` + (s.showQuota !== false ? `<div class="quota"><div class="bar"><i style="width:37%"></i></div><small>371 GB of 1 TB used</small></div>` : '') + foot('Open OneDrive');
+  }
+  function rNews(w) {
+    const s = w.settings, list = NEWS.slice(0, Number(s.maxItems) || 6);
+    const cards = s.layout === 'cards' || (s.layout === 'auto' && w.size >= 2);
+    if (cards) return `<div class="newscards">${list.map(n => `<a class="newscard" href="#" onclick="return false"><svg class="art" viewBox="0 0 160 90" preserveAspectRatio="none" aria-hidden="true"><rect width="160" height="90" fill="${n[4]}"/><circle cx="130" cy="20" r="34" fill="#fff" opacity=".14"/><path d="M0 90 60 40l40 30 60-45v65z" fill="#fff" opacity=".18"/></svg><span class="nb"><span class="nt">${esc(n[0])}</span><span class="nm">${esc(n[1])} · ${esc(n[2])} · ${n[3]}</span></span></a>`).join('')}</div>`;
+    return `<div class="list">${list.map(n => row({ title: n[0], meta: `${esc(n[1])} · ${esc(n[2])} · ${n[3]}`, lead: `<span class="ricon" style="background:${n[4]};color:#fff">${svg('i-news')}</span>` })).join('')}</div>`;
+  }
+  function rCal(w) {
+    return `<div class="toolbar" style="justify-content:space-between"><span style="font-size:12.5px;font-weight:600">11 – 17 Sept</span><span><button class="ibtn" title="Previous">${svg('i-left')}</button><button class="ibtn" title="Today" disabled>${svg('i-cal')}</button><button class="ibtn" title="Next">${svg('i-right')}</button></span></div>` + EVENTS.map(([day, evs]) => `<div class="sec">${day}</div><div class="list">${evs.map(e => { const live = e[0] === '09:30'; const allday = e[5]; return row({ title: e[2], meta: `${allday ? 'All day' : `${e[0]} – ${e[1]}`} · ${esc(e[3])}`, lead: `<span class="cal-day ${live ? 'live' : ''}">${allday ? svg('i-cal') : `${e[0].split(':')[0].replace(/^0/, '')}<small>${Number(e[0].split(':')[0]) < 12 ? 'AM' : 'PM'}</small>`}</span>`, tr: e[4] ? `<span class="pill acc">${svg('i-video')} Join</span>` : '' }); }).join('')}</div>`).join('') + foot('Open calendar');
+  }
+  function rTasks(w) {
+    const s = w.settings, t = (s.showTodo !== false && s.showPlanner !== false) ? (ui.tabs[w.id] || 'todo') : (s.showTodo !== false ? 'todo' : 'planner');
+    const head = (s.showTodo !== false && s.showPlanner !== false) ? tabs(w.id, [['todo', 'To Do'], ['planner', 'Planner']], t) : '';
+    if (t === 'todo') return head + (s.allowAdd !== false ? `<form class="inline" data-act="addTask" data-id="${w.id}"><input placeholder="Add a task" aria-label="New task"><button class="ibtn" type="submit" title="Add task">${svg('i-plus')}</button></form>` : '') + (TODO.length ? `<div class="list">${TODO.map((x, i) => `<div class="row"><span class="check" data-act="doneTask" data-i="${i}" role="checkbox" aria-checked="false" aria-label="Complete ${esc(x[0])}">${svg('i-check')}</span><span class="rbody"><span class="rt">${esc(x[0])}</span>${x[1] ? `<span class="rm" style="${/Overdue/.test(x[1]) ? 'color:var(--danger)' : ''}">${x[1]}</span>` : ''}</span>${x[2] ? `<span class="rtr" style="color:var(--danger)" title="High importance">${svg('i-important')}</span>` : ''}</div>`).join('')}</div>` : `<div class="empty">${svg('i-tasks')}<b>All caught up</b><small>No open tasks in this list.</small></div>`) + foot('Open To Do');
+    return head + `<div class="list">${PLANNER.map(p => row({ title: p[0], meta: esc(p[1]), lead: `<span class="ricon"><svg viewBox="0 0 24 24" style="width:20px;height:20px"><circle cx="12" cy="12" r="8" fill="none" stroke="var(--border)" stroke-width="3"/><circle cx="12" cy="12" r="8" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="${p[2] * 0.503} 100" transform="rotate(-90 12 12)"/></svg></span>`, tr: `${p[2]}%` })).join('')}</div>` + foot('Open Planner');
+  }
+  function rMail(w) {
+    const s = w.settings, list = MAIL.filter(m => !s.unreadOnly || !m[4]).slice(0, Number(s.maxItems) || 8);
+    return `<div class="toolbar" style="justify-content:space-between"><span class="pill acc">${svg('i-mail')} 3 unread</span><label class="toggle ${s.unreadOnly ? 'on' : ''}" data-act="unread" data-id="${w.id}"><i></i>Unread only</label></div>` + (list.length ? `<div class="list">${list.map(m => row({ title: m[1], meta: `<span class="${m[4] ? '' : 'unread'}">${esc(m[0])}</span>${s.showPreview !== false ? ` — ${esc(m[2])}…` : ''}`, lead: avatar({ name: m[0] }, 'sm'), tr: `${m[6] ? svg('i-attach') : ''}${m[5] ? `<span style="color:var(--danger)">${svg('i-important')}</span>` : ''}<span>${m[3]}</span>` })).join('')}</div>` : `<div class="empty">${svg('i-mail')}<b>Inbox zero</b><small>You have no unread mail.</small></div>`) + foot('Open Outlook');
+  }
+  function rLinks(w) {
+    const s = w.settings, links = s.links || [];
+    const body = s.layout === 'tiles' ? `<div class="tiles">${links.map(l => `<a class="tile" href="#" onclick="return false"><span class="ti" style="color:var(--accent)">${svg('i-link')}</span><span class="tt">${esc(l[0])}</span></a>`).join('')}</div>` : `<div class="list">${links.map((l, i) => row({ title: l[0], meta: esc(l[1]), lead: `<span class="ricon" style="color:var(--accent)">${svg('i-link')}</span>`, tr: ui.edit ? `<button class="ibtn" data-act="linkUp" data-id="${w.id}" data-i="${i}" title="Move up">${svg('i-up')}</button><button class="ibtn" data-act="linkDel" data-id="${w.id}" data-i="${i}" title="Remove">${svg('i-trash')}</button>` : '' })).join('')}</div>`;
+    return (links.length ? body : `<div class="empty">${svg('i-link')}<b>No links yet</b><small>Add your favourite places to get to them in one click.</small></div>`) + (w._adding ? `<form class="inline" data-act="addLink" data-id="${w.id}" style="padding-top:8px;border-top:1px solid var(--border);margin-top:8px"><input placeholder="Title" aria-label="Link title"><input placeholder="https://" aria-label="Link URL"><button class="btn primary sm" type="submit">Add</button></form>` : `<div style="padding-top:6px"><button class="btn sm" data-act="linkAdd" data-id="${w.id}">${svg('i-plus')} Add link</button></div>`);
+  }
+  function rNotes(w) { return `<textarea class="notes" data-note="${w.id}" style="background:var(--note-${w.settings.colour || 'yellow'})" placeholder="Jot down a note…" aria-label="Personal notes">${esc(w.settings.text || '')}</textarea>`; }
+
+  // -------------------------------------------------------------- render
+  function render() {
+    const g = $('#grid');
+    if (!state.widgets.length) { g.innerHTML = `<div class="emptygrid">${svg('i-dash').replace('<svg', '<svg style="width:32px;height:32px;color:var(--accent)"')}<div style="font-weight:600;margin-top:8px">Your dashboard is empty</div><div style="font-size:12.5px;margin-top:4px">Add widgets to build your personal workspace.</div>${!ui.locked ? `<div style="margin-top:12px"><button class="btn primary" id="emptyAdd">${svg('i-plus')} Add widget</button></div>` : ''}</div>`; return; }
+    g.innerHTML = state.widgets.map((w, i) => {
+      const d = W[w.type], span = Math.min(w.size, ui.cols);
+      return `<section class="w ${w.collapsed ? 'collapsed' : ''}" data-id="${w.id}" style="--span: ${span}" aria-label="${esc(w.title || d.title)}">
+        <header class="whd">
+          <span class="grip" draggable="true" title="Drag to move" tabindex="0" role="button" aria-label="Drag to move">${svg('i-grip')}</span>
+          ${svg(d.icon, 'wicon')}
+          <h3 class="wtitle" data-act="rename" data-id="${w.id}" title="${esc(w.title || d.title)}">${esc(w.title || d.title)}</h3>
+          <div class="wact">
+            <span class="sizes editonly" role="group" aria-label="Widget width">${[1, 2, 3, 4].filter(n => n <= ui.cols).map(n => `<button class="${w.size === n ? 'on' : ''}" data-act="size" data-id="${w.id}" data-n="${n}" title="${n} column${n > 1 ? 's' : ''} wide">${n}</button>`).join('')}</span>
+            <button class="ibtn editonly" data-act="move" data-id="${w.id}" data-d="-1" title="Move earlier" ${i === 0 ? 'disabled' : ''}>${svg('i-left')}</button>
+            <button class="ibtn editonly" data-act="move" data-id="${w.id}" data-d="1" title="Move later" ${i === state.widgets.length - 1 ? 'disabled' : ''}>${svg('i-right')}</button>
+            <button class="ibtn editonly" data-act="renameBtn" data-id="${w.id}" title="Rename">${svg('i-rename')}</button>
+            <button class="ibtn editonly" data-act="settings" data-id="${w.id}" title="Widget settings">${svg('i-gear')}</button>
+            <button class="ibtn editonly" data-act="remove" data-id="${w.id}" title="Remove widget">${svg('i-trash')}</button>
+            <button class="ibtn" data-act="collapse" data-id="${w.id}" title="${w.collapsed ? 'Expand' : 'Collapse'}" aria-expanded="${!w.collapsed}">${svg(w.collapsed ? 'i-down' : 'i-up')}</button>
+          </div>
+        </header>
+        <div class="wbd">${w._loading ? '<div class="shimmer"><i class="c"></i><div class="l"><i></i><i></i></div></div><div class="shimmer"><i class="c"></i><div class="l"><i></i><i></i></div></div><div class="shimmer"><i class="c"></i><div class="l"><i></i><i></i></div></div>' : d.render(w)}</div>
+      </section>`;
+    }).join('');
+    bindDrag();
+  }
+  const rerender = id => { const w = find(id); if (!w) return; const el = $(`.w[data-id="${id}"] .wbd`); if (el) el.innerHTML = W[w.type].render(w); };
+
+  // ------------------------------------------------------ drag and drop
+  function bindDrag() {
+    $$('.w').forEach(sec => {
+      const id = sec.dataset.id, grip = $('.grip', sec);
+      grip.addEventListener('dragstart', e => { ui.drag = id; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', id); e.dataTransfer.setDragImage(sec, 20, 20); requestAnimationFrame(() => sec.classList.add('dragging')); });
+      grip.addEventListener('dragend', () => { ui.drag = null; $$('.w').forEach(x => x.classList.remove('dragging', 'before', 'after')); });
+      grip.addEventListener('keydown', e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); move(id, -1); } if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); move(id, 1); } });
+      sec.addEventListener('dragover', e => { if (!ui.drag || ui.drag === id) return; e.preventDefault(); const r = sec.getBoundingClientRect(); const pos = e.clientX < r.left + r.width / 2 ? 'before' : 'after'; $$('.w').forEach(x => x !== sec && x.classList.remove('before', 'after')); sec.classList.toggle('before', pos === 'before'); sec.classList.toggle('after', pos === 'after'); ui.pos = pos; });
+      sec.addEventListener('dragleave', () => sec.classList.remove('before', 'after'));
+      sec.addEventListener('drop', e => { if (!ui.drag) return; e.preventDefault(); const from = state.widgets.findIndex(w => w.id === ui.drag); let to = state.widgets.findIndex(w => w.id === id); if (ui.pos === 'after') to++; const [it] = state.widgets.splice(from, 1); if (to > from) to--; state.widgets.splice(to, 0, it); ui.drag = null; save(); render(); });
+    });
+  }
+  function move(id, d) { const i = state.widgets.findIndex(w => w.id === id); const j = i + d; if (j < 0 || j >= state.widgets.length) return; const [it] = state.widgets.splice(i, 1); state.widgets.splice(j, 0, it); save(); render(); $(`.w[data-id="${id}"] .grip`)?.focus(); }
+
+  // ---------------------------------------------------------- edit mode
+  function setEdit(on) {
+    ui.edit = on && !ui.locked;
+    $('#wp').classList.toggle('editing', ui.edit);
+    $('#customiseBtn').hidden = ui.edit || ui.locked;
+    $('#doneBtn').hidden = !ui.edit;
+    $('#banner').hidden = !ui.edit;
+    render();
+  }
+  function openPanel(id) { $('#scrim').classList.add('open'); $$('.panel').forEach(p => p.classList.remove('open')); $(id).classList.add('open'); }
+  function closePanels() { $('#scrim').classList.remove('open'); $$('.panel').forEach(p => p.classList.remove('open')); }
+  $('#scrim').addEventListener('click', closePanels);
+  $$('[data-close]').forEach(b => b.addEventListener('click', closePanels));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanels(); });
+
+  // catalogue
+  function renderCatalog() {
+    const q = $('#catSearch').value.trim().toLowerCase();
+    $('#catList').innerHTML = CATS.map(c => { const items = Object.entries(W).filter(([k, d]) => d.cat === c && (!q || d.title.toLowerCase().includes(q) || d.desc.toLowerCase().includes(q))); if (!items.length) return ''; return `<div class="catsec"><div class="eyebrow">${c}</div>${items.map(([k, d]) => { const added = d.once && state.widgets.some(w => w.type === k); return `<button class="catitem" data-add="${k}" ${added ? 'disabled' : ''}><span class="ci">${svg(d.icon)}</span><span class="cb"><span class="ct">${d.title}${added ? ' <span style="font-weight:400;color:var(--text-muted)">· already on your dashboard</span>' : ''}</span><span class="cd">${d.desc}</span>${d.perms ? `<span class="cp">${d.perms}</span>` : ''}</span>${svg('i-plus')}</button>`; }).join('')}</div>`; }).join('') || '<div class="status">No widgets match your search.</div>';
+  }
+  $('#catSearch').addEventListener('input', renderCatalog);
+  $('#catList').addEventListener('click', e => { const b = e.target.closest('[data-add]'); if (!b) return; const t = b.dataset.add; state.widgets.push({ id: uid(t), type: t, size: Math.min(W[t].size, ui.cols), settings: defSettings(t) }); save(); render(); closePanels(); toast(`${W[t].title} added`); $(`.w[data-id="${state.widgets.at(-1).id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+  const openCatalog = () => { $('#catSearch').value = ''; renderCatalog(); openPanel('#catalog'); };
+  $('#addBtn').addEventListener('click', openCatalog);
+
+  // settings
+  let setId = null;
+  function openSettings(id) {
+    const w = find(id), d = W[w.type]; setId = id;
+    $('#setTitle').textContent = `${d.title} settings`;
+    $('#setBody').innerHTML = `<div class="fld"><label for="s-title">Title</label><input type="text" id="s-title" value="${esc(w.title || '')}" placeholder="${esc(d.title)}"><small>Leave blank to use the default title.</small></div>` + d.settings.map(s => { const v = w.settings[s[0]] ?? s[3]; if (s[2] === 'bool') return `<div class="fld"><label class="toggle ${v ? 'on' : ''}" data-set="${s[0]}"><i></i>${s[1]}</label></div>`; if (s[2] === 'num') return `<div class="fld"><label for="s-${s[0]}">${s[1]}</label><input type="number" id="s-${s[0]}" data-set="${s[0]}" value="${v}" min="1" max="50"></div>`; if (s[2] === 'choice') return `<div class="fld"><label for="s-${s[0]}">${s[1]}</label><select id="s-${s[0]}" data-set="${s[0]}">${s[4].map(o => { const [k, t] = o.split(':'); return `<option value="${k}" ${k === v ? 'selected' : ''}>${t}</option>`; }).join('')}</select></div>`; return `<div class="fld"><label for="s-${s[0]}">${s[1]}</label><input type="text" id="s-${s[0]}" data-set="${s[0]}" value="${esc(v)}"><small>Comma separated Graph user property names. Directory-synced fields are rejected by Microsoft Graph.</small></div>`; }).join('');
+    openPanel('#settings');
+  }
+  $('#setBody').addEventListener('click', e => { const t = e.target.closest('.toggle'); if (t) t.classList.toggle('on'); });
+  $('#setSave').addEventListener('click', () => { const w = find(setId); if (!w) return; const t = $('#s-title').value.trim(); w.title = t && t !== W[w.type].title ? t : undefined; $$('#setBody [data-set]').forEach(el => { const k = el.dataset.set; w.settings[k] = el.classList.contains('toggle') ? el.classList.contains('on') : el.tagName === 'INPUT' && el.type === 'number' ? Number(el.value) : el.value; }); save(); render(); closePanels(); toast('Settings saved'); });
+
+  // profile edit
+  const EDITABLE = [['preferred', 'Preferred name'], ['mobile', 'Mobile'], ['phone', 'Business phone'], ['about', 'About me', true], ['skills', 'Skills', false, true], ['interests', 'Interests', false, true], ['schools', 'Schools', false, true], ['projects', 'Past projects', false, true], ['responsibilities', 'Responsibilities', false, true], ['mysite', 'My site']];
+  let profId = null;
+  function openProfile(id) { profId = id; $('#profBody').innerHTML = `<div style="font-size:12px;color:var(--text-muted)">Only fields your organisation allows you to manage are shown. Lists such as skills and interests are comma separated.</div>` + EDITABLE.map(f => `<div class="fld"><label for="p-${f[0]}">${f[1]}</label>${f[2] ? `<textarea id="p-${f[0]}" rows="4" style="font-family:var(--font);font-size:13px">${esc(ME[f[0]])}</textarea>` : `<input type="text" id="p-${f[0]}" value="${esc(f[3] ? ME[f[0]].join(', ') : ME[f[0]])}">`}${f[3] ? '<small>Comma separated</small>' : ''}</div>`).join(''); openPanel('#profileEdit'); }
+  $('#profSave').addEventListener('click', () => { EDITABLE.forEach(f => { const v = $(`#p-${f[0]}`).value; ME[f[0]] = f[3] ? v.split(',').map(x => x.trim()).filter(Boolean) : v.trim(); }); const w = find(profId); if (w) { w._msg = ['', 'Profile updated. Changes can take a few minutes to appear everywhere.']; rerender(profId); setTimeout(() => { delete w._msg; rerender(profId); }, 5000); } closePanels(); toast('Profile updated'); });
+
+  // import / export
+  $('#ioBtn').addEventListener('click', () => { $('#ioText').value = JSON.stringify({ version: 1, widgets: state.widgets.map(w => ({ id: w.id, type: w.type, size: w.size, collapsed: w.collapsed, title: w.title, settings: w.settings })) }, null, 2); openPanel('#io'); });
+  $('#ioImport').addEventListener('click', () => { try { const p = JSON.parse($('#ioText').value); if (!Array.isArray(p.widgets)) throw 0; state = { widgets: p.widgets.filter(w => W[w.type]).map(w => ({ ...w, id: w.id || uid(w.type), settings: { ...defSettings(w.type), ...(w.settings || {}) } })) }; save(); render(); closePanels(); toast('Layout imported'); } catch { toast('That does not look like a valid layout'); } });
+  $('#ioCopy').addEventListener('click', () => { navigator.clipboard?.writeText($('#ioText').value).then(() => toast('Copied')).catch(() => {}); });
+  $('#resetBtn').addEventListener('click', () => { if (confirm('Reset dashboard? This removes your customisations and restores the default layout set by the page owner.')) { store.del(KEY); state = DEFAULT(); ui.tabs = {}; render(); toast('Dashboard reset'); } });
+  $('#defaultBtn').addEventListener('click', () => toast('Stored as the page default. Republish the page to apply it for everyone.'));
+
+  // header
+  $('#customiseBtn').addEventListener('click', () => setEdit(true));
+  $('#doneBtn').addEventListener('click', () => setEdit(false));
+  $('#refreshBtn').addEventListener('click', () => { state.widgets.forEach(w => w._loading = true); render(); setTimeout(() => { state.widgets.forEach(w => delete w._loading); render(); }, 700); });
+  $('#spsearch').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.value.trim()) toast(`Searching SharePoint for "${e.target.value.trim()}"`); });
+  const now = new Date(); const h = now.getHours();
+  $('#greet').textContent = `${h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'}, Lee`;
+  $('#today').textContent = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  // grid delegation
+  $('#grid').addEventListener('click', e => {
+    if (e.target.id === 'emptyAdd') { setEdit(true); openCatalog(); return; }
+    const t = e.target.closest('[data-tab]'); if (t) { ui.tabs[t.dataset.for] = t.dataset.tab; rerender(t.dataset.for); return; }
+    const a = e.target.closest('[data-act]'); if (!a) return;
+    const id = a.dataset.id, w = find(id), act = a.dataset.act;
+    switch (act) {
+      case 'collapse': w.collapsed = !w.collapsed; save(); render(); break;
+      case 'remove': state.widgets = state.widgets.filter(x => x.id !== id); save(); render(); toast(`${W[w.type].title} removed`); break;
+      case 'size': w.size = Number(a.dataset.n); save(); render(); break;
+      case 'move': move(id, Number(a.dataset.d)); break;
+      case 'settings': openSettings(id); break;
+      case 'renameBtn': startRename(id); break;
+      case 'editProfile': openProfile(id); break;
+      case 'orgToggle': w._exp = w._exp === false; rerender(id); break;
+      case 'folder': ui.folder = a.dataset.f; { const dw = state.widgets.find(x => x.type === 'onedrive'); if (dw) { ui.tabs[dw.id] = 'browse'; rerender(dw.id); } } break;
+      case 'doneTask': a.classList.add('done'); setTimeout(() => { TODO.splice(Number(a.dataset.i), 1); const tw = state.widgets.find(x => x.type === 'tasks'); if (tw) rerender(tw.id); toast('Task completed'); }, 350); break;
+      case 'unread': w.settings.unreadOnly = !w.settings.unreadOnly; save(); rerender(id); break;
+      case 'linkAdd': w._adding = true; rerender(id); $(`.w[data-id="${id}"] form input`)?.focus(); break;
+      case 'linkDel': w.settings.links.splice(Number(a.dataset.i), 1); save(); rerender(id); break;
+      case 'linkUp': { const i = Number(a.dataset.i); if (i > 0) { const l = w.settings.links; [l[i - 1], l[i]] = [l[i], l[i - 1]]; save(); rerender(id); } } break;
+    }
+  });
+  $('#grid').addEventListener('dblclick', e => { const t = e.target.closest('.wtitle'); if (t && ui.edit) startRename(t.dataset.id); });
+  $('#grid').addEventListener('submit', e => {
+    e.preventDefault(); const f = e.target, w = find(f.dataset.id);
+    if (f.dataset.act === 'addTask') { const v = f.querySelector('input').value.trim(); if (!v) return; TODO.unshift([v, '', false]); rerender(w.id); toast('Task added'); }
+    if (f.dataset.act === 'addLink') { const [t, u] = $$('input', f).map(i => i.value.trim()); if (!u) return; (w.settings.links ||= []).push([t || u, u.replace(/^https?:\/\//, '')]); w._adding = false; save(); rerender(w.id); }
+  });
+  $('#grid').addEventListener('input', e => {
+    if (e.target.dataset.note) { const w = find(e.target.dataset.note); w.settings.text = e.target.value; clearTimeout(w._t); w._t = setTimeout(save, 600); }
+    if (e.target.dataset.q) { const w = find(e.target.dataset.q); w._q = e.target.value; const pos = e.target.selectionStart; rerender(w.id); const inp = $(`.w[data-id="${w.id}"] [data-q]`); inp.focus(); inp.setSelectionRange(pos, pos); }
+  });
+  function startRename(id) { const w = find(id), d = W[w.type], h3 = $(`.w[data-id="${id}"] .wtitle`); h3.innerHTML = `<input value="${esc(w.title || d.title)}" aria-label="Widget title">`; const inp = h3.firstChild; inp.focus(); inp.select(); const done = () => { const v = inp.value.trim(); w.title = v && v !== d.title ? v : undefined; save(); render(); }; inp.addEventListener('blur', done); inp.addEventListener('keydown', ev => { if (ev.key === 'Enter') inp.blur(); if (ev.key === 'Escape') { inp.removeEventListener('blur', done); render(); } }); }
+
+  // page-owner settings (mock property pane)
+  const groupBtn = (attr, fn) => $$(`[data-${attr}]`).forEach(b => b.addEventListener('click', () => { $$(`[data-${attr}]`).forEach(x => x.classList.remove('on')); b.classList.add('on'); fn(b.dataset[attr]); }));
+  groupBtn('cols', v => { ui.cols = Number(v); document.documentElement.style.setProperty('--columns', v); render(); });
+  groupBtn('card', v => { $('#wp').classList.remove('shadow', 'outline', 'flat'); $('#wp').classList.add(v); });
+  groupBtn('hdr', v => { $('#hdr').className = `hdr ${v}`; });
+  $('#densityBtn').addEventListener('click', e => { e.target.classList.toggle('on'); $('#wp').classList.toggle('compact'); });
+  $('#lockBtn').addEventListener('click', e => { ui.locked = !ui.locked; e.currentTarget.classList.toggle('on', ui.locked); setEdit(false); $('#status').innerHTML = `${svg('i-pc')} Layout is saved in this browser.${ui.locked ? ' Customisation has been locked by the page owner.' : ''}`; });
+  $('#accentPick').addEventListener('input', e => { const v = e.target.value; const n = parseInt(v.slice(1), 16); document.documentElement.style.setProperty('--accent', v); document.documentElement.style.setProperty('--accent-rgb', `${n >> 16 & 255}, ${n >> 8 & 255}, ${n & 255}`); document.documentElement.style.setProperty('--suite', `color-mix(in srgb, ${v} 70%, #06131c)`); });
+  $('#themeBtn').addEventListener('click', e => { const r = document.documentElement; const dark = r.dataset.theme === 'dark' || (!r.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches); r.dataset.theme = dark ? 'light' : 'dark'; e.currentTarget.innerHTML = `<svg width="13" height="13"><use href="#${dark ? 'i-moon' : 'i-sun'}"/></svg> ${dark ? 'Dark' : 'Light'}`; });
+
+  render();
+})();
+</script>
