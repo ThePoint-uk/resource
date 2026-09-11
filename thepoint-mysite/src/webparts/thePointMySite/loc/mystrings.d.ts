@@ -1,0 +1,62 @@
+declare interface IThePointMySiteWebPartStrings {
+  PageGeneralDescription: string;
+  PageWidgetsDescription: string;
+  PagePersonalisationDescription: string;
+  GroupHeader: string;
+  GroupLayout: string;
+  GroupAvailableWidgets: string;
+  GroupDefaultLayout: string;
+  GroupPersonalisation: string;
+  GroupPerformance: string;
+  GroupAbout: string;
+  ShowGreetingLabel: string;
+  GreetingStyleLabel: string;
+  GreetingTimeOfDay: string;
+  GreetingWelcome: string;
+  GreetingNone: string;
+  ShowTitleLabel: string;
+  TitleLabel: string;
+  ShowDateLabel: string;
+  ShowSearchLabel: string;
+  HeaderStyleLabel: string;
+  HeaderPlain: string;
+  HeaderAccent: string;
+  HeaderGradient: string;
+  ColumnsLabel: string;
+  DensityLabel: string;
+  DensityComfortable: string;
+  DensityCompact: string;
+  CardStyleLabel: string;
+  CardShadow: string;
+  CardOutline: string;
+  CardFlat: string;
+  CornerRadiusLabel: string;
+  AccentColorLabel: string;
+  AccentColorDescription: string;
+  AccentColorError: string;
+  OpenLinksInNewTabLabel: string;
+  AvailableWidgetsHelp: string;
+  ShowPermissionHintsLabel: string;
+  DefaultLayoutHelp: string;
+  DefaultLayoutLabel: string;
+  DefaultLayoutError: string;
+  ClearDefaultLayoutButton: string;
+  AllowCustomisationLabel: string;
+  LockLayoutLabel: string;
+  StorageModeLabel: string;
+  StorageLocal: string;
+  StorageOneDrive: string;
+  StorageList: string;
+  StorageLocalHelp: string;
+  StorageOneDriveHelp: string;
+  StorageListHelp: string;
+  StorageListTitleLabel: string;
+  CacheMinutesLabel: string;
+  CacheMinutesHelp: string;
+  AboutText: string;
+}
+
+declare module 'ThePointMySiteWebPartStrings' {
+  const strings: IThePointMySiteWebPartStrings;
+  export = strings;
+}

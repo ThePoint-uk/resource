@@ -1,0 +1,105 @@
+.hero {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--tpms-border);
+  margin-bottom: 10px;
+}
+
+.heroBody {
+  min-width: 0;
+  flex: 1;
+}
+
+.name {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--tpms-text);
+}
+
+.job {
+  font-size: 13px;
+  color: var(--tpms-text-muted);
+  margin-top: 2px;
+}
+
+.heroActions {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px 12px;
+  margin: 0;
+}
+
+.wide .fields {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.field {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13px;
+  min-width: 0;
+
+  .fieldIcon {
+    color: var(--tpms-accent);
+    font-size: 14px;
+    margin-top: 2px;
+    flex: 0 0 16px;
+  }
+
+  .fieldBody {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .fieldLabel {
+    font-size: 11px;
+    color: var(--tpms-text-muted);
+  }
+
+  .fieldValue {
+    word-break: break-word;
+    color: var(--tpms-text);
+
+    a {
+      color: var(--tpms-accent);
+      text-decoration: none;
+    }
+  }
+}
+
+.readonlyBadge {
+  font-size: 10px;
+  color: var(--tpms-text-muted);
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.about {
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  color: var(--tpms-text);
+}
+
+.editGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.editHelp {
+  font-size: 12px;
+  color: var(--tpms-text-muted);
+  line-height: 1.4;
+}

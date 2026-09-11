@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "the-point-my-site-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/thePointMySite/ThePointMySiteWebPart.js",
+          "manifest": "./src/webparts/thePointMySite/ThePointMySiteWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "ThePointMySiteWebPartStrings": "lib/webparts/thePointMySite/loc/{locale}.js"
+  }
+}

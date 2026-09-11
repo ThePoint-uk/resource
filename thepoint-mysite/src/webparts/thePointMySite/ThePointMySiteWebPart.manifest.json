@@ -1,0 +1,49 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "ccdc643f-cc59-45f7-80d9-65ccf9a36790",
+  "alias": "ThePointMySiteWebPart",
+  "componentType": "WebPart",
+
+  // The "*" signifies that the version should be taken from the package.json
+  "version": "*",
+  "manifestVersion": 2,
+
+  // If true, the component can only be installed on sites where Custom Script is allowed.
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab", "SharePointFullPage"],
+  "supportsThemeVariants": true,
+  "supportsFullBleed": true,
+
+  "preconfiguredEntries": [{
+    "groupId": "cf066440-0614-43d6-98ae-0b31cf14c7c3", // Other
+    "group": { "default": "Other" },
+    "title": { "default": "ThePoint MySite" },
+    "description": { "default": "A personalised, widget-based dashboard: profile, team, org chart, apps, documents, sites, OneDrive, calendar, tasks, mail and more." },
+    "officeFabricIconFontName": "ViewDashboard",
+    "tags": ["dashboard", "my site", "profile", "personalised", "widgets"],
+    "properties": {
+      "title": "My workspace",
+      "showTitle": false,
+      "showGreeting": true,
+      "greetingStyle": "timeOfDay",
+      "showDate": true,
+      "showSearch": true,
+      "columns": 3,
+      "density": "comfortable",
+      "cardStyle": "shadow",
+      "cornerRadius": 8,
+      "accentColor": "",
+      "headerStyle": "plain",
+      "allowUserCustomisation": true,
+      "lockLayout": false,
+      "storageMode": "local",
+      "storageListTitle": "ThePoint MySite Layouts",
+      "cacheMinutes": 10,
+      "enabledWidgets": {},
+      "defaultLayout": "",
+      "maxItems": 10,
+      "openLinksInNewTab": true,
+      "showPermissionHints": true
+    }
+  }]
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "ThePoint MySite",
+    "id": "c49e99c8-0c63-47e2-a50a-9d870c770c4c",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "The Point",
+      "websiteUrl": "https://www.the-point.uk",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": ""
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "A personalised, widget-based dashboard for SharePoint and Teams."
+      },
+      "longDescription": {
+        "default": "ThePoint MySite gives every user an iGoogle-style personal workspace inside SharePoint: my profile (with in-place editing), my team, my organisation, My Apps (Entra), recent documents, sites, OneDrive, calendar, tasks, inbox, Teams, news, quick links and notes. Users drag, resize and configure widgets; page owners control defaults, styling and which widgets are available."
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": ["Productivity", "Collaboration"]
+    },
+    "features": [
+      {
+        "title": "ThePoint MySite",
+        "description": "Deploys the ThePoint MySite web part.",
+        "id": "f35fcd42-b59e-4b5c-aa8f-df061d20ca05",
+        "version": "1.0.0.0"
+      }
+    ],
+    "webApiPermissionRequests": [
+      { "resource": "Microsoft Graph", "scope": "User.Read.All" },
+      { "resource": "Microsoft Graph", "scope": "User.ReadWrite" },
+      { "resource": "Microsoft Graph", "scope": "People.Read" },
+      { "resource": "Microsoft Graph", "scope": "Presence.Read.All" },
+      { "resource": "Microsoft Graph", "scope": "Directory.Read.All" },
+      { "resource": "Microsoft Graph", "scope": "Sites.Read.All" },
+      { "resource": "Microsoft Graph", "scope": "Files.Read.All" },
+      { "resource": "Microsoft Graph", "scope": "Files.ReadWrite" },
+      { "resource": "Microsoft Graph", "scope": "Calendars.Read" },
+      { "resource": "Microsoft Graph", "scope": "Tasks.ReadWrite" },
+      { "resource": "Microsoft Graph", "scope": "Group.Read.All" },
+      { "resource": "Microsoft Graph", "scope": "Mail.Read" },
+      { "resource": "Microsoft Graph", "scope": "Team.ReadBasic.All" }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/thepoint-mysite.sppkg"
+  }
+}

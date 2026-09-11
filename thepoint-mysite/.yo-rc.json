@@ -1,0 +1,23 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "whichFolder": "subdir",
+    "solutionName": "thepoint-mysite",
+    "solutionShortDescription": "ThePoint MySite - a personalised, widget-based dashboard for SharePoint",
+    "environment": "spo",
+    "packageManager": "npm",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "useGulp": false,
+    "componentType": "webpart",
+    "template": "react",
+    "componentName": "ThePointMySite",
+    "componentDescription": "ThePoint MySite - a personalised, widget-based dashboard for SharePoint",
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.22.2",
+    "sdksVersions": {},
+    "version": "1.23.2",
+    "libraryName": "thepoint-mysite",
+    "libraryId": "c49e99c8-0c63-47e2-a50a-9d870c770c4c"
+  }
+}
