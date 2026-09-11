@@ -39,8 +39,10 @@
       "storageMode": "local",
       "storageListTitle": "ThePoint MySite Layouts",
       "cacheMinutes": 10,
-      "enabledWidgets": {},
+      "widgetConfig": {},
       "defaultLayout": "",
+      "defaultLayouts": "",
+      "hideUnavailableWidgets": true,
       "maxItems": 10,
       "openLinksInNewTab": true,
       "showPermissionHints": true

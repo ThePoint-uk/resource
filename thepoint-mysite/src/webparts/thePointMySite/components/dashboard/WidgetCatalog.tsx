@@ -12,7 +12,7 @@ export interface IWidgetCatalogProps {
 
 /** Side panel listing every available widget grouped by category. */
 export const WidgetCatalog: React.FC<IWidgetCatalogProps> = ({ isOpen, onDismiss }) => {
-  const { availableWidgets, state, addWidget, props } = useDashboard();
+  const { availableWidgets, state, addWidget, props, isPinned, unavailableTypes } = useDashboard();
   const [query, setQuery] = React.useState<string>('');
   const q: string = query.trim().toLowerCase();
 
@@ -26,6 +26,11 @@ export const WidgetCatalog: React.FC<IWidgetCatalogProps> = ({ isOpen, onDismiss
       <div className={styles.catalogue}>
         <SearchBox placeholder="Search widgets" value={query} onChange={(_, v) => setQuery(v || '')} />
         {groups.length === 0 && <div className={styles.status}>No widgets match your search.</div>}
+        {unavailableTypes.size > 0 && !q && (
+          <div className={styles.status}>
+            <Icon iconName="Info" /> {unavailableTypes.size} widget{unavailableTypes.size === 1 ? ' is' : 's are'} hidden because their permissions have not been approved yet.
+          </div>
+        )}
         {groups.map(group => (
           <div className={styles.catalogueSection} key={group.category}>
             <div className={styles.catalogueHeading}>{CATEGORY_LABELS[group.category]}</div>
@@ -48,6 +53,7 @@ export const WidgetCatalog: React.FC<IWidgetCatalogProps> = ({ isOpen, onDismiss
                   <span className={styles.catalogueBody}>
                     <span className={styles.catalogueTitle}>
                       {def.title}
+                      {isPinned(def.type) && <span className={styles.requiredPill}><Icon iconName="Pinned" /> Required</span>}
                       {alreadyAdded && <span style={{ fontWeight: 400, color: 'var(--tpms-text-muted)' }}> · already on your dashboard</span>}
                     </span>
                     <span className={styles.catalogueDesc}>{def.description}</span>

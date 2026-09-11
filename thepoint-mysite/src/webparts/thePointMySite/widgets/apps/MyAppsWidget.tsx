@@ -167,6 +167,7 @@ export const myAppsDefinition: IWidgetDefinition = {
   defaultSize: 1,
   allowMultiple: false,
   permissions: ['Directory.Read.All'],
+  probe: async (graph) => { await graph.get('/me/appRoleAssignments?$top=1&$select=id'); },
   settingsSchema: [
     { key: 'layout', label: 'Layout', type: 'choice', defaultValue: 'tiles', choices: [{ key: 'tiles', text: 'Tiles' }, { key: 'list', text: 'List' }] },
     { key: 'showSearch', label: 'Show search box', type: 'boolean', defaultValue: true },

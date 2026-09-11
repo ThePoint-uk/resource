@@ -3,7 +3,7 @@
   "solution": {
     "name": "ThePoint MySite",
     "id": "c49e99c8-0c63-47e2-a50a-9d870c770c4c",
-    "version": "1.0.0.0",
+    "version": "1.1.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
@@ -30,7 +30,7 @@
         "title": "ThePoint MySite",
         "description": "Deploys the ThePoint MySite web part.",
         "id": "f35fcd42-b59e-4b5c-aa8f-df061d20ca05",
-        "version": "1.0.0.0"
+        "version": "1.1.0.0"
       }
     ],
     "webApiPermissionRequests": [

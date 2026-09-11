@@ -324,6 +324,7 @@ export const myProfileDefinition: IWidgetDefinition = {
   defaultSize: 1,
   allowMultiple: false,
   permissions: ['User.ReadWrite', 'Presence.Read'],
+  probe: async (graph) => { await graph.get('/me?$select=id', { cacheKey: 'probe:me' }); },
   settingsSchema: [
     { key: 'allowEdit', label: 'Allow editing', type: 'boolean', defaultValue: true },
     { key: 'showPresence', label: 'Show Teams presence', type: 'boolean', defaultValue: true },

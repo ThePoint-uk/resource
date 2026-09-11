@@ -55,6 +55,7 @@ export const teamsDefinition: IWidgetDefinition = {
   defaultSize: 1,
   allowMultiple: false,
   permissions: ['Team.ReadBasic.All'],
+  probe: async (graph) => { await graph.get('/me/joinedTeams?$select=id&$top=1'); },
   settingsSchema: [
     { key: 'maxItems', label: 'Teams to show', type: 'number', defaultValue: 12, min: 3, max: 50 },
     { key: 'showSearch', label: 'Show search box', type: 'boolean', defaultValue: true },

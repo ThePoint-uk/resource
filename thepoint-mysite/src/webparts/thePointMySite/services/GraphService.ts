@@ -37,6 +37,13 @@ export interface IGraphUser {
   directReports?: IGraphUser[];
 }
 
+export interface IGraphGroup {
+  id: string;
+  displayName: string;
+  mail?: string;
+  mailNickname?: string;
+}
+
 export interface IGraphPresence {
   id: string;
   availability: string;
@@ -338,6 +345,18 @@ export class GraphService {
 
   public getPeople(top: number): Promise<IGraphPerson[]> {
     return this.getAll<IGraphPerson>(`/me/people?$top=${top}&$filter=personType/class eq 'Person'`, top);
+  }
+
+  /** Groups the user belongs to, including nested membership. */
+  public getMyGroups(): Promise<IGraphGroup[]> {
+    return this.getAll<IGraphGroup>('/me/transitiveMemberOf/microsoft.graph.group?$select=id,displayName,mail,mailNickname&$top=999', 2000, {
+      headers: { ConsistencyLevel: 'eventual' }
+    });
+  }
+
+  public async hasDirectReports(): Promise<boolean> {
+    const page: IGraphCollection<{ id: string }> = await this.get('/me/directReports?$select=id&$top=1', { cacheKey: 'me:hasReports' });
+    return (page.value || []).length > 0;
   }
 
   public async searchUsers(query: string, top: number = 10): Promise<IGraphUser[]> {

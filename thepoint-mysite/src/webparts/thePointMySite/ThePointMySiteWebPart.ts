@@ -24,7 +24,9 @@ import type { IThePointMySiteWebPartProps } from './models';
 import { GraphService } from './services/GraphService';
 import { SharePointService } from './services/SharePointService';
 import { CacheService } from './services/CacheService';
-import { getWidgetDefinitions } from './widgets/registry';
+import { getWidgetDefinition, getWidgetDefinitions } from './widgets/registry';
+import { isEnabled, parseAudienceLayouts, schemaDefaults } from './context/DashboardContext';
+import type { IAudienceLayout, IWidgetDefinition } from './models';
 
 export type { IThePointMySiteWebPartProps };
 
@@ -39,6 +41,7 @@ export default class ThePointMySiteWebPart extends BaseClientSideWebPart<IThePoi
   private _cache!: CacheService;
   private _graph!: GraphService;
   private _sp!: SharePointService;
+  private _ruleWidget: string = '';
 
   protected async onInit(): Promise<void> {
     await super.onInit();
@@ -59,8 +62,19 @@ export default class ThePointMySiteWebPart extends BaseClientSideWebPart<IThePoi
       properties: { ...this.properties },
       isPageEditMode: this.displayMode === DisplayMode.Edit,
       instanceId: this.instanceId,
-      onSaveAsDefault: (json: string): void => {
-        this.properties.defaultLayout = json;
+      onSaveAsDefault: (json: string, audience: string): void => {
+        if (!audience) {
+          this.properties.defaultLayout = json;
+        } else {
+          const layouts: IAudienceLayout[] = parseAudienceLayouts(this.properties.defaultLayouts);
+          const existing: IAudienceLayout | undefined = layouts.find(l => l.audiences.trim().toLowerCase() === audience.toLowerCase());
+          if (existing) {
+            existing.layout = JSON.parse(json);
+          } else {
+            layouts.push({ audiences: audience, layout: JSON.parse(json) });
+          }
+          this.properties.defaultLayouts = JSON.stringify(layouts, undefined, 2);
+        }
         this.context.propertyPane.refresh();
         this.render();
       }
@@ -87,8 +101,19 @@ export default class ThePointMySiteWebPart extends BaseClientSideWebPart<IThePoi
     p.storageMode = p.storageMode ?? 'local';
     p.storageListTitle = p.storageListTitle ?? 'ThePoint MySite Layouts';
     p.cacheMinutes = p.cacheMinutes ?? 10;
-    p.enabledWidgets = p.enabledWidgets ?? {};
+    p.widgetConfig = p.widgetConfig ?? {};
+    // Migrate the v1.0 enable map into widgetConfig.
+    if (p.enabledWidgets) {
+      Object.keys(p.enabledWidgets).forEach(type => {
+        if (p.enabledWidgets![type] === false && p.widgetConfig[type]?.enabled === undefined) {
+          p.widgetConfig[type] = { ...(p.widgetConfig[type] || {}), enabled: false };
+        }
+      });
+      p.enabledWidgets = undefined;
+    }
     p.defaultLayout = p.defaultLayout ?? '';
+    p.defaultLayouts = p.defaultLayouts ?? '';
+    p.hideUnavailableWidgets = p.hideUnavailableWidgets ?? true;
     p.maxItems = p.maxItems ?? 10;
     p.openLinksInNewTab = p.openLinksInNewTab ?? true;
     p.showPermissionHints = p.showPermissionHints ?? true;
@@ -113,20 +138,92 @@ export default class ThePointMySiteWebPart extends BaseClientSideWebPart<IThePoi
   }
 
   protected get dataVersion(): Version {
-    return Version.parse('1.0');
+    return Version.parse('1.1');
   }
 
   protected get disableReactivePropertyChanges(): boolean {
     return false;
   }
 
+  protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: unknown, newValue: unknown): void {
+    super.onPropertyPaneFieldChanged(propertyPath, oldValue, newValue);
+    if (propertyPath === 'ruleWidget') {
+      // The rule selector is UI state, not a persisted property.
+      this._ruleWidget = String(newValue);
+      delete (this.properties as unknown as Record<string, unknown>).ruleWidget;
+      this.context.propertyPane.refresh();
+    }
+  }
+
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
-    const widgetToggles: IPropertyPaneField<unknown>[] = getWidgetDefinitions().map(def =>
-      PropertyPaneCheckbox(`enabledWidgets.${def.type}`, {
+    const definitions: IWidgetDefinition[] = getWidgetDefinitions();
+    const widgetToggles: IPropertyPaneField<unknown>[] = definitions.map(def =>
+      PropertyPaneCheckbox(`widgetConfig.${def.type}.enabled`, {
         text: def.title,
-        checked: this.properties.enabledWidgets?.[def.type] !== false
+        checked: isEnabled(this.properties, def.type)
       })
     );
+
+    const ruleType: string = this._ruleWidget && getWidgetDefinition(this._ruleWidget) ? this._ruleWidget : definitions[0].type;
+    const ruleDef: IWidgetDefinition = getWidgetDefinition(ruleType)!;
+    const ruleFields: IPropertyPaneField<unknown>[] = [
+      PropertyPaneDropdown('ruleWidget', {
+        label: strings.RuleWidgetLabel,
+        options: definitions.map(def => ({ key: def.type, text: def.title })),
+        selectedKey: ruleType
+      }),
+      PropertyPaneToggle(`widgetConfig.${ruleType}.pinned`, { label: strings.PinnedLabel, onText: strings.PinnedOn, offText: strings.PinnedOff }),
+      PropertyPaneTextField(`widgetConfig.${ruleType}.audiences`, {
+        label: strings.AudiencesLabel,
+        description: strings.AudiencesDescription,
+        placeholder: strings.AudiencesPlaceholder
+      })
+    ];
+    const lockable = (ruleDef.settingsSchema || []).filter(f => f.type !== 'links');
+    if (lockable.length > 0) {
+      ruleFields.push(PropertyPaneLabel('lockedHelp', { text: strings.LockedSettingsHelp }));
+      lockable.forEach(f => {
+        ruleFields.push(
+          PropertyPaneCheckbox(`widgetConfig.${ruleType}.locked.${f.key}`, {
+            text: f.label,
+            checked: !!this.properties.widgetConfig?.[ruleType]?.locked?.[f.key]
+          })
+        );
+      });
+      ruleFields.push(
+        PropertyPaneTextField(`widgetConfig.${ruleType}.settings`, {
+          label: strings.OwnerSettingsLabel,
+          description: strings.OwnerSettingsDescription,
+          multiline: true,
+          rows: 6,
+          resizable: true,
+          onGetErrorMessage: (value: string): string => {
+            if (!value || !value.trim()) {
+              return '';
+            }
+            try {
+              const parsed: unknown = JSON.parse(value);
+              return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? '' : strings.OwnerSettingsError;
+            } catch {
+              return strings.OwnerSettingsError;
+            }
+          }
+        }),
+        PropertyPaneButton('fillDefaults', {
+          text: strings.FillDefaultsButton,
+          buttonType: PropertyPaneButtonType.Normal,
+          icon: 'Refresh',
+          onClick: (): void => {
+            this.properties.widgetConfig[ruleType] = {
+              ...(this.properties.widgetConfig[ruleType] || {}),
+              settings: JSON.stringify(schemaDefaults(ruleDef), undefined, 2)
+            };
+            this.context.propertyPane.refresh();
+            this.render();
+          }
+        })
+      );
+    }
 
     return {
       pages: [
@@ -198,7 +295,16 @@ export default class ThePointMySiteWebPart extends BaseClientSideWebPart<IThePoi
           groups: [
             {
               groupName: strings.GroupAvailableWidgets,
-              groupFields: [PropertyPaneLabel('widgetsHelp', { text: strings.AvailableWidgetsHelp }), ...widgetToggles, PropertyPaneToggle('showPermissionHints', { label: strings.ShowPermissionHintsLabel })]
+              groupFields: [
+                PropertyPaneLabel('widgetsHelp', { text: strings.AvailableWidgetsHelp }),
+                ...widgetToggles,
+                PropertyPaneToggle('hideUnavailableWidgets', { label: strings.HideUnavailableLabel }),
+                PropertyPaneToggle('showPermissionHints', { label: strings.ShowPermissionHintsLabel })
+              ]
+            },
+            {
+              groupName: strings.GroupWidgetRules,
+              groupFields: [PropertyPaneLabel('rulesHelp', { text: strings.WidgetRulesHelp }), ...ruleFields]
             },
             {
               groupName: strings.GroupDefaultLayout,
@@ -229,6 +335,24 @@ export default class ThePointMySiteWebPart extends BaseClientSideWebPart<IThePoi
                     this.properties.defaultLayout = '';
                     this.context.propertyPane.refresh();
                     this.render();
+                  }
+                }),
+                PropertyPaneLabel('audienceLayoutsHelp', { text: strings.AudienceLayoutsHelp }),
+                PropertyPaneTextField('defaultLayouts', {
+                  label: strings.AudienceLayoutsLabel,
+                  multiline: true,
+                  rows: 8,
+                  resizable: true,
+                  onGetErrorMessage: (value: string): string => {
+                    if (!value || !value.trim()) {
+                      return '';
+                    }
+                    try {
+                      const parsed: unknown = JSON.parse(value);
+                      return Array.isArray(parsed) ? '' : strings.AudienceLayoutsError;
+                    } catch {
+                      return strings.AudienceLayoutsError;
+                    }
                   }
                 })
               ]

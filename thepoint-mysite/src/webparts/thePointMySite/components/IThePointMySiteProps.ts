@@ -13,5 +13,5 @@ export interface IThePointMySiteProps {
   properties: IThePointMySiteWebPartProps;
   isPageEditMode: boolean;
   instanceId: string;
-  onSaveAsDefault: (json: string) => void;
+  onSaveAsDefault: (json: string, audience: string) => void;
 }

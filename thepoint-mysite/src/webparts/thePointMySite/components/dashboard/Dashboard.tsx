@@ -28,7 +28,9 @@ function hexToRgba(hex: string, alpha: number): string {
 
 export const Dashboard: React.FC = () => {
   const dash = useDashboard();
-  const { props, state, ready, editMode, isDarkTheme, theme, loadError, loadSource, moveWidget, updateWidgetSettings, resetLayout, exportLayout, importLayout, refreshToken, graph, sp, context } = dash;
+  const { props, state, ready, editMode, isDarkTheme, theme, loadError, loadSource, moveWidget, updateWidgetSettings, resetLayout, exportLayout, importLayout, refreshToken, graph, sp, context, unavailableTypes, saveAsDefault } = dash;
+  const [defaultOpen, setDefaultOpen] = React.useState<boolean>(false);
+  const [defaultAudience, setDefaultAudience] = React.useState<string>('');
   const columns: number = Math.max(1, Math.min(4, props.columns || 3));
   const [catalogOpen, setCatalogOpen] = React.useState<boolean>(false);
   const [settingsId, setSettingsId] = React.useState<string | undefined>(undefined);
@@ -82,7 +84,7 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className={[styles.root, isDarkTheme ? styles.dark : '', props.density === 'compact' ? styles.compact : ''].join(' ')} style={cssVars as React.CSSProperties}>
-      <DashboardHeader onAddWidget={() => setCatalogOpen(true)} onReset={() => setResetOpen(true)} onImportExport={openIo} />
+      <DashboardHeader onAddWidget={() => setCatalogOpen(true)} onReset={() => setResetOpen(true)} onImportExport={openIo} onSaveAsDefault={() => { setDefaultAudience(''); setDefaultOpen(true); }} />
 
       {loadError && (
         <MessageBar messageBarType={MessageBarType.warning} styles={{ root: { marginBottom: 12 } }}>
@@ -121,7 +123,7 @@ export const Dashboard: React.FC = () => {
           )}
           {state.widgets.map((instance: IWidgetInstance, index: number) => {
             const definition: IWidgetDefinition | undefined = getWidgetDefinition(instance.type);
-            if (!definition) {
+            if (!definition || unavailableTypes.has(instance.type)) {
               return undefined;
             }
             const Component = definition.component;
@@ -189,6 +191,33 @@ export const Dashboard: React.FC = () => {
             }}
           />
           <DefaultButton text="Cancel" onClick={() => setResetOpen(false)} />
+        </DialogFooter>
+      </Dialog>
+
+      <Dialog
+        hidden={!defaultOpen}
+        onDismiss={() => setDefaultOpen(false)}
+        minWidth={460}
+        dialogContentProps={{ type: DialogType.normal, title: 'Set as page default', subText: 'Everyone who has not personalised their dashboard (and anyone who resets) will start from the current layout. Remember to republish the page.' }}
+      >
+        <TextField
+          label="Audience (optional)"
+          value={defaultAudience}
+          onChange={(_, v) => setDefaultAudience(v || '')}
+          placeholder="Leave blank for everyone"
+          description="Entra or Microsoft 365 group names, ids or mail addresses, comma separated. @managers targets people with direct reports. Audience defaults are checked before the page default."
+        />
+        <DialogFooter>
+          <PrimaryButton
+            text="Save default"
+            onClick={() => {
+              if (saveAsDefault) {
+                saveAsDefault(defaultAudience.trim());
+              }
+              setDefaultOpen(false);
+            }}
+          />
+          <DefaultButton text="Cancel" onClick={() => setDefaultOpen(false)} />
         </DialogFooter>
       </Dialog>
 

@@ -8,9 +8,10 @@ export interface IDashboardHeaderProps {
   onAddWidget: () => void;
   onReset: () => void;
   onImportExport: () => void;
+  onSaveAsDefault: () => void;
 }
 
-export const DashboardHeader: React.FC<IDashboardHeaderProps> = ({ onAddWidget, onReset, onImportExport }) => {
+export const DashboardHeader: React.FC<IDashboardHeaderProps> = ({ onAddWidget, onReset, onImportExport, onSaveAsDefault }) => {
   const { props, context, editMode, setEditMode, canCustomise, saveAsDefault, refreshAll, sp } = useDashboard();
   const firstName: string = (context.pageContext.user.displayName || '').split(' ')[0];
   const [query, setQuery] = React.useState<string>('');
@@ -66,8 +67,8 @@ export const DashboardHeader: React.FC<IDashboardHeaderProps> = ({ onAddWidget, 
             <DefaultButton text="Import / export" iconProps={{ iconName: 'Code' }} onClick={onImportExport} />
             <DefaultButton text="Reset" iconProps={{ iconName: 'Undo' }} onClick={onReset} />
             {saveAsDefault && (
-              <TooltipHost content="Stores the current layout as the default for everyone who has not customised yet. Remember to republish the page.">
-                <DefaultButton text="Set as page default" iconProps={{ iconName: 'Save' }} onClick={saveAsDefault} />
+              <TooltipHost content="Stores the current layout as the default for everyone, or for an audience you choose. Remember to republish the page.">
+                <DefaultButton text="Set as page default" iconProps={{ iconName: 'Save' }} onClick={onSaveAsDefault} />
               </TooltipHost>
             )}
           </span>

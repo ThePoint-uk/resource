@@ -126,6 +126,7 @@ export const calendarDefinition: IWidgetDefinition = {
   defaultSize: 1,
   allowMultiple: false,
   permissions: ['Calendars.Read'],
+  probe: async (graph) => { await graph.get('/me/calendar?$select=id'); },
   settingsSchema: [
     { key: 'days', label: 'Days to show', type: 'number', defaultValue: 7, min: 1, max: 31 },
     { key: 'maxItems', label: 'Maximum events', type: 'number', defaultValue: 15, min: 3, max: 50 }

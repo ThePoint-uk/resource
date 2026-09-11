@@ -109,6 +109,7 @@ export const myTeamDefinition: IWidgetDefinition = {
   defaultSize: 1,
   allowMultiple: false,
   permissions: ['User.Read.All', 'Presence.Read.All'],
+  probe: async (graph) => { await graph.get('/me/directReports?$select=id&$top=1', { cacheKey: 'me:hasReports' }); },
   settingsSchema: [
     { key: 'showPresence', label: 'Show Teams presence', type: 'boolean', defaultValue: true },
     { key: 'showTabs', label: 'Show tabs', type: 'boolean', defaultValue: true },

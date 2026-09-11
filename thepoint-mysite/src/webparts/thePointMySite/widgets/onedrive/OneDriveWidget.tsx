@@ -135,6 +135,7 @@ export const oneDriveDefinition: IWidgetDefinition = {
   defaultSize: 1,
   allowMultiple: false,
   permissions: ['Files.Read.All'],
+  probe: async (graph) => { await graph.get('/me/drive?$select=id'); },
   settingsSchema: [
     { key: 'maxItems', label: 'Number of files', type: 'number', defaultValue: 15, min: 5, max: 50 },
     { key: 'defaultView', label: 'Default view', type: 'choice', defaultValue: 'recent', choices: [{ key: 'recent', text: 'Recent' }, { key: 'browse', text: 'My files' }, { key: 'shared', text: 'Shared' }] },

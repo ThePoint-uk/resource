@@ -56,9 +56,25 @@ the dashboard down.
 **Widgets**
 * Tick / untick each widget to control what users may add (unticked widgets are also removed from
   existing dashboards).
-* Default layout as JSON. Easiest route: edit the page → *Customise* → arrange → **Set as page default**
-  → republish. Anyone who has not personalised (and anyone who resets) gets this layout.
+* **Hide widgets whose permissions are not yet approved** – each widget makes one cheap probe call;
+  a 403 hides it from the catalogue and the grid instead of showing an error card.
 * Show required permissions in the catalogue.
+
+**Widget rules** (pick a widget, then set its rules)
+* **Required** – the widget is always on the dashboard. Users can move and resize it but not remove it.
+* **Audience** – Entra / Microsoft 365 group names, object ids or mail addresses, comma separated.
+  Nested membership counts. `@managers` targets anyone with direct reports. Users outside the audience
+  never see the widget, in the catalogue or in a default layout.
+* **Locked settings** – tick any setting to fix it for everyone (for example lock News to *This hub*
+  while leaving the item count free). Locked settings show with a padlock in the user's settings panel.
+* **Owner default settings** – JSON applied to new instances and enforced for locked keys.
+
+**Default layouts**
+* Page default as JSON. Easiest route: edit the page → *Customise* → arrange → **Set as page default**
+  → republish. Anyone who has not personalised (and anyone who resets) gets this layout.
+* **Audience default layouts** – in the same dialog enter an audience to save a layout just for that
+  group (for example Finance gets a Finance quick-links widget first). Audience layouts are evaluated in
+  order and the first match wins, then the page default, then the built-in starter.
 
 **Personalisation**
 * Allow user customisation, or lock the layout.
@@ -77,7 +93,7 @@ centre → Advanced → API access after deploying):
 
 | Scope | Used by |
 | --- | --- |
-| `User.Read.All` | My team, My organisation, people search, photos |
+| `User.Read.All` | My team, My organisation, people search, photos, audience group membership |
 | `User.ReadWrite` | My profile editing |
 | `People.Read` | People I work with |
 | `Presence.Read.All` | Presence dots on people |
@@ -91,9 +107,17 @@ centre → Advanced → API access after deploying):
 | `Mail.Read` | My inbox |
 | `Team.ReadBasic.All` | My Teams |
 
-Widgets degrade gracefully: a widget whose permission has not been approved shows a clear message
-with a retry button rather than breaking the page. If your organisation will not approve a scope,
-simply untick that widget in the property pane.
+Every call is **delegated**: the web part acts as the signed-in user through the SharePoint Online
+Client Extensibility principal and never holds an app-only token. Search and insights results are
+security-trimmed by SharePoint, mailbox and OneDrive data is the user's own, and directory reads use the
+rights the user already has in Entra. Admin consent lets the web part ask on the user's behalf; it never
+elevates them.
+
+Widgets degrade gracefully: with *Hide widgets whose permissions are not yet approved* on (default) an
+unconsented widget simply disappears; with it off the widget shows a clear message and a retry button.
+If your organisation will not approve a scope, untick that widget in the property pane.
+
+`/me/transitiveMemberOf` (audience targeting) needs no extra scope beyond those above.
 
 ## Build and deploy
 

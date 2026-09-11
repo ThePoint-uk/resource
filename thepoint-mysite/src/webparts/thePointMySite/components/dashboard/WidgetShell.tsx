@@ -22,7 +22,8 @@ export interface IWidgetShellProps {
 /** Card chrome around a widget: title, actions, drag handle and edit-mode controls. */
 export const WidgetShell: React.FC<IWidgetShellProps> = (props) => {
   const { instance, definition, index, total, columns, onOpenSettings, dragState, onDragStart, onDragOver, onDrop, onDragEnd, children } = props;
-  const { editMode, removeWidget, updateWidget, moveWidget, props: wpProps } = useDashboard();
+  const { editMode, removeWidget, updateWidget, moveWidget, props: wpProps, isPinned } = useDashboard();
+  const pinned: boolean = isPinned(instance.type);
   const [renaming, setRenaming] = React.useState<boolean>(false);
   const [titleDraft, setTitleDraft] = React.useState<string>(instance.title || definition.title);
   const ref = React.useRef<HTMLDivElement>(null);
@@ -136,7 +137,13 @@ export const WidgetShell: React.FC<IWidgetShellProps> = (props) => {
               <IconButton iconProps={{ iconName: 'ChevronRight' }} title="Move later" ariaLabel="Move later" disabled={index >= total - 1} onClick={() => moveWidget(instance.id, Math.min(total, index + 2))} styles={{ root: { height: 28, width: 28 }, icon: { fontSize: 11 } }} />
               <IconButton iconProps={{ iconName: 'Rename' }} title="Rename" ariaLabel="Rename widget" onClick={() => setRenaming(true)} styles={{ root: { height: 28, width: 28 }, icon: { fontSize: 13 } }} />
               {hasSettings && <IconButton iconProps={{ iconName: 'Settings' }} title="Widget settings" ariaLabel="Widget settings" onClick={() => onOpenSettings(instance.id)} styles={{ root: { height: 28, width: 28 }, icon: { fontSize: 13 } }} />}
-              <IconButton iconProps={{ iconName: 'Delete' }} title="Remove widget" ariaLabel="Remove widget" onClick={() => removeWidget(instance.id)} styles={{ root: { height: 28, width: 28 }, icon: { fontSize: 13 } }} />
+              {pinned ? (
+                <TooltipHost content="Required by the page owner. You can move and resize it but not remove it.">
+                  <IconButton iconProps={{ iconName: 'Pinned' }} ariaLabel="Required widget" disabled styles={{ root: { height: 28, width: 28 }, icon: { fontSize: 13 }, rootDisabled: { background: 'transparent' } }} />
+                </TooltipHost>
+              ) : (
+                <IconButton iconProps={{ iconName: 'Delete' }} title="Remove widget" ariaLabel="Remove widget" onClick={() => removeWidget(instance.id)} styles={{ root: { height: 28, width: 28 }, icon: { fontSize: 13 } }} />
+              )}
             </>
           )}
           <IconButton

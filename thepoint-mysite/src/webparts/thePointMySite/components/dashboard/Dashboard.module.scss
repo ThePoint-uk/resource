@@ -438,3 +438,38 @@
   gap: 6px;
   align-items: center;
 }
+
+.requiredPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  background: var(--tpms-accent-soft);
+  color: var(--tpms-accent);
+  vertical-align: middle;
+}
+
+.lockedField {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--tpms-surface-2);
+  font-size: 12.5px;
+
+  .lockedLabel {
+    font-weight: 600;
+  }
+
+  .lockedValue {
+    color: var(--tpms-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}

@@ -114,6 +114,7 @@ export const sitesDefinition: IWidgetDefinition = {
   defaultSize: 1,
   allowMultiple: true,
   permissions: ['Sites.Read.All'],
+  probe: async (graph) => { await graph.get('/me/followedSites?$top=1'); },
   settingsSchema: [
     { key: 'maxItems', label: 'Number of sites', type: 'number', defaultValue: 10, min: 3, max: 40 },
     { key: 'layout', label: 'Layout', type: 'choice', defaultValue: 'list', choices: [{ key: 'list', text: 'List' }, { key: 'tiles', text: 'Tiles' }] },

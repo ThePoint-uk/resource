@@ -125,6 +125,7 @@ export const myOrgDefinition: IWidgetDefinition = {
   defaultSize: 1,
   allowMultiple: false,
   permissions: ['User.Read.All'],
+  probe: async (graph) => { await graph.get('/me/directReports?$select=id&$top=1', { cacheKey: 'me:hasReports' }); },
   settingsSchema: [
     { key: 'showChain', label: 'Show management chain', type: 'boolean', defaultValue: true },
     { key: 'expandManagers', label: 'Allow expanding managers', type: 'boolean', defaultValue: true },

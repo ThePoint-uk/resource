@@ -190,6 +190,7 @@ export const tasksDefinition: IWidgetDefinition = {
   defaultSize: 1,
   allowMultiple: false,
   permissions: ['Tasks.ReadWrite'],
+  probe: async (graph) => { await graph.get('/me/todo/lists?$top=1&$select=id'); },
   settingsSchema: [
     { key: 'showTodo', label: 'Show To Do', type: 'boolean', defaultValue: true },
     { key: 'showPlanner', label: 'Show Planner', type: 'boolean', defaultValue: true },

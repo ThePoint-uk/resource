@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { DefaultButton, Dropdown, Panel, PanelType, PrimaryButton, SpinButton, TextField, Toggle } from '@fluentui/react';
+import { DefaultButton, Dropdown, Icon, Panel, PanelType, PrimaryButton, SpinButton, TextField, Toggle } from '@fluentui/react';
 import type { IWidgetDefinition, IWidgetInstance, IWidgetSettingField } from '../../models';
 import { useDashboard } from '../../context/DashboardContext';
 import { getWidgetDefinition } from '../../widgets/registry';
+import styles from './Dashboard.module.scss';
 
 export interface IWidgetSettingsPanelProps {
   widgetId: string | undefined;
@@ -11,7 +12,7 @@ export interface IWidgetSettingsPanelProps {
 
 /** Generic settings editor driven by a widget definition's settings schema. */
 export const WidgetSettingsPanel: React.FC<IWidgetSettingsPanelProps> = ({ widgetId, onDismiss }) => {
-  const { state, updateWidget, updateWidgetSettings } = useDashboard();
+  const { state, updateWidget, updateWidgetSettings, lockedKeys } = useDashboard();
   const instance: IWidgetInstance | undefined = state.widgets.find(w => w.id === widgetId);
   const definition: IWidgetDefinition | undefined = instance ? getWidgetDefinition(instance.type) : undefined;
   const [draft, setDraft] = React.useState<Record<string, unknown>>({});
@@ -37,8 +38,19 @@ export const WidgetSettingsPanel: React.FC<IWidgetSettingsPanelProps> = ({ widge
     onDismiss();
   };
 
+  const locked: string[] = lockedKeys(instance.type);
+
   const renderField = (field: IWidgetSettingField): React.ReactNode => {
     const value: unknown = draft[field.key] !== undefined ? draft[field.key] : field.defaultValue;
+    if (locked.indexOf(field.key) >= 0) {
+      const display: string = field.type === 'boolean' ? (value ? 'On' : 'Off') : field.type === 'choice' ? (field.choices || []).find(c => c.key === String(value))?.text || String(value ?? '') : String(value ?? '');
+      return (
+        <div className={styles.lockedField} key={field.key} title="Set by the page owner">
+          <span className={styles.lockedLabel}>{field.label}</span>
+          <span className={styles.lockedValue}><Icon iconName="Lock" /> {display}</span>
+        </div>
+      );
+    }
     switch (field.type) {
       case 'boolean':
         return <Toggle key={field.key} label={field.label} checked={value !== false && value !== undefined ? !!value : false} onText="On" offText="Off" onChange={(_, v) => setDraft(d => ({ ...d, [field.key]: !!v }))} />;
@@ -91,6 +103,7 @@ export const WidgetSettingsPanel: React.FC<IWidgetSettingsPanelProps> = ({ widge
         <TextField label="Title" value={title} placeholder={definition.title} onChange={(_, v) => setTitle(v || '')} description="Leave blank to use the default title." />
         {fields.map(renderField)}
         {fields.length === 0 && <div style={{ fontSize: 12.5, color: 'var(--tpms-text-muted)' }}>This widget has no additional settings.</div>}
+        {locked.length > 0 && <div style={{ fontSize: 11.5, color: 'var(--tpms-text-muted)' }}><Icon iconName="Lock" /> Settings with a lock are fixed by the page owner.</div>}
       </div>
     </Panel>
   );

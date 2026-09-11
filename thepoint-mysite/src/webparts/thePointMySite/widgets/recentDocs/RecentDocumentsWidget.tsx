@@ -78,6 +78,7 @@ export const recentDocumentsDefinition: IWidgetDefinition = {
   defaultSize: 1,
   allowMultiple: false,
   permissions: ['Sites.Read.All'],
+  probe: async (graph) => { await graph.get('/me/insights/used?$top=1'); },
   settingsSchema: [
     { key: 'maxItems', label: 'Number of items', type: 'number', defaultValue: 10, min: 3, max: 30 },
     { key: 'showTabs', label: 'Show Recent / Shared / Trending tabs', type: 'boolean', defaultValue: true },

@@ -88,6 +88,30 @@ export interface IWidgetProps {
 }
 
 /**
+ * Owner-side rules for one widget type, set in the property pane.
+ */
+export interface IWidgetConfig {
+  /** Available in the catalogue and allowed in layouts. Defaults to true. */
+  enabled?: boolean;
+  /** Users can move and resize but not remove. */
+  pinned?: boolean;
+  /** Comma separated Entra / Microsoft 365 group names, ids or mail addresses; blank = everyone. Supports @everyone and @managers. */
+  audiences?: string;
+  /** Setting keys users may not change; the owner value (or schema default) always wins. */
+  locked?: Record<string, boolean>;
+  /** Owner default settings as JSON; applied to new instances and to locked keys. */
+  settings?: string;
+}
+
+/**
+ * A default layout that applies to a specific audience.
+ */
+export interface IAudienceLayout {
+  audiences: string;
+  layout: IDashboardState;
+}
+
+/**
  * Static definition of a widget type.
  */
 export interface IWidgetDefinition {
@@ -104,6 +128,11 @@ export interface IWidgetDefinition {
   /** Graph / SharePoint permissions this widget relies on, shown in the catalogue. */
   permissions?: string[];
   settingsSchema?: IWidgetSettingField[];
+  /**
+   * Cheap call that fails with 403 when the widget's permission has not been consented.
+   * Used to hide widgets the user cannot use.
+   */
+  probe?: (graph: GraphService, sp: SharePointService) => Promise<void>;
   component: React.ComponentType<IWidgetProps>;
 }
 
@@ -138,8 +167,13 @@ export interface IThePointMySiteWebPartProps {
   storageMode: StorageMode;
   storageListTitle: string;
   cacheMinutes: number;
-  enabledWidgets: Record<string, boolean>;
+  /** Legacy (v1.0) enable map, migrated into widgetConfig on init. */
+  enabledWidgets?: Record<string, boolean>;
+  widgetConfig: Record<string, IWidgetConfig>;
   defaultLayout: string;
+  /** JSON array of IAudienceLayout, evaluated in order; first match wins. */
+  defaultLayouts: string;
+  hideUnavailableWidgets: boolean;
   maxItems: number;
   openLinksInNewTab: boolean;
   showPermissionHints: boolean;

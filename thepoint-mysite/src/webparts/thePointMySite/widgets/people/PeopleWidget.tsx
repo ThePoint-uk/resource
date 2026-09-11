@@ -63,6 +63,7 @@ export const peopleDefinition: IWidgetDefinition = {
   defaultSize: 1,
   allowMultiple: false,
   permissions: ['People.Read', 'Presence.Read.All'],
+  probe: async (graph) => { await graph.get('/me/people?$top=1&$select=id'); },
   settingsSchema: [
     { key: 'maxPeople', label: 'Number of people', type: 'number', defaultValue: 8, min: 3, max: 30 },
     { key: 'showPresence', label: 'Show Teams presence', type: 'boolean', defaultValue: true }

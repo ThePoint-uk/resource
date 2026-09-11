@@ -65,6 +65,7 @@ export const mailDefinition: IWidgetDefinition = {
   defaultSize: 1,
   allowMultiple: false,
   permissions: ['Mail.Read'],
+  probe: async (graph) => { await graph.get('/me/mailFolders/inbox?$select=id'); },
   settingsSchema: [
     { key: 'maxItems', label: 'Messages to show', type: 'number', defaultValue: 8, min: 3, max: 30 },
     { key: 'unreadOnly', label: 'Unread only', type: 'boolean', defaultValue: true },
