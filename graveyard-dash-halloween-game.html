@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Graveyard Dash</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Creepster&family=Fredoka:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: moonlit night stage. Square board is the hero on the left; turn card + scores stack on the right. On phones: turn card, board, scores. */
+:root{
+  --night:#150e22;
+  --dusk:#231735;
+  --tile-a:#2b1f40;
+  --tile-b:#34274d;
+  --line:#4a3a68;
+  --pumpkin:#f5902c;
+  --pumpkin-deep:#b8560c;
+  --bone:#f0e7d4;
+  --mist:#a99cc6;
+  --slime:#93d453;
+  --blood:#ef4f66;
+  --hex:#a77dff;
+  --ink:#1a1126;
+  --display:'Creepster','Chiller',fantasy;
+  --body:'Fredoka','Trebuchet MS',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{
+  margin:0;min-height:100vh;color:var(--bone);font-family:var(--body);font-size:16px;line-height:1.45;
+  padding-block:18px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  background:
+    radial-gradient(circle at 90% 70px,#fff4d6 0 34px,rgba(255,236,190,.16) 35px 90px,transparent 160px),
+    radial-gradient(1px 1px at 12% 18%,#fff8 50%,transparent 51%),
+    radial-gradient(1px 1px at 34% 8%,#fff6 50%,transparent 51%),
+    radial-gradient(1.5px 1.5px at 58% 14%,#fff7 50%,transparent 51%),
+    radial-gradient(1px 1px at 76% 30%,#fff5 50%,transparent 51%),
+    radial-gradient(1px 1px at 22% 40%,#fff4 50%,transparent 51%),
+    linear-gradient(180deg,#1d1330 0%,var(--night) 420px);
+  background-color:var(--night);
+}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible{outline:3px solid var(--pumpkin);outline-offset:2px}
+
+header{max-width:1180px;margin:0 auto 18px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:4px 18px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(2.6rem,7vw,4.4rem);line-height:.95;margin:0;color:var(--pumpkin);letter-spacing:.02em;
+  text-shadow:0 0 18px rgba(245,144,44,.45),0 3px 0 var(--pumpkin-deep);animation:flicker 5s infinite}
+.tag{margin:0 0 6px;color:var(--mist);font-weight:500;letter-spacing:.04em}
+@keyframes flicker{0%,100%{opacity:1}47%{opacity:1}48%{opacity:.82}50%{opacity:1}72%{opacity:.9}73%{opacity:1}}
+
+.stage{max-width:1180px;margin:0 auto;display:grid;gap:20px 24px;
+  grid-template-columns:minmax(0,1fr) 350px;grid-template-areas:"board turn" "board side";grid-template-rows:auto 1fr;align-items:start}
+@media (max-width:880px){.stage{grid-template-columns:minmax(0,1fr);grid-template-areas:"turn" "board" "side";grid-template-rows:auto}}
+.area-board{grid-area:board;min-width:0}
+.area-turn{grid-area:turn;min-width:0}
+.area-side{grid-area:side;min-width:0;display:grid;gap:16px}
+
+/* Board */
+.board{position:relative;width:100%;max-width:760px;margin:0 auto;aspect-ratio:1;container-type:inline-size;
+  border-radius:14px;overflow:hidden;border:3px solid var(--line);box-shadow:0 20px 60px rgba(0,0,0,.55),0 0 0 6px rgba(74,58,104,.35)}
+.grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr)}
+.cell{position:relative;background:var(--tile-a)}
+.cell.alt{background:var(--tile-b)}
+.num{position:absolute;top:.5cqw;left:.7cqw;font-size:max(8px,1.8cqw);font-weight:600;color:var(--mist);font-variant-numeric:tabular-nums}
+.cell.tot{background:radial-gradient(circle at 50% 55%,rgba(245,144,44,.38),rgba(245,144,44,.08) 70%),var(--tile-a);box-shadow:inset 0 0 0 .25cqw rgba(245,144,44,.55)}
+.cell.tot::after{content:"?";position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-size:max(14px,5.2cqw);color:var(--pumpkin);opacity:.85;padding-top:.6cqw}
+.cell.home{background:radial-gradient(circle at 50% 60%,rgba(167,125,255,.5),rgba(167,125,255,.1) 75%),var(--tile-b)}
+.cell .lbl{position:absolute;inset:auto 0 .6cqw;text-align:center;font-size:max(6px,1.2cqw);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--bone);line-height:1.05}
+.cell.home .ico{position:absolute;inset:0;display:grid;place-items:center;font-size:max(12px,3.6cqw);padding-bottom:1.6cqw}
+.art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.pawns{position:absolute;inset:0;pointer-events:none}
+.pawn{position:absolute;width:7.4%;height:7.4%;transform:translate(-50%,-50%);transition:left .17s ease-out,top .17s ease-out,width .2s,height .2s;z-index:2}
+.pawn.small{width:5.6%;height:5.6%}
+.pawn.glide{transition:left 1s ease-in-out,top 1s ease-in-out}
+.pawn.active{z-index:3}
+.pawn span{display:grid;place-items:center;width:100%;height:100%;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#3d2f58,var(--ink));border:max(2px,.45cqw) solid var(--pc);
+  font-size:max(12px,4cqw);line-height:1;box-shadow:0 .5cqw 1cqw rgba(0,0,0,.6)}
+.pawn.small span{font-size:max(10px,3cqw)}
+.pawn.active span{box-shadow:0 0 0 .5cqw rgba(255,255,255,.12),0 0 2.4cqw var(--pc)}
+.pawn.hop span{animation:hop .17s ease-out}
+@keyframes hop{50%{transform:translateY(-35%)}}
+.floater{position:absolute;transform:translate(-50%,-60%);font-weight:700;font-size:max(14px,3.2cqw);pointer-events:none;z-index:5;
+  text-shadow:0 2px 6px #000;animation:rise 1.3s ease-out forwards;white-space:nowrap}
+@keyframes rise{to{transform:translate(-50%,-260%);opacity:0}}
+
+/* Panels */
+.panel{background:linear-gradient(180deg,rgba(52,39,77,.9),rgba(35,23,53,.92));border:1px solid var(--line);border-radius:16px;padding:18px}
+.panel h2{font-family:var(--display);font-weight:400;font-size:1.7rem;letter-spacing:.03em;margin:0 0 10px;color:var(--bone);text-wrap:balance}
+.eyebrow{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mist);font-weight:600;margin:0}
+.btn{appearance:none;border:0;border-radius:12px;padding:12px 18px;font-weight:600;cursor:pointer;background:var(--tile-b);color:var(--bone);border:1px solid var(--line);transition:transform .1s,filter .15s}
+.btn:hover:not(:disabled){filter:brightness(1.15)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.go{background:linear-gradient(180deg,#ffa448,var(--pumpkin) 60%,var(--pumpkin-deep));color:var(--ink);border-color:#ffb36b;box-shadow:0 4px 0 #7a3a07,0 8px 20px rgba(245,144,44,.3)}
+.btn.go:active:not(:disabled){box-shadow:0 2px 0 #7a3a07}
+.btn.ghost{background:transparent}
+.btn.wide{width:100%}
+
+/* Setup */
+.plist{display:grid;gap:10px;margin:12px 0}
+.prow{display:grid;grid-template-columns:48px minmax(0,1fr) 40px;gap:8px;align-items:center}
+.tokbtn{width:48px;height:48px;border-radius:50%;border:3px solid var(--pc);background:var(--ink);font-size:24px;cursor:pointer;display:grid;place-items:center;padding:0}
+.prow input{width:100%;min-width:0;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--ink);color:var(--bone);padding:0 12px;font:inherit;font-size:16px}
+.prow input::placeholder{color:#7d6f99}
+.rm{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:transparent;cursor:pointer;font-size:20px;line-height:1}
+.rm:disabled{opacity:.3;cursor:not-allowed}
+.hint{font-size:.85rem;color:var(--mist);margin:0 0 4px}
+.setup-actions{display:flex;flex-wrap:wrap;gap:10px}
+.setup-actions .go{flex:1 1 160px}
+
+/* Turn card */
+.turn{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}
+.who{display:flex;gap:12px;align-items:center;min-width:0}
+.who .big{flex:none;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-size:30px;background:var(--ink);border:3px solid var(--pc);box-shadow:0 0 18px var(--pc)}
+.who .nm{font-size:1.35rem;font-weight:700;line-height:1.1;overflow-wrap:anywhere}
+.who .st{color:var(--mist);font-size:.92rem}
+.diebox{display:flex;flex-direction:column;align-items:center;gap:10px}
+.die{width:76px;height:76px;border-radius:16px;background:linear-gradient(145deg,#fffaf0,#e3d6bb);box-shadow:inset 0 -5px 0 #c9b893,0 8px 18px rgba(0,0,0,.5);
+  display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:11px;gap:2px}
+.die i{display:block;border-radius:50%;margin:3px;background:transparent}
+.die i.on{background:radial-gradient(circle at 35% 35%,#6a1b2b,#2a0710)}
+.die.rolling{animation:tumble .28s linear infinite}
+@keyframes tumble{25%{transform:rotate(-14deg) translateY(-4px)}50%{transform:rotate(9deg)}75%{transform:rotate(-6deg) translateY(-2px)}}
+.turn-foot{grid-column:1/-1;display:flex;gap:10px}
+.turn-foot .go{flex:1;font-size:1.1rem}
+
+/* Scores */
+.scores{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.srow{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;border:1px solid transparent;background:rgba(21,14,34,.5)}
+.srow.now{border-color:var(--pc);background:rgba(21,14,34,.85)}
+.stok{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:21px;background:var(--ink);border:2px solid var(--pc)}
+.sname{min-width:0;font-weight:600;overflow-wrap:anywhere;line-height:1.2}
+.sname small{display:block;font-weight:500;color:var(--mist);font-size:.8rem}
+.badge{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:99px;margin-left:4px;vertical-align:1px}
+.badge.lead{background:var(--pumpkin);color:var(--ink)}
+.badge.web{background:#5a4a7a;color:var(--bone)}
+.badge.garlic{background:var(--slime);color:var(--ink)}
+.candy{text-align:right;font-variant-numeric:tabular-nums;line-height:1}
+.candy b{display:block;font-size:1.5rem;color:var(--pumpkin)}
+.candy span{font-size:.72rem;color:var(--mist);letter-spacing:.06em;text-transform:uppercase}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+.panel-head h2{margin:0}
+
+.log{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-height:220px;overflow:auto;font-size:.9rem}
+.log li{padding:6px 10px;border-radius:8px;background:rgba(21,14,34,.5);border-left:3px solid var(--line)}
+.log li.ladder{border-color:var(--slime)}
+.log li.snake{border-color:var(--blood)}
+.log li.treat{border-color:var(--pumpkin)}
+.log li.trick{border-color:var(--hex)}
+.log li.win{border-color:#ffd54a;font-weight:600}
+
+.legend{display:grid;gap:10px;margin:0;padding:0;list-style:none;font-size:.9rem}
+.legend li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:center}
+.sw{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;background:var(--tile-a);border:1px solid var(--line)}
+.sw.q{font-family:var(--display);color:var(--pumpkin);font-size:22px;box-shadow:inset 0 0 0 2px rgba(245,144,44,.55)}
+.sw svg{width:26px;height:26px}
+.legend b{color:var(--bone)}
+.legend span{color:var(--mist)}
+
+/* Modal */
+.modal{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:rgba(10,6,18,.72);backdrop-filter:blur(3px);
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet{width:min(440px,100%);max-height:100%;overflow:auto;border-radius:20px;padding:24px;text-align:center;background:var(--dusk);border:2px solid var(--line);box-shadow:0 30px 80px rgba(0,0,0,.7);animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.7) rotate(-4deg);opacity:0}}
+.sheet h2{font-family:var(--display);font-weight:400;font-size:2.4rem;line-height:1;margin:6px 0 12px;text-wrap:balance}
+.sheet p{margin:0 0 16px}
+.sheet .door{font-size:64px;line-height:1;margin:6px 0 4px}
+.sheet .acts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.sheet .acts .btn{flex:1 1 140px}
+.sheet.treat{border-color:var(--pumpkin);background:radial-gradient(circle at 50% 0,rgba(245,144,44,.35),transparent 60%),var(--dusk)}
+.sheet.trick{border-color:var(--hex);background:radial-gradient(circle at 50% 0,rgba(167,125,255,.35),transparent 60%),var(--dusk)}
+.kind{display:inline-block;font-weight:700;letter-spacing:.2em;font-size:.8rem;padding:4px 12px;border-radius:99px}
+.treat .kind{background:var(--pumpkin);color:var(--ink)}
+.trick .kind{background:var(--hex);color:var(--ink)}
+.treat h2{color:var(--pumpkin)}
+.trick h2{color:var(--hex)}
+.fx{display:inline-block;font-weight:700;padding:6px 12px;border-radius:10px;background:rgba(21,14,34,.7);margin-bottom:16px}
+.podium{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:8px;text-align:left}
+.podium li{display:grid;grid-template-columns:34px 40px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:rgba(21,14,34,.6)}
+.podium li:first-child{background:rgba(245,144,44,.18);border:1px solid var(--pumpkin)}
+.podium .rk{font-weight:700;color:var(--mist);text-align:center}
+.podium li:first-child .rk{color:#ffd54a}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important}
+  .pawn,.pawn.glide{transition-duration:.05s}
+}
+</style>
+
+<header>
+  <h1>Graveyard Dash</h1>
+  <p class="tag">Spooky snakes &amp; ladders with trick-or-treat squares · 2 to 6 players</p>
+</header>
+
+<main class="stage">
+  <section class="area-turn">
+    <div class="panel" id="setup">
+      <p class="eyebrow">Who's out trick-or-treating?</p>
+      <h2>Add your players</h2>
+      <p class="hint">Tap a character to swap it. Leave a name blank to use the character's name.</p>
+      <div class="plist" id="plist"></div>
+      <div class="setup-actions">
+        <button class="btn ghost" id="addBtn" type="button">+ Add player</button>
+        <button class="btn go" id="startBtn" type="button">Start the night</button>
+      </div>
+    </div>
+
+    <div class="panel" id="play" hidden>
+      <div class="turn">
+        <div class="who">
+          <div class="big" id="whoTok"></div>
+          <div style="min-width:0">
+            <p class="eyebrow">Now playing</p>
+            <div class="nm" id="whoName"></div>
+            <div class="st" id="whoStatus" aria-live="polite"></div>
+          </div>
+        </div>
+        <div class="diebox">
+          <div class="die" id="die" role="img" aria-label="Die showing 1"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div class="turn-foot">
+          <button class="btn go" id="rollBtn" type="button">Roll the dice</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="area-board">
+    <div class="board" id="board">
+      <div class="grid" id="grid"></div>
+      <svg class="art" id="art" viewBox="0 0 100 100" aria-hidden="true"></svg>
+      <div class="pawns" id="pawns"></div>
+    </div>
+  </section>
+
+  <aside class="area-side">
+    <div class="panel" id="scorePanel" hidden>
+      <div class="panel-head">
+        <h2>Candy bags</h2>
+        <button class="btn ghost" id="newBtn" type="button" style="padding:6px 12px;font-size:.85rem">New game</button>
+      </div>
+      <ol class="scores" id="scores"></ol>
+    </div>
+
+    <div class="panel" id="logPanel" hidden>
+      <h2>Spooky happenings</h2>
+      <ol class="log" id="log" aria-live="polite"></ol>
+    </div>
+
+    <div class="panel">
+      <h2>How to play</h2>
+      <ul class="legend">
+        <li><div class="sw q">?</div><div><b>Trick or Treat square.</b> <span>Knock on the door and draw a card. Treats give candy or a boost; tricks take it away or set you a silly dare.</span></div></li>
+        <li><div class="sw"><svg viewBox="0 0 26 26"><path d="M8 24 L10 2 M18 24 L20 2 M8.4 19 H18.4 M8.9 13.5 H18.9 M9.4 8 H19.4" stroke="#efe6d2" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div><div><b>Ladder.</b> <span>Climb up and grab 2 candy.</span></div></li>
+        <li><div class="sw"><svg viewBox="0 0 26 26"><path d="M5 22 C10 22 8 15 13 15 S16 8 20 6" stroke="#93d453" stroke-width="3.4" fill="none" stroke-linecap="round"/><circle cx="20.5" cy="5.5" r="3" fill="#93d453"/><circle cx="21.2" cy="4.6" r=".9" fill="#ffe14a"/></svg></div><div><b>Snake.</b> <span>Slide down its tail and drop 2 candy.</span></div></li>
+        <li><div class="sw" style="font-size:18px">🏚️</div><div><b>Haunted House (100).</b> <span>First one there gets 15 candy and ends the night. Overshoot and you bounce back.</span></div></li>
+        <li><div class="sw" style="font-size:18px">🍬</div><div><b>Winning.</b> <span>When the night ends, the player with the most candy wins.</span></div></li>
+      </ul>
+    </div>
+  </aside>
+</main>
+
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+
+<script>
+(() => {
+const TOKENS = [
+  {t:'🎃', n:'Pumpkin',  c:'#f5902c'},
+  {t:'👻', n:'Ghost',    c:'#cfd8ff'},
+  {t:'🧛', n:'Vampire',  c:'#ef4f66'},
+  {t:'🧙', n:'Witch',    c:'#a77dff'},
+  {t:'🦇', n:'Bat',      c:'#4fc3b8'},
+  {t:'💀', n:'Skeleton', c:'#f0e7d4'},
+];
+const SNAKES  = {32:10, 48:26, 56:37, 62:19, 74:53, 89:68, 95:75, 99:80};
+const LADDERS = {4:14, 9:31, 21:42, 28:84, 40:59, 51:67, 63:81, 71:91};
+const TOT = new Set([6,12,16,23,34,38,45,50,58,66,72,77,83,86,92,97]);
+const FACES = {1:[4], 2:[0,8], 3:[0,4,8], 4:[0,2,6,8], 5:[0,2,4,6,8], 6:[0,2,3,5,6,8]};
+const KEY = 'graveyard-dash-v1';
+
+const TREATS = [
+  {title:'Full-size chocolate bar', text:'The best house on the street! Collect 5 candy.', fx:p=>gain(p,5)},
+  {title:'Candy apple', text:'Sticky, crunchy, delicious. Collect 3 candy.', fx:p=>gain(p,3)},
+  {title:'Friendly ghost', text:'A friendly ghost floats you forward 3 squares.', move:3},
+  {title:'Broomstick ride', text:'A witch lends you her broom. Zoom forward 5 squares.', move:5},
+  {title:'Bat wings', text:'Flap flap! Roll again straight away.', extra:true},
+  {title:'Garlic charm', text:'The next snake that bites you will miss. Plus 1 candy.', fx:p=>{p.shield=true; gain(p,1);}},
+  {title:'Trick-or-treat haul', text:'Every other player gives you 1 candy.', fx:p=>collectFromAll(p,1)},
+];
+const TRICKS = [
+  {title:'Toilet-papered!', text:'Your house got wrapped from top to bottom. Lose 3 candy.', fx:p=>lose(p,3)},
+  {title:'Spooked!', text:'A skeleton jumped out of a bush. Run back 3 squares.', move:-3},
+  {title:'Cobweb trap', text:'You walked into a giant sticky web. Miss your next turn.', fx:p=>{p.skip=true;}},
+  {title:'Ghost tax', text:'The ghosts want their share. Give 1 candy to every other player.', fx:p=>payAll(p,1)},
+  {title:'Zombie shuffle', text:'Your legs have gone all zombie. Shuffle back 2 squares.', move:-2},
+  {dare:true, title:'Werewolf dare', text:'Stand up and howl at the moon like a werewolf!'},
+  {dare:true, title:'Monster mash dare', text:'Do your best monster dance for 10 seconds.'},
+  {dare:true, title:'Witch cackle dare', text:'Give everyone your most evil witch cackle.'},
+  {dare:true, title:'Gravestone dare', text:'Freeze like a gravestone while everyone tries to make you laugh. No giggling!'},
+];
+
+const $ = s => document.querySelector(s);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep = ms => new Promise(r => setTimeout(r, reduce ? ms * 0.4 : ms));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+let state = fresh();
+let busy = false;
+let lastCard = '';
+
+function fresh(){
+  return {phase:'setup', setup:[{name:'',token:0},{name:'',token:1}], players:[], turn:0, log:[], finisher:null, die:1};
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function load(){
+  try{ const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.phase && Array.isArray(s.setup)) state = s; }catch(e){}
+}
+
+/* ---------- Board geometry ---------- */
+function center(n){
+  const i = n - 1, row = Math.floor(i / 10), c = i % 10, col = row % 2 === 0 ? c : 9 - c;
+  return {x: col * 10 + 5, y: (9 - row) * 10 + 5};
+}
+
+function buildBoard(){
+  const grid = $('#grid');
+  let html = '';
+  for (let vr = 0; vr < 10; vr++){
+    const row = 9 - vr;
+    for (let col = 0; col < 10; col++){
+      const n = row % 2 === 0 ? row * 10 + col + 1 : row * 10 + (10 - col);
+      const cls = ['cell'];
+      if ((row + col) % 2) cls.push('alt');
+      if (TOT.has(n)) cls.push('tot');
+      if (n === 100) cls.push('home');
+      let inner = `<span class="num">${n}</span>`;
+      if (n === 100) inner += `<span class="ico">🏚️</span><span class="lbl">Haunted<br>House</span>`;
+      if (n === 1) inner += `<span class="lbl">Start</span>`;
+      html += `<div class="${cls.join(' ')}" aria-label="Square ${n}"></div>`.replace('></div>', `>${inner}</div>`);
+    }
+  }
+  grid.innerHTML = html;
+
+  let svg = '';
+  for (const [b, t] of Object.entries(LADDERS)) svg += ladderSVG(center(+b), center(t));
+  const palettes = [['#93d453','#3f7a1c'],['#a77dff','#4b2a8f'],['#f5902c','#2a1405'],['#ef4f66','#5c0f1d']];
+  Object.entries(SNAKES).forEach(([h, t], k) => svg += snakeSVG(center(+h), center(t), palettes[k % palettes.length], k));
+  $('#art').innerHTML = svg;
+}
+
+function ladderSVG(a, b){
+  const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy), ux = dx/len, uy = dy/len, nx = -uy, ny = ux, w = 1.7;
+  const ax = a.x - ux*1.5, ay = a.y - uy*1.5, bx = b.x + ux*1.5, by = b.y + uy*1.5, L = len + 3;
+  const rail = s => `M${(ax+nx*s).toFixed(2)} ${(ay+ny*s).toFixed(2)} L${(bx+nx*s).toFixed(2)} ${(by+ny*s).toFixed(2)}`;
+  let rungs = '';
+  for (let s = 2.2; s < L - 1; s += 3.2){
+    const px = ax + ux*s, py = ay + uy*s;
+    rungs += `M${(px+nx*w).toFixed(2)} ${(py+ny*w).toFixed(2)} L${(px-nx*w).toFixed(2)} ${(py-ny*w).toFixed(2)}`;
+  }
+  const d = rail(w) + rail(-w) + rungs;
+  return `<g stroke-linecap="round" fill="none">
+    <path d="${d}" stroke="rgba(0,0,0,.55)" stroke-width="1.5" transform="translate(.45 .6)"/>
+    <path d="${rungs}" stroke="#cbb88f" stroke-width=".75"/>
+    <path d="${rail(w) + rail(-w)}" stroke="#f0e7d4" stroke-width=".95"/>
+  </g>`;
+}
+
+function snakeSVG(a, b, [c1, c2], seed){
+  const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy), nx = -dy/len, ny = dx/len;
+  const N = Math.max(36, Math.round(len * 1.6)), waves = Math.max(1.5, len / 12), phase = seed * 1.3;
+  const pts = [];
+  for (let i = 0; i <= N; i++){
+    const u = i / N, env = Math.min(1, u * 5, (1 - u) * 3);
+    const off = 2.6 * env * Math.sin(u * waves * Math.PI * 2 + phase);
+    pts.push([a.x + dx*u + nx*off, a.y + dy*u + ny*off]);
+  }
+  let shadow = '', body = '';
+  for (let i = 0; i < N; i++){
+    const u = i / N, sw = 2.7 * (1 - 0.72 * u);
+    const seg = `M${pts[i][0].toFixed(2)} ${pts[i][1].toFixed(2)} L${pts[i+1][0].toFixed(2)} ${pts[i+1][1].toFixed(2)}`;
+    shadow += `<path d="${seg}" stroke="rgba(0,0,0,.55)" stroke-width="${(sw+0.8).toFixed(2)}"/>`;
+    body += `<path d="${seg}" stroke="${Math.floor(i/3) % 2 ? c2 : c1}" stroke-width="${sw.toFixed(2)}"/>`;
+  }
+  const ang = Math.atan2(pts[0][1] - pts[2][1], pts[0][0] - pts[2][0]) * 180 / Math.PI;
+  return `<g stroke-linecap="round" fill="none">${shadow}${body}
+    <g transform="translate(${a.x.toFixed(2)} ${a.y.toFixed(2)}) rotate(${ang.toFixed(1)})">
+      <path d="M2.3 0 H3.7 M3.7 0 l.7 -.6 M3.7 0 l.7 .6" stroke="#ff3355" stroke-width=".35"/>
+      <ellipse cx=".3" cy="0" rx="2.5" ry="2" fill="${c1}" stroke="rgba(0,0,0,.6)" stroke-width=".35"/>
+      <circle cx="1" cy="-.85" r=".62" fill="#ffe14a"/><circle cx="1" cy=".85" r=".62" fill="#ffe14a"/>
+      <ellipse cx="1.12" cy="-.85" rx=".16" ry=".42" fill="#120a1c"/><ellipse cx="1.12" cy=".85" rx=".16" ry=".42" fill="#120a1c"/>
+    </g></g>`;
+}
+
+/* ---------- Rendering ---------- */
+function render(){
+  const setup = state.phase === 'setup';
+  $('#setup').hidden = !setup;
+  $('#play').hidden = setup;
+  $('#scorePanel').hidden = setup;
+  $('#logPanel').hidden = setup;
+  if (setup) renderSetup();
+  renderPawns();
+  renderScores();
+  renderTurn();
+  renderLog();
+  setDie(state.die || 1);
+}
+
+function renderSetup(){
+  const list = $('#plist');
+  list.innerHTML = '';
+  state.setup.forEach((s, i) => {
+    const tk = TOKENS[s.token];
+    const row = document.createElement('div');
+    row.className = 'prow';
+    row.innerHTML = `<button class="tokbtn" type="button" style="--pc:${tk.c}" aria-label="Player ${i+1} is the ${tk.n}. Tap to change.">${tk.t}</button>
+      <input id="pname-${i}" maxlength="14" placeholder="${tk.n}" value="${esc(s.name)}" aria-label="Player ${i+1} name" autocomplete="off">
+      <button class="rm" type="button" aria-label="Remove player ${i+1}" ${state.setup.length <= 2 ? 'disabled' : ''}>×</button>`;
+    row.querySelector('.tokbtn').onclick = () => {
+      const used = new Set(state.setup.map(x => x.token));
+      let t = s.token;
+      do { t = (t + 1) % TOKENS.length; } while (used.has(t) && t !== s.token);
+      s.token = t; save(); renderSetup(); renderPawns();
+      document.querySelectorAll('.tokbtn')[i]?.focus();
+    };
+    row.querySelector('input').oninput = e => { s.name = e.target.value; save(); };
+    row.querySelector('input').onkeydown = e => { if (e.key === 'Enter') startGame(); };
+    row.querySelector('.rm').onclick = () => { state.setup.splice(i, 1); save(); renderSetup(); renderPawns(); };
+    list.appendChild(row);
+  });
+  $('#addBtn').disabled = state.setup.length >= TOKENS.length;
+}
+
+function pieces(){
+  if (state.phase === 'setup') return state.setup.map(s => ({token:s.token, pos:1}));
+  return state.players;
+}
+
+const OFFS = [[-1.9,-1.9],[1.9,-1.9],[-1.9,1.9],[1.9,1.9],[0,-2.6],[0,2.6]];
+function renderPawns(){
+  const layer = $('#pawns'), list = pieces();
+  while (layer.children.length > list.length) layer.lastChild.remove();
+  while (layer.children.length < list.length){
+    const el = document.createElement('div'); el.className = 'pawn'; el.innerHTML = '<span></span>'; layer.appendChild(el);
+  }
+  const byPos = {};
+  list.forEach((p, i) => (byPos[p.pos] ||= []).push(i));
+  list.forEach((p, i) => {
+    const el = layer.children[i], tk = TOKENS[p.token], same = byPos[p.pos], k = same.indexOf(i);
+    const [ox, oy] = same.length > 1 ? OFFS[k % OFFS.length] : [0, 0];
+    const c = center(p.pos);
+    el.style.setProperty('--pc', tk.c);
+    el.style.left = (c.x + ox) + '%';
+    el.style.top = (c.y + oy) + '%';
+    el.firstChild.textContent = tk.t;
+    el.classList.toggle('small', same.length > 1);
+    el.classList.toggle('active', state.phase === 'play' && i === state.turn);
+  });
+}
+
+function renderScores(){
+  if (state.phase === 'setup') return;
+  const max = Math.max(...state.players.map(p => p.candy));
+  $('#scores').innerHTML = state.players.map((p, i) => {
+    const tk = TOKENS[p.token];
+    let badges = '';
+    if (max > 0 && p.candy === max) badges += '<span class="badge lead">Leading</span>';
+    if (p.skip) badges += '<span class="badge web">Webbed</span>';
+    if (p.shield) badges += '<span class="badge garlic">Garlic</span>';
+    return `<li class="srow ${i === state.turn && state.phase === 'play' ? 'now' : ''}" style="--pc:${tk.c}">
+      <span class="stok">${tk.t}</span>
+      <span class="sname">${esc(p.name)}${badges}<small>Square ${p.pos}</small></span>
+      <span class="candy"><b>${p.candy}</b><span>candy</span></span></li>`;
+  }).join('');
+}
+
+function renderTurn(){
+  if (state.phase === 'setup') return;
+  const p = state.players[state.turn], tk = TOKENS[p.token];
+  $('#whoTok').textContent = tk.t;
+  $('#whoTok').style.setProperty('--pc', tk.c);
+  $('#whoName').textContent = p.name;
+  $('#whoStatus').textContent = state.phase === 'over' ? 'The night is over.'
+    : busy ? statusMsg : `On square ${p.pos}. Roll when ready!`;
+  $('#rollBtn').disabled = busy || state.phase !== 'play';
+  $('#rollBtn').textContent = state.phase === 'over' ? 'See results' : 'Roll the dice';
+  if (state.phase === 'over') $('#rollBtn').disabled = false;
+}
+let statusMsg = '';
+function status(msg){ statusMsg = msg; $('#whoStatus').textContent = msg; }
+
+function renderLog(){
+  $('#log').innerHTML = state.log.map(l => `<li class="${l.cls || ''}">${esc(l.text)}</li>`).join('');
+}
+function addLog(text, cls = ''){
+  state.log.unshift({text, cls});
+  if (state.log.length > 40) state.log.length = 40;
+  renderLog();
+}
+
+function setDie(n){
+  const on = FACES[n];
+  $('#die').querySelectorAll('i').forEach((el, k) => el.classList.toggle('on', on.includes(k)));
+  $('#die').setAttribute('aria-label', `Die showing ${n}`);
+}
+
+function floatText(p, text, color){
+  const c = center(p.pos), el = document.createElement('div');
+  el.className = 'floater'; el.textContent = text; el.style.color = color;
+  el.style.left = c.x + '%'; el.style.top = c.y + '%';
+  $('#board').appendChild(el);
+  setTimeout(() => el.remove(), 1400);
+}
+
+/* ---------- Candy ---------- */
+function gain(p, n){ p.candy += n; floatText(p, `+${n} 🍬`, 'var(--pumpkin)'); renderScores(); return n; }
+function lose(p, n){ const l = Math.min(n, p.candy); p.candy -= l; floatText(p, `−${l} 🍬`, 'var(--blood)'); renderScores(); return l; }
+function payAll(p, n){
+  state.players.forEach(q => { if (q !== p && p.candy >= n){ p.candy -= n; q.candy += n; } });
+  floatText(p, 'Ghost tax!', 'var(--hex)'); renderScores();
+}
+function collectFromAll(p, n){
+  state.players.forEach(q => { if (q !== p && q.candy >= n){ q.candy -= n; p.candy += n; } });
+  floatText(p, 'Haul!', 'var(--pumpkin)'); renderScores();
+}
+
+/* ---------- Turn flow ---------- */
+const cur = () => state.players[state.turn];
+function pawnEl(p){ return $('#pawns').children[state.players.indexOf(p)]; }
+
+async function rollDie(){
+  const d = $('#die');
+  d.classList.add('rolling');
+  for (let k = 0; k < 9; k++){ setDie(1 + Math.floor(Math.random() * 6)); await sleep(65); }
+  d.classList.remove('rolling');
+  const n = 1 + Math.floor(Math.random() * 6);
+  state.die = n; setDie(n);
+  return n;
+}
+
+async function walk(p, steps){
+  const path = [];
+  if (steps > 0) for (let k = 1; k <= steps; k++){ const raw = p.pos + k; path.push(raw <= 100 ? raw : 200 - raw); }
+  else for (let k = 1; k <= -steps && p.pos - k >= 1; k++) path.push(p.pos - k);
+  const el = pawnEl(p);
+  for (const v of path){
+    p.pos = v; renderPawns();
+    el.classList.remove('hop'); void el.offsetWidth; el.classList.add('hop');
+    await sleep(175);
+  }
+  el.classList.remove('hop');
+  renderScores();
+}
+
+async function glide(p, to){
+  await sleep(350);
+  const el = pawnEl(p);
+  el.classList.add('glide');
+  p.pos = to; renderPawns();
+  await sleep(1050);
+  el.classList.remove('glide');
+  renderScores();
+}
+
+async function resolve(p, allowCard = true){
+  if (p.pos === 100){ await finish(p); return {}; }
+  if (LADDERS[p.pos]){
+    const from = p.pos, to = LADDERS[from];
+    status('A ladder! Climbing up…');
+    addLog(`${p.name} found a ladder on ${from} and climbed to ${to}. +2 candy`, 'ladder');
+    gain(p, 2); await glide(p, to); return {};
+  }
+  if (SNAKES[p.pos]){
+    const from = p.pos, to = SNAKES[from];
+    if (p.shield){
+      p.shield = false;
+      addLog(`A snake struck at ${p.name} on ${from}, but the garlic charm scared it off!`, 'treat');
+      floatText(p, 'Garlic!', 'var(--slime)'); renderScores(); await sleep(700); return {};
+    }
+    status('Hissss! A snake!');
+    const l = lose(p, 2);
+    addLog(`Hiss! A snake on ${from} swallowed ${p.name} down to ${to}.${l ? ` −${l} candy` : ''}`, 'snake');
+    await glide(p, to); return {};
+  }
+  if (allowCard && TOT.has(p.pos)) return drawCard(p);
+  return {};
+}
+
+async function rollTurn(){
+  if (state.phase === 'over'){ showResults(); return; }
+  if (busy || state.phase !== 'play') return;
+  busy = true; renderTurn();
+  const p = cur();
+  status('Rolling…');
+  const n = await rollDie();
+  status(`Rolled a ${n}!`);
+  addLog(`${p.name} rolled a ${n}.`);
+  await sleep(250);
+  await walk(p, n);
+  const r = await resolve(p);
+  if (state.phase === 'over'){ busy = false; save(); render(); return; }
+  if (r.extra) addLog(`${p.name} gets another roll!`, 'treat');
+  else await nextTurn();
+  busy = false; save(); render();
+}
+
+async function nextTurn(){
+  state.turn = (state.turn + 1) % state.players.length;
+  renderPawns(); renderScores(); renderTurn();
+  let guard = state.players.length;
+  while (cur().skip && guard-- > 0){
+    const p = cur();
+    p.skip = false;
+    status('Stuck in cobwebs! Skipping this turn…');
+    addLog(`${p.name} is stuck in cobwebs and misses this turn.`, 'trick');
+    renderScores();
+    await sleep(1300);
+    state.turn = (state.turn + 1) % state.players.length;
+    renderPawns(); renderScores(); renderTurn();
+  }
+}
+
+/* ---------- Trick or Treat cards ---------- */
+function pick(list){
+  let c;
+  do { c = list[Math.floor(Math.random() * list.length)]; } while (list.length > 1 && c.title === lastCard);
+  lastCard = c.title;
+  return c;
+}
+
+function openModal(cls, html){
+  const sheet = $('#sheet');
+  sheet.className = 'sheet ' + cls;
+  sheet.innerHTML = html;
+  $('#modal').hidden = false;
+  sheet.style.animation = 'none'; void sheet.offsetWidth; sheet.style.animation = '';
+  sheet.querySelector('button')?.focus();
+}
+function closeModal(){ $('#modal').hidden = true; $('#rollBtn').focus({preventScroll:true}); }
+function waitClick(map){
+  return new Promise(res => {
+    for (const [id, val] of Object.entries(map)) $('#' + id).onclick = () => res(val);
+  });
+}
+
+function fxLabel(c, treat){
+  if (c.dare) return 'Do it for +3 candy, or chicken out and lose 2';
+  if (c.move) return c.move > 0 ? `Move forward ${c.move}` : `Move back ${-c.move}`;
+  if (c.extra) return 'Roll again';
+  return treat ? 'Treat!' : 'Trick!';
+}
+
+async function drawCard(p){
+  status('Knock knock…');
+  const tk = TOKENS[p.token];
+  openModal('', `<p class="eyebrow">${esc(p.name)} knocks on a spooky door</p>
+    <div class="door">🚪</div><h2>Trick or Treat?</h2>
+    <p>Who knows what's waiting on the other side…</p>
+    <div class="acts"><button class="btn go" id="knock" type="button">Open the door</button></div>`);
+  await waitClick({knock:1});
+
+  const treat = Math.random() < 0.5;
+  const c = pick(treat ? TREATS : TRICKS);
+  const acts = c.dare
+    ? `<button class="btn go" id="did" type="button">We saw it! +3</button><button class="btn" id="chicken" type="button">Chickened out −2</button>`
+    : `<button class="btn go" id="ok" type="button">${treat ? 'Yum, thanks!' : 'Oh no!'}</button>`;
+  openModal(treat ? 'treat' : 'trick', `<span class="kind">${treat ? 'TREAT' : 'TRICK'}</span>
+    <h2>${esc(c.title)}</h2><p>${esc(c.text)}</p>
+    <div class="fx">${tk.t} ${esc(p.name)}: ${fxLabel(c, treat)}</div>
+    <div class="acts">${acts}</div>`);
+  const choice = await waitClick(c.dare ? {did:'did', chicken:'chicken'} : {ok:'ok'});
+  closeModal();
+  await sleep(150);
+
+  addLog(`${treat ? 'Treat' : 'Trick'} for ${p.name}: ${c.title}.`, treat ? 'treat' : 'trick');
+  if (c.dare){
+    if (choice === 'did'){ gain(p, 3); addLog(`${p.name} did the dare! +3 candy`, 'treat'); }
+    else { const l = lose(p, 2); addLog(`${p.name} chickened out.${l ? ` −${l} candy` : ''}`, 'trick'); }
+    await sleep(500); return {};
+  }
+  if (c.fx){ c.fx(p); await sleep(700); }
+  if (c.move){
+    status(c.move > 0 ? 'Whoosh!' : 'Backing away…');
+    await walk(p, c.move);
+    return resolve(p, false);
+  }
+  if (c.extra) return {extra:true};
+  return {};
+}
+
+/* ---------- End of the night ---------- */
+async function finish(p){
+  addLog(`${p.name} reached the Haunted House! +15 candy`, 'win');
+  gain(p, 15);
+  state.finisher = state.players.indexOf(p);
+  state.phase = 'over';
+  save(); render();
+  await sleep(900);
+  showResults();
+}
+
+function showResults(){
+  const ranked = state.players.map((p, i) => ({p, i})).sort((a, b) => b.p.candy - a.p.candy || b.p.pos - a.p.pos);
+  const top = ranked[0].p.candy, winners = ranked.filter(r => r.p.candy === top).map(r => esc(r.p.name));
+  const headline = winners.length > 1 ? `It's a tie between ${winners.join(' and ')}!` : `${winners[0]} wins!`;
+  const fin = state.players[state.finisher];
+  const ord = ['1st','2nd','3rd','4th','5th','6th'];
+  openModal('treat', `<span class="kind">THE NIGHT IS OVER</span>
+    <h2>${headline}</h2>
+    ${fin ? `<p>${esc(fin.name)} reached the Haunted House first and earned 15 bonus candy.</p>` : ''}
+    <ol class="podium">${ranked.map((r, k) => {
+      const tk = TOKENS[r.p.token];
+      return `<li style="--pc:${tk.c}"><span class="rk">${ord[k]}</span><span class="stok">${tk.t}</span><span class="sname">${esc(r.p.name)}</span><span class="candy"><b>${r.p.candy}</b><span>candy</span></span></li>`;
+    }).join('')}</ol>
+    <div class="acts"><button class="btn go" id="rematch" type="button">Rematch</button><button class="btn" id="newPlayers" type="button">Change players</button><button class="btn ghost" id="closeRes" type="button">Look at the board</button></div>`);
+  $('#rematch').onclick = () => { closeModal(); startGame(state.players.map(p => ({name:p.name, token:p.token}))); };
+  $('#newPlayers').onclick = () => { closeModal(); toSetup(); };
+  $('#closeRes').onclick = closeModal;
+}
+
+/* ---------- Setup / start ---------- */
+function startGame(from){
+  const src = from || state.setup;
+  state.setup = src.map(s => ({name:s.name, token:s.token}));
+  state.players = src.map(s => ({name:(s.name || '').trim() || TOKENS[s.token].n, token:s.token, pos:1, candy:0, skip:false, shield:false}));
+  state.turn = 0; state.log = []; state.finisher = null; state.phase = 'play'; state.die = 1;
+  addLog(`The night begins! ${state.players.map(p => p.name).join(', ')} race to the Haunted House.`);
+  save(); render();
+  $('#rollBtn').focus({preventScroll:true});
+}
+function toSetup(){
+  state.setup = state.players.map(p => ({name:p.name, token:p.token}));
+  state.players = []; state.phase = 'setup'; state.log = [];
+  save(); render();
+}
+
+$('#addBtn').onclick = () => {
+  if (state.setup.length >= TOKENS.length) return;
+  const used = new Set(state.setup.map(s => s.token));
+  const t = TOKENS.findIndex((_, i) => !used.has(i));
+  state.setup.push({name:'', token:t});
+  save(); renderSetup(); renderPawns();
+  $(`#pname-${state.setup.length - 1}`)?.focus();
+};
+$('#startBtn').onclick = () => startGame();
+$('#rollBtn').onclick = rollTurn;
+
+let armed = false, armTimer;
+$('#newBtn').onclick = () => {
+  if (busy) return;
+  const b = $('#newBtn');
+  if (!armed){
+    armed = true; b.textContent = 'Tap again to quit';
+    armTimer = setTimeout(() => { armed = false; b.textContent = 'New game'; }, 3000);
+    return;
+  }
+  clearTimeout(armTimer); armed = false; b.textContent = 'New game';
+  $('#modal').hidden = true;
+  toSetup();
+};
+
+document.addEventListener('keydown', e => {
+  const tag = document.activeElement?.tagName;
+  if ((e.key === ' ' || e.key === 'r') && state.phase === 'play' && $('#modal').hidden && tag !== 'INPUT' && tag !== 'BUTTON'){
+    e.preventDefault(); rollTurn();
+  }
+});
+
+/* ---------- Boot ---------- */
+buildBoard();
+const hot = window.claude?.hot;
+if (hot && typeof hot.snapshot === 'function') hot.snapshot(() => ({state}));
+const boot = d => {
+  if (d && d.state && d.state.phase) state = d.state; else load();
+  render();
+  if (state.phase === 'over') showResults();
+};
+hot?.ready ? hot.ready(boot) : boot(hot?.data ?? {});
+})();
+</script>
