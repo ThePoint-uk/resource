@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Snap Scramble</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@500;600;700;800&display=swap">
+<style>
+/* Layout: games-night tabletop. Cream plastic board is the hero with the card pile where the dice dome would be; turn card above, snap buttons below, scores at the side. */
+:root{
+  --table:#2a1c16;
+  --table-2:#3b281f;
+  --panel:#3f2c22;
+  --line:#5d4434;
+  --board:#f7f0e1;
+  --board-edge:#d8c8aa;
+  --hole:#e6dac2;
+  --ink:#2a1c16;
+  --cream:#fbf5ea;
+  --muted:#cdb89c;
+  --gold:#ffc23d;
+  --display:'Bungee','Arial Black',Impact,sans-serif;
+  --body:'Nunito','Trebuchet MS',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{
+  margin:0;min-height:100vh;color:var(--cream);font-family:var(--body);font-size:16px;line-height:1.45;
+  padding-block:18px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  background:
+    repeating-linear-gradient(92deg,rgba(255,255,255,.018) 0 2px,transparent 2px 9px),
+    repeating-linear-gradient(88deg,rgba(0,0,0,.08) 0 1px,transparent 1px 23px),
+    radial-gradient(ellipse at 50% 0,var(--table-2),var(--table) 70%);
+  background-color:var(--table);
+}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,.peg:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+header{max-width:1180px;margin:0 auto 18px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:4px 18px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(2.2rem,6vw,3.6rem);line-height:1;margin:0;letter-spacing:.01em}
+h1 .s1{color:#e23b3b}h1 .s2{color:#2f6fe0}h1 .s3{color:var(--gold)}h1 .s4{color:#2a9d5c}
+.tag{margin:0 0 4px;color:var(--muted);font-weight:600}
+
+.stage{max-width:1180px;margin:0 auto;display:grid;gap:18px 24px;
+  grid-template-columns:minmax(0,1fr) 350px;grid-template-areas:"board turn" "board side";grid-template-rows:auto 1fr;align-items:start}
+@media (max-width:880px){.stage{grid-template-columns:minmax(0,1fr);grid-template-areas:"turn" "board" "side";grid-template-rows:auto}}
+.area-board{grid-area:board;min-width:0;display:grid;gap:14px;justify-items:center}
+.area-turn{grid-area:turn;min-width:0}
+.area-side{grid-area:side;min-width:0;display:grid;gap:16px}
+
+/* Board */
+.board{position:relative;width:100%;max-width:720px;aspect-ratio:1;container-type:inline-size;border-radius:6%;
+  margin-bottom:12px;box-shadow:0 10px 0 #b9a582,0 22px 40px rgba(0,0,0,.5)}
+.board svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.peg{cursor:default;transition:transform .16s ease-out}
+.peg.can{cursor:pointer}
+.peg .pulse{fill:none;stroke-width:.7;opacity:0}
+.peg.can .pulse{opacity:1;animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{stroke-width:1.4;opacity:.35}}
+.pile{position:absolute;left:50%;top:50%;width:17%;aspect-ratio:5/7;transform:translate(-50%,-50%);cursor:pointer;border:0;padding:0;background:none;border-radius:1.4cqw}
+.pile:disabled{cursor:default}
+.pile .empty{position:absolute;inset:0;border-radius:1.4cqw;border:.4cqw dashed #b9a582;display:grid;place-items:center;text-align:center;
+  color:#8b7556;font-weight:800;font-size:max(9px,1.6cqw);line-height:1.15;padding:1cqw}
+.pile.ready .empty{border-color:var(--ink);color:var(--ink)}
+.count{position:absolute;left:50%;top:calc(50% + 13.5%);transform:translateX(-50%);font-size:max(9px,1.5cqw);font-weight:800;color:#8b7556;white-space:nowrap;letter-spacing:.04em}
+
+.card{position:absolute;inset:0;border-radius:1.4cqw;background:#fffdf8;border:.55cqw solid var(--cc);box-shadow:0 .5cqw 1.2cqw rgba(42,28,22,.35);
+  display:grid;place-items:center;overflow:hidden}
+.card.under{transform:rotate(-7deg) translate(-6%,2%);filter:brightness(.93)}
+.card.top.fresh{animation:flipin .45s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes flipin{from{transform:translateY(-40%) rotateY(180deg) scale(1.15);opacity:.2}}
+.card .cn{position:absolute;font-family:var(--display);color:var(--cc);font-size:max(11px,2.6cqw);line-height:1}
+.card .tl{top:.6cqw;left:.9cqw}
+.card .br{bottom:.6cqw;right:.9cqw;transform:rotate(180deg)}
+.card .pic{font-size:max(22px,6cqw);line-height:1;margin-top:-1.4cqw}
+.card .cname{position:absolute;bottom:1.8cqw;left:0;right:0;text-align:center;font-weight:800;font-size:max(8px,1.35cqw);color:var(--ink);letter-spacing:.06em;text-transform:uppercase}
+.card::before{content:"";position:absolute;inset:8% 12%;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--cc) 22%,transparent),transparent 70%)}
+
+.callout{position:absolute;left:50%;top:21%;transform:translateX(-50%);z-index:4;text-align:center;pointer-events:none;width:60%}
+.callout b{display:block;font-family:var(--display);font-weight:400;font-size:max(30px,9cqw);line-height:1;color:var(--gold);
+  -webkit-text-stroke:.3cqw var(--ink);text-shadow:0 .7cqw 0 var(--ink);animation:boom .5s cubic-bezier(.2,1.6,.4,1)}
+.callout span{display:inline-block;margin-top:1cqw;background:var(--ink);color:var(--cream);font-weight:800;font-size:max(11px,1.9cqw);padding:.4cqw 1.6cqw;border-radius:99px}
+.callout .timer{height:.9cqw;min-height:5px;border-radius:99px;background:rgba(42,28,22,.25);margin:1.2cqw auto 0;width:70%;overflow:hidden}
+.callout .timer i{display:block;height:100%;background:var(--ink);transform-origin:left;animation:drain linear forwards}
+@keyframes drain{to{transform:scaleX(0)}}
+@keyframes boom{from{transform:scale(.3) rotate(-10deg);opacity:0}}
+
+.floater{position:absolute;transform:translate(-50%,-50%);font-weight:800;font-size:max(14px,3cqw);pointer-events:none;z-index:5;
+  color:var(--ink);background:var(--gold);padding:.2cqw 1.2cqw;border-radius:99px;animation:rise 1.4s ease-out forwards;white-space:nowrap}
+@keyframes rise{to{transform:translate(-50%,-220%);opacity:0}}
+
+/* Snap buttons */
+.snapbar{width:100%;max-width:720px;display:grid;gap:10px;grid-template-columns:repeat(var(--n,4),minmax(0,1fr))}
+.snap{appearance:none;border:0;border-radius:16px;padding:10px 8px 12px;cursor:pointer;background:var(--pc);color:#fff;touch-action:manipulation;user-select:none;-webkit-user-select:none;
+  box-shadow:inset 0 -6px 0 rgba(0,0,0,.25),0 6px 14px rgba(0,0,0,.35);display:grid;gap:2px;justify-items:center;transition:transform .08s}
+.snap:active,.snap.hit{transform:translateY(3px);box-shadow:inset 0 -3px 0 rgba(0,0,0,.25),0 3px 8px rgba(0,0,0,.35)}
+.snap b{font-family:var(--display);font-weight:400;font-size:clamp(1.1rem,3.4vw,1.6rem);line-height:1;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.snap span{font-weight:800;font-size:.82rem;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.snap kbd{font:700 .7rem var(--body);opacity:.85;border:1px solid rgba(255,255,255,.6);border-radius:5px;padding:0 5px}
+.snap.yellow{color:var(--ink)}
+.snap.yellow kbd{border-color:rgba(42,28,22,.5)}
+.snapbar.live .snap{animation:wobble .4s ease-in-out infinite}
+@keyframes wobble{25%{transform:rotate(-2deg) scale(1.03)}75%{transform:rotate(2deg) scale(1.03)}}
+@media (hover:none){.snap kbd{display:none}}
+
+/* Panels */
+.panel{background:linear-gradient(180deg,rgba(74,52,40,.92),rgba(55,38,29,.94));border:1px solid var(--line);border-radius:16px;padding:18px}
+.panel h2{font-family:var(--display);font-weight:400;font-size:1.25rem;letter-spacing:.02em;margin:0 0 10px;text-wrap:balance}
+.eyebrow{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800;margin:0}
+.btn{appearance:none;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer;background:transparent;color:var(--cream);border:1px solid var(--line);transition:transform .1s,filter .15s}
+.btn:hover:not(:disabled){filter:brightness(1.15)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.go{background:linear-gradient(180deg,#ffd36b,var(--gold));color:var(--ink);border-color:#ffe09a;box-shadow:0 4px 0 #a8771a,0 8px 18px rgba(0,0,0,.3)}
+.btn.go:active:not(:disabled){box-shadow:0 2px 0 #a8771a}
+.btn.small{padding:6px 12px;font-size:.85rem}
+
+.seg{display:flex;gap:6px;margin:10px 0 14px}
+.seg button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:transparent;font-weight:800;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--cream);color:var(--ink);border-color:var(--cream)}
+.plist{display:grid;gap:10px;margin:0 0 14px}
+.prow{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:center}
+.dot{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff8,transparent 45%),var(--pc);box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+.prow input{width:100%;min-width:0;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--table);color:var(--cream);padding:0 12px;font:inherit;font-size:16px}
+.prow input::placeholder{color:#9b8468}
+
+.turn{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}
+.who{display:flex;gap:12px;align-items:center;min-width:0}
+.who .dot{width:46px;height:46px;flex:none}
+.who .nm{font-size:1.35rem;font-weight:800;line-height:1.1;overflow-wrap:anywhere}
+.who .st{color:var(--muted);font-size:.92rem;font-weight:600}
+.turn .go{grid-column:1/-1;font-size:1.05rem}
+
+.scores{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.srow{display:grid;grid-template-columns:30px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;border:1px solid transparent;background:rgba(42,28,22,.45)}
+.srow.now{border-color:var(--pc);background:rgba(42,28,22,.8)}
+.sname{min-width:0;font-weight:800;overflow-wrap:anywhere;line-height:1.2}
+.pegs{display:flex;gap:3px;margin-top:3px}
+.pegs i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--pc)}
+.pegs i.out{background:color-mix(in srgb,var(--pc) 40%,transparent)}
+.pegs i.done{background:var(--pc)}
+.num{text-align:right;font-variant-numeric:tabular-nums;line-height:1}
+.num b{display:block;font-size:1.4rem;color:var(--gold)}
+.num.w b{color:var(--cream)}
+.num span{font-size:.66rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:800}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+.panel-head h2{margin:0}
+
+.log{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-height:200px;overflow:auto;font-size:.9rem}
+.log li{padding:6px 10px;border-radius:8px;background:rgba(42,28,22,.45);border-left:3px solid var(--line)}
+.log li.snap{border-color:var(--gold);font-weight:700}
+.log li.cap{border-color:#e23b3b}
+.log li.home{border-color:#2a9d5c}
+.log li.win{border-color:var(--gold);background:rgba(255,194,61,.15);font-weight:800}
+
+.rules{margin:0;padding:0 0 0 1.1em;display:grid;gap:7px;font-size:.92rem;color:var(--muted)}
+.rules b{color:var(--cream)}
+.speed{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:12px 0 0}
+.speed div{background:var(--cream);color:var(--ink);border-radius:8px;border:2px solid var(--cc);text-align:center;padding:4px 0 3px;line-height:1.1}
+.speed b{display:block;font-family:var(--display);font-weight:400;color:var(--cc);font-size:.95rem}
+.speed span{font-size:1.1rem}
+
+/* Modal */
+.modal{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:rgba(20,12,8,.7);backdrop-filter:blur(3px);
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet{width:min(440px,100%);max-height:100%;overflow:auto;border-radius:20px;padding:24px;text-align:center;background:var(--panel);border:2px solid var(--gold);box-shadow:0 30px 80px rgba(0,0,0,.6);animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.7);opacity:0}}
+.sheet h2{font-family:var(--display);font-weight:400;font-size:2rem;line-height:1.05;margin:8px 0 10px;color:var(--gold);text-wrap:balance}
+.sheet p{margin:0 0 16px;color:var(--muted)}
+.podium{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:8px;text-align:left}
+.podium li{display:grid;grid-template-columns:30px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:rgba(42,28,22,.6)}
+.podium li.first{background:rgba(255,194,61,.16);border:1px solid var(--gold)}
+.acts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.acts .btn{flex:1 1 130px}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important}
+  .peg{transition-duration:.05s}
+  .callout .timer i{animation-duration:4s!important}
+}
+</style>
+
+<header>
+  <h1><span class="s1">S</span>nap <span class="s2">S</span>cr<span class="s3">a</span>mbl<span class="s4">e</span></h1>
+  <p class="tag">Race your pegs home with snap cards instead of dice · 2 to 4 players</p>
+</header>
+
+<main class="stage">
+  <section class="area-turn">
+    <div class="panel" id="setup">
+      <p class="eyebrow">New game</p>
+      <h2>How many players?</h2>
+      <div class="seg" id="countSeg" role="group" aria-label="Number of players">
+        <button type="button" data-n="2">2</button><button type="button" data-n="3">3</button><button type="button" data-n="4">4</button>
+      </div>
+      <div class="plist" id="plist"></div>
+      <button class="btn go" id="startBtn" type="button" style="width:100%">Deal the cards</button>
+    </div>
+
+    <div class="panel" id="play" hidden>
+      <div class="turn">
+        <div class="who">
+          <div class="dot" id="whoDot"></div>
+          <div style="min-width:0">
+            <p class="eyebrow">Your go</p>
+            <div class="nm" id="whoName"></div>
+            <div class="st" id="whoStatus" aria-live="polite"></div>
+          </div>
+        </div>
+        <span></span>
+        <button class="btn go" id="flipBtn" type="button">Flip a card</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="area-board">
+    <div class="board" id="board">
+      <svg id="svg" viewBox="0 0 100 100" aria-label="Game board"></svg>
+      <button class="pile" id="pile" type="button" aria-label="Card pile. Tap to flip a card."></button>
+      <div class="count" id="count"></div>
+      <div class="callout" id="callout" hidden><b>SNAP!</b><span>First to hit their button wins the pile</span><div class="timer"><i id="timerBar"></i></div></div>
+    </div>
+    <div class="snapbar" id="snapbar"></div>
+  </section>
+
+  <aside class="area-side">
+    <div class="panel" id="scorePanel" hidden>
+      <div class="panel-head">
+        <h2>Scoreboard</h2>
+        <button class="btn small" id="newBtn" type="button">New game</button>
+      </div>
+      <ol class="scores" id="scores"></ol>
+    </div>
+
+    <div class="panel" id="logPanel" hidden>
+      <h2>What happened</h2>
+      <ol class="log" id="log" aria-live="polite"></ol>
+    </div>
+
+    <div class="panel">
+      <h2>How to play</h2>
+      <ol class="rules">
+        <li><b>Flip a card</b> instead of rolling. Move one peg that many holes clockwise.</li>
+        <li><b>A 6 (Cheetah)</b> lets you bring a peg out onto your start hole, and gives you another go.</li>
+        <li><b>Land on someone</b> and you send their peg back home. +5 points.</li>
+        <li><b>Get a peg into your coloured finish lane</b> for +10. You need the exact number to fit, and you can't land on your own pegs.</li>
+        <li><b>SNAP!</b> When a card matches the one underneath, anyone can hit their snap button. Fastest player wins the whole pile: 1 point per card. Snap at the wrong time and lose 2.</li>
+        <li><b>First with all four pegs in the finish lane</b> wins the round (+20). Points carry over if you play again.</li>
+      </ol>
+      <div class="speed" id="speed"></div>
+    </div>
+  </aside>
+</main>
+
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+
+<script>
+(() => {
+const SEATS = [
+  {n:'Red',    c:'#e23b3b', l:'#f8cdc8', d:'#9c1f1f', key:'q', cls:''},
+  {n:'Blue',   c:'#2f6fe0', l:'#c9d9fb', d:'#173f8f', key:'p', cls:''},
+  {n:'Yellow', c:'#f2b705', l:'#fbe8a8', d:'#9a7200', key:'m', cls:'yellow'},
+  {n:'Green',  c:'#2a9d5c', l:'#c2e7d1', d:'#16653a', key:'z', cls:''},
+];
+const SEATS_FOR = {2:[0,2], 3:[0,1,2], 4:[0,1,2,3]};
+const CARDS = {
+  1:{n:'Snail',    p:'🐌', c:'#d9483c'},
+  2:{n:'Tortoise', p:'🐢', c:'#e07a2c'},
+  3:{n:'Duck',     p:'🦆', c:'#c99700'},
+  4:{n:'Fox',      p:'🦊', c:'#2f9358'},
+  5:{n:'Horse',    p:'🐎', c:'#2f6fe0'},
+  6:{n:'Cheetah',  p:'🐆', c:'#8a4fd0'},
+};
+const TRACK = 28, LAST = 31, SNAP_MS = 4000, KEY = 'snap-scramble-v1';
+const STEP = 360 / TRACK;
+
+const $ = s => document.querySelector(s);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep = ms => new Promise(r => setTimeout(r, reduce ? ms * 0.4 : ms));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const rad = d => d * Math.PI / 180;
+
+let state = fresh();
+let busy = false, snapOpen = false, snapResolve = null, snapTimer = null, graceUntil = 0, choosing = null;
+const lastFalse = {};
+
+function fresh(){
+  return {phase:'setup', count:4, names:['','','',''], players:[], turn:0, deck:[], pile:[], card:null, step:'flip', log:[], winner:null, freshCard:false};
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function load(){ try{ const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.phase && Array.isArray(s.names)) state = s; }catch(e){} }
+function shuffle(a){ for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function newDeck(){ const d = []; for (let v = 1; v <= 6; v++) for (let k = 0; k < 6; k++) d.push(v); return shuffle(d); }
+
+/* ---------- Geometry (viewBox 0..100) ---------- */
+const corner = s => -135 + 90 * s;
+function polar(ang, r){ return {x: 50 + r * Math.cos(rad(ang)), y: 50 + r * Math.sin(rad(ang))}; }
+const trackXY = i => polar(-135 + STEP / 2 + i * STEP, 37);
+const laneXY = (s, j) => polar(corner(s), 30 - j * 4.6);
+function homeXY(s, k){
+  const c = polar(corner(s), 52), dx = k % 2 ? 3.7 : -3.7, dy = k < 2 ? -3.7 : 3.7;
+  return {x: c.x + dx, y: c.y + dy};
+}
+function pegXY(s, k, prog){
+  if (prog < 0) return homeXY(s, k);
+  if (prog < TRACK) return trackXY((7 * s + prog) % TRACK);
+  return laneXY(s, prog - TRACK);
+}
+
+function buildBoard(){
+  let g = `<defs>`;
+  SEATS.forEach((s, i) => g += `<radialGradient id="pg${i}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".25" stop-color="${s.c}"/><stop offset="1" stop-color="${s.d}"/></radialGradient>`);
+  g += `<radialGradient id="dome" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#e9dcc3"/></radialGradient></defs>`;
+  g += `<rect x="0" y="0" width="100" height="100" rx="6" fill="var(--board)"/>`;
+  g += `<rect x="1.2" y="1.2" width="97.6" height="97.6" rx="5" fill="none" stroke="var(--board-edge)" stroke-width=".5"/>`;
+  SEATS.forEach((s, i) => {
+    const c = polar(corner(i), 52);
+    g += `<circle cx="${c.x}" cy="${c.y}" r="9.6" fill="${s.l}" stroke="${s.c}" stroke-width=".6"/>`;
+  });
+  g += `<circle cx="50" cy="50" r="37" fill="none" stroke="var(--board-edge)" stroke-width="1.2"/>`;
+  g += `<circle cx="50" cy="50" r="15.5" fill="url(#dome)" stroke="var(--board-edge)" stroke-width=".8"/>`;
+  SEATS.forEach((s, i) => {
+    const a = laneXY(i, 0), b = laneXY(i, 3);
+    g += `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${s.l}" stroke-width="5.6" stroke-linecap="round"/>`;
+    for (let j = 0; j < 4; j++){ const p = laneXY(i, j); g += hole(p, s.l, s.c); }
+    for (let k = 0; k < 4; k++){ const p = homeXY(i, k); g += hole(p, '#fff8', s.c); }
+    const e = polar(corner(i), 33.6);
+    g += `<text x="${e.x}" y="${e.y + .9}" text-anchor="middle" font-size="2.6" font-weight="800" fill="${s.d}" transform="rotate(${corner(i) + 90} ${e.x} ${e.y})">▼</text>`;
+  });
+  for (let i = 0; i < TRACK; i++){
+    const p = trackXY(i), start = i % 7 === 0 ? SEATS[i / 7] : null;
+    g += start ? hole(p, start.c, start.d, 2.75) : hole(p, 'var(--hole)', 'var(--board-edge)');
+  }
+  g += `<g id="pegs"></g>`;
+  $('#svg').innerHTML = g;
+  $('#speed').innerHTML = Object.entries(CARDS).map(([v, c]) => `<div style="--cc:${c.c}"><b>${v}</b><span>${c.p}</span></div>`).join('');
+}
+function hole(p, fill, stroke, r = 2.5){
+  return `<circle cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width=".45"/><circle cx="${p.x.toFixed(2)}" cy="${(p.y + .35).toFixed(2)}" r="${r * .55}" fill="rgba(42,28,22,.12)"/>`;
+}
+
+/* ---------- Rendering ---------- */
+function seatsInPlay(){ return state.phase === 'setup' ? SEATS_FOR[state.count] : state.players.map(p => p.seat); }
+
+function render(){
+  const setup = state.phase === 'setup';
+  $('#setup').hidden = !setup;
+  $('#play').hidden = setup;
+  $('#scorePanel').hidden = setup;
+  $('#logPanel').hidden = setup;
+  if (setup) renderSetup();
+  renderPegs(); renderPile(); renderScores(); renderTurn(); renderLog(); renderSnapbar();
+}
+
+function renderSetup(){
+  document.querySelectorAll('#countSeg button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.n === state.count)));
+  const list = $('#plist');
+  list.innerHTML = SEATS_FOR[state.count].map(s => `<div class="prow" style="--pc:${SEATS[s].c}"><span class="dot"></span>
+    <input id="pname-${s}" maxlength="14" placeholder="${SEATS[s].n} player" value="${esc(state.names[s])}" aria-label="${SEATS[s].n} player name" autocomplete="off"></div>`).join('');
+  list.querySelectorAll('input').forEach(inp => {
+    const s = +inp.id.split('-')[1];
+    inp.oninput = () => { state.names[s] = inp.value; save(); };
+    inp.onkeydown = e => { if (e.key === 'Enter') startGame(); };
+  });
+}
+
+function legalMoves(p, v){
+  const out = [];
+  let releaseAdded = false;
+  p.pegs.forEach((prog, k) => {
+    let to;
+    if (prog < 0){
+      if (v !== 6 || releaseAdded) return;
+      to = 0;
+    } else {
+      to = prog + v;
+      if (to > LAST) return;
+    }
+    if (p.pegs.some((q, j) => j !== k && q === to)) return;
+    if (prog < 0) releaseAdded = true;
+    out.push({k, from:prog, to});
+  });
+  return out;
+}
+
+function renderPegs(){
+  const layer = $('#pegs');
+  if (!layer) return;
+  const seats = seatsInPlay();
+  const can = choosing ? new Set(choosing.map(m => m.k)) : new Set();
+  const curSeat = state.phase === 'play' ? state.players[state.turn]?.seat : -1;
+  for (let s = 0; s < 4; s++){
+    const pl = state.players.find(p => p.seat === s);
+    for (let k = 0; k < 4; k++){
+      let el = document.getElementById(`peg-${s}-${k}`);
+      if (!el){
+        el = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        el.id = `peg-${s}-${k}`; el.setAttribute('class', 'peg');
+        el.innerHTML = `<circle class="pulse" r="3.6" stroke="${SEATS[s].d}"/><ellipse cx=".3" cy=".9" rx="2.3" ry="1.4" fill="rgba(42,28,22,.3)"/><circle r="2.3" fill="url(#pg${s})" stroke="${SEATS[s].d}" stroke-width=".35"/>`;
+        el.addEventListener('click', () => pickPeg(s, k));
+        el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); pickPeg(s, k); } });
+        layer.appendChild(el);
+      }
+      const show = seats.includes(s);
+      el.style.display = show ? '' : 'none';
+      if (!show) continue;
+      const prog = pl ? pl.pegs[k] : -1;
+      const p = pegXY(s, k, prog);
+      el.style.transform = `translate(${p.x}px, ${p.y}px)`;
+      const active = s === curSeat && can.has(k);
+      el.classList.toggle('can', active);
+      if (active){ el.setAttribute('tabindex', '0'); el.setAttribute('role', 'button'); el.setAttribute('aria-label', `Move ${SEATS[s].n} peg ${k + 1}`); }
+      else { el.removeAttribute('tabindex'); el.removeAttribute('role'); el.removeAttribute('aria-label'); }
+    }
+  }
+}
+
+function cardHTML(v, cls){
+  const c = CARDS[v];
+  return `<div class="card ${cls}" style="--cc:${c.c}"><span class="cn tl">${v}</span><span class="pic">${c.p}</span><span class="cname">${c.n}</span><span class="cn br">${v}</span></div>`;
+}
+function renderPile(){
+  const pile = $('#pile'), n = state.pile.length;
+  let html = '';
+  if (n >= 2) html += cardHTML(state.pile[n - 2], 'under');
+  if (n >= 1) html += cardHTML(state.pile[n - 1], 'top' + (state.freshCard ? ' fresh' : ''));
+  const canFlip = state.phase === 'play' && state.step === 'flip' && !busy;
+  if (!n) html = `<div class="empty">${canFlip ? 'Tap to flip' : 'Card pile'}</div>`;
+  pile.innerHTML = html;
+  pile.disabled = !canFlip;
+  pile.classList.toggle('ready', canFlip);
+  state.freshCard = false;
+  $('#count').textContent = state.phase === 'setup' ? '' : `${state.deck.length} left · pile ${n}`;
+}
+
+function renderScores(){
+  if (state.phase === 'setup') return;
+  $('#scores').innerHTML = state.players.map((p, i) => {
+    const s = SEATS[p.seat];
+    const pegs = p.pegs.map(g => `<i class="${g >= TRACK ? 'done' : g >= 0 ? 'out' : ''}"></i>`).join('');
+    return `<li class="srow ${i === state.turn && state.phase === 'play' ? 'now' : ''}" style="--pc:${s.c}">
+      <span class="dot"></span>
+      <span class="sname">${esc(p.name)}<span class="pegs" aria-label="${p.pegs.filter(g => g >= TRACK).length} of 4 pegs finished">${pegs}</span></span>
+      <span class="num"><b>${p.points}</b><span>points</span></span>
+      <span class="num w"><b>${p.wins}</b><span>wins</span></span></li>`;
+  }).join('');
+}
+
+let statusMsg = '';
+function status(m){ statusMsg = m; $('#whoStatus').textContent = m; }
+function renderTurn(){
+  if (state.phase === 'setup') return;
+  const p = state.players[state.turn], s = SEATS[p.seat];
+  $('#whoDot').style.setProperty('--pc', s.c);
+  $('#whoName').textContent = p.name;
+  const msg = state.phase === 'over' ? 'Round over.' : busy || choosing ? statusMsg : 'Flip a card to move.';
+  $('#whoStatus').textContent = msg;
+  const fb = $('#flipBtn');
+  fb.textContent = state.phase === 'over' ? 'See results' : 'Flip a card';
+  fb.disabled = state.phase === 'over' ? false : (busy || state.step !== 'flip');
+}
+
+function renderLog(){ $('#log').innerHTML = state.log.map(l => `<li class="${l.cls || ''}">${esc(l.text)}</li>`).join(''); }
+function addLog(text, cls = ''){ state.log.unshift({text, cls}); if (state.log.length > 40) state.log.length = 40; renderLog(); }
+
+function renderSnapbar(){
+  const bar = $('#snapbar');
+  if (state.phase === 'setup'){ bar.innerHTML = ''; return; }
+  bar.style.setProperty('--n', state.players.length);
+  bar.innerHTML = state.players.map((p, i) => {
+    const s = SEATS[p.seat];
+    return `<button class="snap ${s.cls}" type="button" data-i="${i}" style="--pc:${s.c}" aria-label="Snap for ${esc(p.name)}"><b>SNAP</b><span>${esc(p.name)}</span><kbd>${s.key.toUpperCase()}</kbd></button>`;
+  }).join('');
+  bar.querySelectorAll('.snap').forEach(b => {
+    b.addEventListener('pointerdown', e => { e.preventDefault(); snapPress(+b.dataset.i, b); });
+    b.addEventListener('click', e => { if (e.detail === 0) snapPress(+b.dataset.i, b); });
+  });
+}
+
+function floatAt(x, y, text){
+  const el = document.createElement('div');
+  el.className = 'floater'; el.textContent = text;
+  el.style.left = x + '%'; el.style.top = y + '%';
+  $('#board').appendChild(el);
+  setTimeout(() => el.remove(), 1500);
+}
+function floatPeg(p, k, text){ const q = pegXY(p.seat, k, p.pegs[k]); floatAt(q.x, q.y, text); }
+
+/* ---------- Snap ---------- */
+function openSnap(){
+  snapOpen = true; state.step = 'snap';
+  $('#callout').hidden = false;
+  const bar = $('#timerBar');
+  bar.style.animation = 'none'; void bar.offsetWidth; bar.style.animation = `drain ${SNAP_MS}ms linear forwards`;
+  $('#snapbar').classList.add('live');
+  status('SNAP! Quick, hit your button!');
+  return new Promise(res => { snapResolve = res; snapTimer = setTimeout(() => closeSnap(null), SNAP_MS); });
+}
+function closeSnap(winner){
+  if (!snapOpen) return;
+  snapOpen = false; clearTimeout(snapTimer);
+  graceUntil = performance.now() + 1200;
+  $('#callout').hidden = true;
+  $('#snapbar').classList.remove('live');
+  if (winner === null) addLog('Nobody snapped in time. The pile stays put.');
+  const r = snapResolve; snapResolve = null;
+  setTimeout(() => r && r(), 700);
+}
+function snapPress(i, btn){
+  if (state.phase !== 'play' || !$('#modal').hidden) return;
+  const p = state.players[i];
+  if (!p) return;
+  if (btn){ btn.classList.add('hit'); setTimeout(() => btn.classList.remove('hit'), 120); }
+  if (snapOpen){
+    const n = state.pile.length;
+    p.points += n; p.snaps = (p.snaps || 0) + 1;
+    state.deck = shuffle(state.deck.concat(state.pile));
+    state.pile = [];
+    addLog(`${p.name} snapped first and won the pile! +${n} points`, 'snap');
+    floatAt(50, 50, `${p.name} +${n}`);
+    renderPile(); renderScores();
+    closeSnap(i);
+    return;
+  }
+  const now = performance.now();
+  if (now < graceUntil || now - (lastFalse[i] || 0) < 900) return;
+  lastFalse[i] = now;
+  const lost = Math.min(2, p.points);
+  p.points -= lost;
+  addLog(`${p.name} snapped on a non-match.${lost ? ` −${lost} points` : ''}`, 'cap');
+  floatAt(50, 50, `Wrong snap ${p.name}${lost ? ` −${lost}` : ''}`);
+  renderScores(); save();
+}
+
+/* ---------- Turn flow ---------- */
+const cur = () => state.players[state.turn];
+
+async function flip(){
+  if (state.phase === 'over'){ showResults(); return; }
+  if (busy || state.phase !== 'play' || state.step !== 'flip') return;
+  busy = true;
+  const p = cur();
+  if (!state.deck.length){
+    const top = state.pile.pop();
+    state.deck = shuffle(state.pile);
+    state.pile = top ? [top] : [];
+    addLog('The deck ran out, so the pile was shuffled back in.');
+  }
+  const v = state.deck.pop(), prev = state.pile[state.pile.length - 1];
+  state.pile.push(v); state.card = v; state.freshCard = true;
+  renderPile(); renderTurn();
+  status(`Flipped a ${v}, the ${CARDS[v].n}.`);
+  addLog(`${p.name} flipped a ${v} (${CARDS[v].n}).`);
+  save();
+  await sleep(550);
+  if (prev === v) await openSnap();
+  await proceed();
+}
+
+async function proceed(){
+  const p = cur(), v = state.card;
+  state.step = 'choose';
+  const moves = legalMoves(p, v);
+  if (!moves.length){
+    status(`No peg can move ${v}.`);
+    addLog(`${p.name} can't use a ${v}.`);
+    await sleep(1000);
+    return endTurn(v);
+  }
+  if (moves.length === 1){
+    status(`Moving ${v}…`);
+    await sleep(350);
+    return doMove(p, moves[0], v);
+  }
+  choosing = moves;
+  busy = false;
+  status(`Tap a glowing ${SEATS[p.seat].n.toLowerCase()} peg to move ${v}.`);
+  renderPegs(); renderTurn(); save();
+  document.querySelector('.peg.can')?.focus({preventScroll:true});
+}
+
+function pickPeg(s, k){
+  if (!choosing || busy) return;
+  const p = cur();
+  if (p.seat !== s) return;
+  const m = choosing.find(x => x.k === k);
+  if (!m) return;
+  choosing = null; busy = true;
+  doMove(p, m, state.card);
+}
+
+async function doMove(p, m, v){
+  state.step = 'moving';
+  renderPegs();
+  if (m.from < 0){
+    p.pegs[m.k] = 0; renderPegs();
+    addLog(`${p.name} brought a peg out onto the start hole.`);
+    await sleep(300);
+  } else {
+    for (let t = m.from + 1; t <= m.to; t++){ p.pegs[m.k] = t; renderPegs(); await sleep(170); }
+  }
+  if (m.to < TRACK){
+    const abs = (7 * p.seat + m.to) % TRACK;
+    for (const q of state.players){
+      if (q === p) continue;
+      q.pegs.forEach((g, j) => {
+        if (g >= 0 && g < TRACK && (7 * q.seat + g) % TRACK === abs){
+          q.pegs[j] = -1;
+          p.points += 5; p.caps = (p.caps || 0) + 1;
+          addLog(`${p.name} landed on ${q.name} and sent them home! +5 points`, 'cap');
+          floatPeg(p, m.k, 'Gotcha! +5');
+        }
+      });
+    }
+    renderPegs();
+  }
+  if (m.from < TRACK && m.to >= TRACK){
+    p.points += 10;
+    addLog(`${p.name} got a peg into the finish lane. +10 points`, 'home');
+    floatPeg(p, m.k, 'Safe! +10');
+  }
+  renderScores();
+  if (p.pegs.every(g => g >= TRACK)){ await sleep(500); return finish(p); }
+  await sleep(300);
+  endTurn(v);
+}
+
+function endTurn(v){
+  state.card = null; choosing = null;
+  if (state.phase !== 'play') return;
+  if (v === 6) addLog(`${cur().name} flipped a 6 and gets another go.`);
+  else state.turn = (state.turn + 1) % state.players.length;
+  state.step = 'flip';
+  busy = false;
+  save(); render();
+}
+
+function finish(p){
+  p.points += 20; p.wins += 1;
+  state.phase = 'over'; state.winner = state.players.indexOf(p); state.step = 'flip';
+  addLog(`${p.name} got all four pegs home and wins the round! +20 points`, 'win');
+  busy = false; save(); render();
+  setTimeout(showResults, 600);
+}
+
+function showResults(){
+  const w = state.players[state.winner];
+  const ranked = [...state.players].sort((a, b) => b.points - a.points);
+  $('#sheet').innerHTML = `<p class="eyebrow">Round over</p>
+    <h2>${w ? esc(w.name) + ' wins the round!' : 'Round over'}</h2>
+    <p>Running totals across every round you've played:</p>
+    <ol class="podium">${ranked.map(p => `<li class="${p === w ? 'first' : ''}" style="--pc:${SEATS[p.seat].c}"><span class="dot"></span><span class="sname">${esc(p.name)}</span>
+      <span class="num"><b>${p.points}</b><span>points</span></span><span class="num w"><b>${p.wins}</b><span>wins</span></span></li>`).join('')}</ol>
+    <div class="acts"><button class="btn go" id="again" type="button">Play again</button><button class="btn" id="change" type="button">Change players</button><button class="btn" id="look" type="button">Look at the board</button></div>`;
+  $('#modal').hidden = false;
+  $('#again').focus();
+  $('#again').onclick = () => { $('#modal').hidden = true; newRound(); };
+  $('#change').onclick = () => { $('#modal').hidden = true; toSetup(); };
+  $('#look').onclick = () => { $('#modal').hidden = true; };
+}
+
+/* ---------- Setup ---------- */
+function startGame(){
+  state.players = SEATS_FOR[state.count].map(s => ({seat:s, name:(state.names[s] || '').trim() || SEATS[s].n, pegs:[-1,-1,-1,-1], points:0, wins:0, snaps:0, caps:0}));
+  state.log = [];
+  addLog(`Game on! ${state.players.map(p => p.name).join(', ')} are racing home.`);
+  newRound(true);
+}
+function newRound(first){
+  state.players.forEach(p => p.pegs = [-1,-1,-1,-1]);
+  state.deck = newDeck(); state.pile = []; state.card = null; state.step = 'flip';
+  state.phase = 'play'; state.winner = null; choosing = null; busy = false;
+  if (!first){ state.turn = (state.turn + 1) % state.players.length; addLog('New round! Pegs back home, points carried over.'); }
+  else state.turn = 0;
+  save(); render();
+  $('#flipBtn').focus({preventScroll:true});
+}
+function toSetup(){
+  state.players.forEach(p => { state.names[p.seat] = p.name === SEATS[p.seat].n ? '' : p.name; });
+  state.phase = 'setup'; state.players = []; state.log = []; state.deck = []; state.pile = []; choosing = null; busy = false;
+  if (snapOpen) closeSnap(null);
+  save(); render();
+}
+
+document.querySelectorAll('#countSeg button').forEach(b => b.onclick = () => { state.count = +b.dataset.n; save(); renderSetup(); renderPegs(); });
+$('#startBtn').onclick = startGame;
+$('#flipBtn').onclick = flip;
+$('#pile').onclick = flip;
+
+let armed = false, armTimer;
+$('#newBtn').onclick = () => {
+  if (busy) return;
+  const b = $('#newBtn');
+  if (!armed){ armed = true; b.textContent = 'Tap again to quit'; armTimer = setTimeout(() => { armed = false; b.textContent = 'New game'; }, 3000); return; }
+  clearTimeout(armTimer); armed = false; b.textContent = 'New game';
+  $('#modal').hidden = true; toSetup();
+};
+
+document.addEventListener('keydown', e => {
+  if (e.repeat || state.phase !== 'play' || !$('#modal').hidden) return;
+  const tag = document.activeElement?.tagName;
+  if (tag === 'INPUT') return;
+  const k = e.key.toLowerCase();
+  const i = state.players.findIndex(p => SEATS[p.seat].key === k);
+  if (i >= 0){ e.preventDefault(); snapPress(i, document.querySelector(`.snap[data-i="${i}"]`)); return; }
+  if (e.key === ' ' && tag !== 'BUTTON' && !document.activeElement?.classList?.contains('peg')){ e.preventDefault(); flip(); }
+});
+
+/* ---------- Boot ---------- */
+buildBoard();
+const hot = window.claude?.hot;
+if (hot && typeof hot.snapshot === 'function') hot.snapshot(() => ({state}));
+const boot = d => {
+  if (d && d.state && d.state.phase) state = d.state; else load();
+  render();
+  if (state.phase === 'play' && state.step !== 'flip' && state.card){ busy = true; proceed(); }
+  else if (state.phase === 'play') state.step = 'flip';
+  if (state.phase === 'over') showResults();
+};
+hot?.ready ? hot.ready(boot) : boot(hot?.data ?? {});
+})();
+</script>
