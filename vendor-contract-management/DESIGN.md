@@ -158,7 +158,7 @@ Site: `/sites/Keystone` (dedicated site, unique permissions, no member Contribut
 ### 3.3 Environment variables (solution)
 `kst_SiteUrl`, `kst_ListIds` (JSON of list GUIDs, so flows survive list renames), `kst_ServiceMailbox`, `kst_TeamsChannelId`, `kst_FeatureFlags`, `kst_LicenceKey`.
 
-**Licence key.** A signed JSON token (tenant ID, plan, expiry, signature). The app checks it on start (public key in `@keystone/core`) and the API flows check it too. Enterprise-only features are gated by plan. An expired key never blocks access to data: the app drops to read-only with a renewal banner, and reminders keep running for 30 days.
+**Licence key.** A signed JSON token (tenant ID, expiry, signature). The app checks it on start (public key in `@keystone/core`) and the API flows check it too. There is a single plan, so all features are enabled for any valid key. An expired key never blocks access to data: the app drops to read-only with a renewal banner, and reminders keep running for 30 days.
 
 ---
 

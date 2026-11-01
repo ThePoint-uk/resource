@@ -1,93 +1,119 @@
-# Keystone — Suggested pricing (internal)
+# Keystone — Pricing (internal)
 
-> Internal working note. Prices are GBP, excluding VAT, for UK mid-market buyers (roughly 100–2,000 staff). Test them with your first 3–5 customers before treating them as fixed.
+> Internal working note. GBP, excluding VAT. Target: UK mid-market organisations (roughly 100–2,000 staff).
 
-## 1. Recommended price list
+## 1. Price list
 
-### Subscription (annual, per Microsoft 365 tenant, unlimited users)
+### Subscription (one plan)
 
-| | **Standard** | **Enterprise** |
+| | **Keystone** |
+|---|---|
+| **Price** | **£5,950 / year** per Microsoft 365 tenant (~£496/month), billed annually in advance |
+| Users | **Unlimited** |
+| Environments | Production + Dev/Test |
+| Product | Everything: all 13 components, 8 screens, Rule Builder, Vendor 360, risk scoring, scorecards, obligations, approvals, BU confidentiality walls, multi-currency, spend import, e-signature integration pack* |
+| Updates | All updates and new versions |
+| Support | Standard support included (§3) |
+
+\*E-signature connectors need the customer's own Power Automate Premium licence for the Keystone service account.
+
+### Optional services (all delivered remotely, no on-site)
+
+| Service | Price |
+|---|---|
+| **Guided Installation Day** | **£1,150 fixed** |
+| **Premium Support** | **£2,400 / year** |
+| **Consultancy** (custom rules, integrations, training, extensions) | **£1,050 / day** |
+| **Data migration** (more than 500 contracts, messy registers, bulk document filing) | **from £1,950** (quoted) |
+
+### Offers
+- **Install bundle:** subscription + Guided Installation Day in year one = **£6,750** (saves £350).
+- **Founding customer:** 25% off year one for the first 10 customers, in exchange for a case study and a reference call. That makes the subscription £4,460, or £5,260 with the install day.
+
+### Typical first-year totals
+| Package | Year 1 | Year 2+ |
 |---|---|---|
-| **Price** | **£5,950 / year** | **£11,950 / year** |
-| Monthly equivalent | ~£496 | ~£996 |
-| Users | Unlimited | Unlimited |
-| Production environments | 1 | 1 + licensed Dev/Test environments |
-| All 13 Keystone controls, 8 screens | ✓ | ✓ |
-| Rules engine (reminders, escalations, validations, approval routing, obligation templates) | ✓ | ✓ |
-| Vendor 360, risk scoring, scorecards, spend import | ✓ | ✓ |
-| Business-unit confidentiality walls | — | ✓ |
-| E-signature integration pack (DocuSign / Adobe Acrobat Sign)* | — | ✓ |
-| Multi-currency reporting | — | ✓ |
-| Updates and new versions | ✓ | ✓ |
-| Support | Standard | Premium included |
-| Quarterly health check and upgrade done for you | — | ✓ |
+| Subscription only | £5,950 | £5,950 |
+| Subscription + Installation Day | £6,750 | £5,950 |
+| Subscription + Installation Day + Premium Support | £9,150 | £8,350 |
 
-\*E-signature connectors require the customer's own Power Automate Premium licence for the service account.
+## 2. Guided Installation Day (£1,150, remote)
 
-### Services (optional)
+**Before:** a 45-minute readiness call (licensing, environment/Dataverse capacity, DLP, admin roles, the decisions checklist in Installation Guide §2.5) and a data-quality review of the contract register.
 
-| Service | Price | What's included |
-|---|---|---|
-| **Guided Installation Day** (remote) | **£1,150 fixed** | See §2 |
-| Guided Installation Day (on-site) | £1,450 + travel at cost | Same, delivered at the customer's office |
-| Additional consultancy day | £1,050 / day | Custom rules, data cleansing, integrations, training |
-| Data migration pack | from £1,950 | Messy registers, > 500 contracts, document bulk-filing |
-| **Premium Support** (add-on to Standard) | **£2,400 / year** | See §3 |
-
-### Launch offers
-- **Founding customer:** 25% off the first year's subscription for the first 10 customers, in return for a case study and a reference call. Standard drops to £4,460.
-- **Bundle:** Standard + Guided Installation Day in year one for **£6,750** (saves £350).
-- **Pilot:** 60-day pilot for £1,500, credited in full against the first year if they buy.
-
-## 2. Guided Installation Day — scope (£1,150)
-
-Fixed price. One consultant, one working day of delivery, plus preparation before and support after.
-
-**Before (about a week ahead)**
-- 45-minute readiness call: licensing check, environment/Dataverse capacity, DLP, admin roles, decisions checklist (§2.5 of the Installation Guide)
-- Customer sends their contract register for a quick data-quality review
-
-**On the day**
+**On the day:**
 1. Service account, SharePoint site and solution installed and verified (Installation Guide Steps 1–6)
 2. Settings, branding, holidays, business units and roles configured
-3. Seeded rules reviewed with the business owner. Timings, recipients and approval thresholds set and published
-4. Up to **3 custom rules** built with the customer's admin
-5. Contract register imported: **up to 500 contracts** from the Keystone template (the customer prepares the data, we fix import errors)
+3. Seeded rules reviewed with the business owner, then timings, recipients and approval thresholds set and published
+4. Up to 3 custom rules built with the customer's admin
+5. Up to 500 contracts imported from the Keystone template
 6. Smoke test and go-live checklist
-7. **2-hour admin training** (rules, settings, imports, troubleshooting), recorded for the customer
+7. 2-hour admin training, recorded
 
-**After**
-- **30 days of priority support**: 4-business-hour response, plus one 30-minute follow-up call
+**After:** 30 days of priority support (4-business-hour response) and a 30-minute follow-up call.
 
-**Not included** (quote separately): data cleansing, bulk document filing, custom development, integrations, end-user training sessions beyond the admin session.
+**Not included:** data cleansing, bulk document filing, custom development, integrations, end-user training. These are quoted as consultancy days.
 
-## 3. Support levels
+## 3. Support
 
-| | Standard (included) | Premium (+£2,400/yr, included in Enterprise) |
+| | Standard (included) | Premium (£2,400 / year) |
 |---|---|---|
 | Channel | Email / portal | Email / portal + Teams call |
-| Response — app down / reminders not sending | Next business day | 4 business hours |
-| Response — other issues | 2 business days | Next business day |
-| Updates and release notes | ✓ | ✓ |
-| Upgrades | Customer installs using the guide | Done for you, quarterly |
-| Health check (connections, flow failures, rule hygiene) | — | Quarterly |
+| Critical issue (app down, reminders not sending) | Next business day | 4 business hours |
+| Other issues | 2 business days | Next business day |
+| Upgrades | Customer installs them using the guide | Done for you, quarterly |
+| Health check | — | Quarterly |
 | Rule-building help | — | 1 hour per month |
 | Named consultant | — | ✓ |
 
-## 4. Rationale
+## 4. Market landscape
 
-1. **Value anchor.** The risk Keystone removes is a missed notice deadline. One unplanned auto-renewal of a £200k contract, or failing to renegotiate it by 5%, costs more than a year of Standard. Sales copy should lead with this.
-2. **Market position.**
-   - *Dedicated per-user CLM SaaS* is usually priced per user per month, often with platform fees. It typically reaches five figures a year once procurement, legal, finance and contract owners all need access.
-   - *Spreadsheets and SharePoint lists* cost nothing, but they're where missed deadlines come from.
-   - Keystone sits between them: a premium experience at a predictable tenant price, with **no per-user fees**. That removes the "who gets a seat" argument and lets every contract owner in.
-3. **Low delivery cost.** There is no hosting cost to us. Everything runs in the customer's tenant. Margin is mainly support time, so price support explicitly (Premium) and keep Standard support asynchronous.
-4. **Why a fixed installation day.** It removes the biggest buying objection ("our IT team doesn't have time"). It sharply improves activation (customers who go live renew), and it's a natural upsell into consultancy. £1,150 is in line with UK Power Platform consultant day rates and is easy to approve on a card or PO.
-5. **Two plans, not three.** Mid-market buyers decide faster with fewer choices. Enterprise is justified by things large organisations need (BU walls, Dev/Test, premium support), not by locking away core features. Every customer gets the rules engine, because it's the differentiator.
-6. **Annual subscription over perpetual.** It funds continuous updates, keeps up with Microsoft platform changes, and gives recurring revenue. If a buyer insists on perpetual: **£17,950 one-off + 22% a year maintenance** (Standard scope).
+Checked November 2026 from public listings. Prices are as published or reported by review sites. **Confirm directly with each vendor before quoting them in sales conversations.**
 
-## 5. Before publishing prices
-- [ ] Run 5 pricing conversations (show the page, ask for reactions to the price, don't negotiate). Adjust if more than 3 of 5 call it cheap.
-- [ ] Check current Microsoft licensing guidance for code components in canvas apps, and get it reviewed.
-- [ ] Draft the subscription terms (EULA, SLA, DPA) and the cancellation policy shown in the FAQ.
-- [ ] Decide on VAT display (B2B: ex VAT is normal) and payment terms (annual in advance, invoice or card).
+### A. Contract management built on SharePoint / Microsoft 365 (closest competitors)
+| Product | What it is | Pricing (public) | How Keystone differs |
+|---|---|---|---|
+| **CLM 365** (Apps365) | SharePoint-based CLM on AppSource, with AI features and a 14-day trial | Per user per year. Review sites list roughly **$29.99–$69.99/user/year** across three tiers, with a minimum of 5 users. Lower tiers cap contracts per year (e.g. 30 or 60). The vendor's own page shows inconsistent figures | Keystone has no per-user or per-contract caps. It's vendor-led as well as contract-led (Vendor 360, risk, scorecards), and has an admin Rule Builder with simulation |
+| **Dock 365 Contract Management** | Contract management built for Microsoft 365 / SharePoint | Not published (quote only) | Transparent fixed price |
+| **Consensus** (Barhead) | CLM on the Power Platform for Microsoft 365 | Not found publicly | Keystone stores data in SharePoint (no Dataverse data capacity needed) and uses standard connectors |
+| **Contracts 365** | SaaS CLM on Power Platform / Dataverse, recently on Microsoft Marketplace | Not found publicly | Same as above |
+| **SP Marketplace** (Contract Tracker) | No-code SharePoint app suite with a contract module | Not checked | A lighter list-style tool. Keystone is a dedicated, premium UX |
+
+### B. Partner-built, bespoke Power Platform projects
+Examples: Withum's "Power Apps Contract Management" (sold as a 6-week implementation), LTI's 4-week implementation offer, and many custom builds (e.g. Synapx case study with 90/60/30-day reminders). **These are projects, not products.** Typically several weeks of consultancy, so costs run well above Keystone's first-year price, and the customer then owns the maintenance.
+
+### C. Microsoft's own route (DIY)
+Microsoft documents a contract management pattern using **SharePoint Premium (formerly Syntex)** for AI extraction, plus SharePoint lists, Teams and Power Automate. There is also a Syntex *Contracts Management* site template. It needs Syntex / SharePoint Premium licensing for the people who use it, and it's a reference pattern you build and maintain yourself. There's no renewal timeline, vendor view, rules engine or packaged UX. It's **complementary**: Keystone could later read Syntex-extracted metadata (roadmap phase 4).
+
+### D. Standalone CLM SaaS (outside Microsoft 365)
+| Product | Pricing (public / reported) |
+|---|---|
+| **Concord** | ~$499 / $899 / $1,299 per month (5 users included), extra seats $49–$89/user/month |
+| **ContractSafe** | Reported from ~$375–$450/month |
+| **Juro** | Quote only. Third parties report ~$450–$1,000/month |
+| Enterprise CLM (Icertis, Agiloft, DocuSign CLM, Ironclad, Conga) | Quote only. Typically enterprise-scale contracts |
+
+These are strong on drafting, negotiation and e-signature. However, data sits outside the customer's tenant, there's another login and vendor to approve, and costs scale with seats.
+
+### Where Keystone fits
+**The gap:** most M365-native tools are per-user and contract-centric. DIY and partner builds are projects. Standalone CLM lives outside the tenant and charges per seat. Keystone's position is a **packaged, premium, vendor-and-contract product that lives entirely in the customer's tenant, at one fixed price for unlimited users, with policy that admins control.**
+
+**Price check against the closest rival:** at CLM 365's top reported tier (~$70/user/year), Keystone's £5,950 breaks even at roughly 100 users. Below that, Keystone looks dearer on paper. Sell against that with:
+- no contract caps or seat counting
+- vendor management and risk included
+- the Rule Builder
+- the installation day
+
+Above ~100 users, Keystone is cheaper and the gap widens.
+
+## 5. Rationale for one plan
+- **Simpler buying:** one number, no feature comparison, quicker approval (often within a department head's sign-off limit).
+- **Simpler engineering:** no feature gating. The licence key only checks tenant and expiry.
+- **Revenue grows through services:** support and consultancy carry the upsell, not plans.
+- **Raising the price later:** keep the founding discount time-limited, then review the list price after the first 10 customers.
+
+## 6. Before publishing prices
+- [ ] Run 5 pricing conversations. If more than 3 call it cheap, raise it to £6,950–£7,500.
+- [ ] Verify competitor prices directly. Directory figures drift and conflict.
+- [ ] Get the code-components licensing position reviewed by a Microsoft licensing partner.
+- [ ] Draft the EULA, SLA, DPA and cancellation terms shown in the FAQ.
