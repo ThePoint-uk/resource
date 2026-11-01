@@ -1,0 +1,1178 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keystone · Vendor &amp; Contract Management (PCF)</title>
+<style>
+:root{
+  --font:'Segoe UI','Segoe UI Web (West European)',-apple-system,BlinkMacSystemFont,Roboto,'Helvetica Neue',Arial,sans-serif;
+  --brand:#1F3A5F; --brand-hover:#172C48; --brand-2:#2E5A8C; --brand-bg:#EAF0F7; --brand-bd:#BCCDE2;
+  --accent:#A67C3D; --accent-bg:#F7F0E4;
+  --bg:#F4F5F7; --card:#FFFFFF;
+  --stroke:#E1DFDD; --stroke-1:#D2D0CE; --stroke-2:#EDEBE9; --stroke-3:#F3F2F1;
+  --fg:#1B1F24; --fg-2:#5B6168; --fg-3:#8A8F96; --fg-4:#A7ABB0;
+  --ok-fg:#0E700E; --ok-bg:#E7F3E3; --ok-bd:#BDDFB8; --ok-strong:#107C10;
+  --warn-fg:#8A5300; --warn-bg:#FBF3D5; --warn-bd:#EFD590; --warn-strong:#D29200;
+  --bad-fg:#A4262C; --bad-bg:#FDEDEE; --bad-bd:#EEACB2; --bad-strong:#C50F1F;
+  --info-fg:#0F6CBD; --info-bg:#EBF3FC; --info-bd:#B4D6FA;
+  --sh2:0 0 2px rgba(0,0,0,.10),0 1px 2px rgba(0,0,0,.12);
+  --sh8:0 0 2px rgba(0,0,0,.12),0 4px 8px rgba(0,0,0,.14);
+  --r:4px; --r-lg:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{font-family:var(--font);font-size:14px;color:var(--fg);background:var(--bg);line-height:1.4}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+input,select,textarea{font:inherit;color:inherit}
+svg{width:16px;height:16px;flex:none}
+.num{font-variant-numeric:tabular-nums lining-nums;white-space:nowrap}
+:focus-visible{outline:2px solid var(--brand-2);outline-offset:1px;border-radius:2px}
+
+/* review bar */
+.rev{position:sticky;top:0;z-index:80;min-height:42px;display:flex;align-items:center;gap:14px;padding:5px 16px;background:#16191d;color:#d6d6d6;border-bottom:1px solid #000;flex-wrap:wrap}
+.rev__b{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:#f3f2f1;white-space:nowrap}
+.rev__dot{width:13px;height:13px;border-radius:3px;background:linear-gradient(135deg,var(--accent),var(--brand-2))}
+.seg{display:inline-flex;background:#0e1013;border:1px solid #33373c;border-radius:5px;padding:2px;gap:2px;flex-wrap:wrap}
+.seg button{display:flex;align-items:center;gap:7px;padding:5px 11px;border-radius:4px;font-size:12.5px;font-weight:600;color:#a0a5ab;transition:.15s;white-space:nowrap}
+.seg button .n{font-size:10px;opacity:.7;font-weight:700}
+.seg button[aria-selected=true]{background:#fff;color:#1b1f24;box-shadow:0 1px 2px rgba(0,0,0,.4)}
+.pcftoggle{display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:5px;font-size:12.5px;font-weight:600;color:#cdcdcd;border:1px solid #33373c;transition:.15s;white-space:nowrap}
+.pcftoggle:hover{color:#fff;border-color:#5a5f66}
+.pcftoggle[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.rev__note{margin-left:auto;font-size:11px;color:#8a8f96;display:flex;align-items:center;gap:6px}
+.rev__note::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent)}
+
+/* app chrome */
+.appbar{display:flex;align-items:center;gap:12px;height:50px;padding:0 16px;background:var(--brand);color:#fff}
+.appicon{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,#c9a46a,var(--accent));display:grid;place-items:center;color:#fff;flex:none}
+.appicon svg{width:17px;height:17px}
+.appname{font-size:15px;font-weight:600;letter-spacing:.01em}
+.appname small{font-weight:400;opacity:.7;margin-left:8px;font-size:12.5px}
+.appbar__sp{flex:1}
+.gsrch{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:6px;padding:0 10px;height:32px;width:340px;color:#dfe6ef}
+.gsrch input{background:none;border:0;color:#fff;width:100%;font-size:13px}
+.gsrch input::placeholder{color:#b7c3d3}
+.gsrch kbd{white-space:nowrap;font-size:10.5px;font-family:inherit;border:1px solid rgba(255,255,255,.3);border-radius:3px;padding:0 5px;color:#cfd8e3}
+.iconbtn{width:32px;height:32px;border-radius:var(--r);display:grid;place-items:center;color:#dfe6ef;position:relative}
+.iconbtn:hover{background:rgba(255,255,255,.12)} .iconbtn svg{width:18px;height:18px}
+.iconbtn .dotr{position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:50%;background:#ff6b6b;border:1.5px solid var(--brand)}
+.uav{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:600}
+
+.layout{display:flex;min-height:calc(100vh - 92px)}
+.rail{width:64px;background:#fff;border-right:1px solid var(--stroke);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px;flex:none;position:relative}
+.rail button{width:52px;padding:7px 0 6px;border-radius:6px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-weight:600;color:var(--fg-2)}
+.rail button svg{width:20px;height:20px}
+.rail button:hover{background:var(--stroke-3)}
+.rail button[aria-current=true]{background:var(--brand-bg);color:var(--brand)}
+.main{flex:1;min-width:0}
+
+.subbar{display:flex;align-items:center;gap:6px;padding:0 20px;background:var(--card);border-bottom:1px solid var(--stroke);min-height:46px;flex-wrap:wrap}
+.crumb{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--fg-2);margin-right:8px}
+.crumb b{color:var(--fg);font-weight:600} .crumb a{color:var(--fg-2);cursor:pointer} .crumb a:hover{color:var(--brand)} .crumb svg{width:13px;height:13px;color:var(--fg-4)}
+.cmd{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border-radius:var(--r);font-size:13.5px;white-space:nowrap}
+.cmd:hover{background:var(--stroke-3)} .cmd svg{color:var(--fg-2)}
+.cmd.prim{background:var(--brand);color:#fff} .cmd.prim:hover{background:var(--brand-hover)} .cmd.prim svg{color:#fff}
+.sep{width:1px;height:20px;background:var(--stroke);margin:0 2px}
+.sp{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:20px;font-size:12.5px;color:var(--fg);border:1px solid var(--stroke-1);background:#fff;white-space:nowrap}
+.chip .c{font-size:11px;color:var(--fg-3);font-weight:600}
+.chip[aria-pressed=true]{background:var(--brand);border-color:var(--brand);color:#fff} .chip[aria-pressed=true] .c{color:#c9d6e6}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+
+.screen{display:none} .screen.is-active{display:block}
+.wrap{padding:20px;max-width:1680px}
+.h1{font-size:20px;font-weight:600;margin-bottom:2px}
+.lede{font-size:13px;color:var(--fg-2);margin-bottom:16px}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--stroke-2);border-radius:var(--r-lg);box-shadow:var(--sh2)}
+.card__hd{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--stroke-2);min-height:50px}
+.card__hd h2{font-size:14.5px;font-weight:600} .card__hd .sub{font-size:12px;color:var(--fg-3)}
+.card__hd .r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.pad{padding:16px}
+.lk{color:var(--brand-2);font-weight:600;cursor:pointer;font-size:13px}
+.lk:hover{text-decoration:underline}
+.g{display:grid;gap:16px;align-items:start}
+.g-dash{grid-template-columns:minmax(0,1fr) 380px}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g-side{grid-template-columns:minmax(0,1fr) 400px}
+.stack{display:grid;gap:16px}
+.mt16{margin-top:16px}
+
+/* KPI tiles */
+.tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.tiles.t4{grid-template-columns:repeat(4,minmax(0,1fr))} .tiles.t5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.tile{background:var(--card);border:1px solid var(--stroke-2);border-radius:var(--r-lg);box-shadow:var(--sh2);padding:13px 14px 12px;position:relative;overflow:hidden;cursor:pointer;transition:box-shadow .15s}
+.tile:hover{box-shadow:var(--sh8)}
+.tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--brand-bd)}
+.tile.warn::before{background:var(--warn-strong)} .tile.bad::before{background:var(--bad-strong)} .tile.ok::before{background:var(--ok-strong)} .tile.acc::before{background:var(--accent)}
+.tile__l{font-size:12px;color:var(--fg-2);font-weight:600;display:flex;align-items:center;gap:6px}
+.tile__l svg{width:14px;height:14px;color:var(--fg-3)}
+.tile__n{font-size:26px;font-weight:600;letter-spacing:-.01em;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.tile__n .u{font-size:15px;font-weight:500;color:var(--fg-2)}
+.tile__s{font-size:11.5px;color:var(--fg-3);display:flex;align-items:center;gap:6px}
+.spark{position:absolute;right:12px;bottom:12px;width:64px;height:22px;stroke:var(--brand-2);fill:none;stroke-width:1.6;opacity:.75}
+.delta{font-weight:700} .delta.up{color:var(--ok-fg)} .delta.dn{color:var(--bad-fg)}
+
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:20px;white-space:nowrap;border:1px solid transparent;line-height:1.5}
+.badge svg{width:12px;height:12px}
+.b-brand{background:var(--brand-bg);color:var(--brand);border-color:var(--brand-bd)}
+.b-ok{background:var(--ok-bg);color:var(--ok-fg);border-color:var(--ok-bd)}
+.b-warn{background:var(--warn-bg);color:var(--warn-fg);border-color:var(--warn-bd)}
+.b-bad{background:var(--bad-bg);color:var(--bad-fg);border-color:var(--bad-bd)}
+.b-info{background:var(--info-bg);color:var(--info-fg);border-color:var(--info-bd)}
+.b-grey{background:var(--stroke-3);color:var(--fg-2);border-color:var(--stroke-1)}
+.b-acc{background:var(--accent-bg);color:#7a5520;border-color:#e3cfa9}
+.dotb::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* avatars */
+.av{width:30px;height:30px;border-radius:6px;display:grid;place-items:center;font-size:11.5px;font-weight:700;color:#fff;flex:none;letter-spacing:.02em}
+.av.rd{border-radius:50%} .av.sm{width:24px;height:24px;font-size:10px} .av.xl{width:60px;height:60px;font-size:21px;border-radius:12px}
+.a0{background:#1F3A5F}.a1{background:#0E7C6E}.a2{background:#2E5A8C}.a3{background:#8764B8}.a4{background:#CA5010}.a5{background:#038387}.a6{background:#BC4B4F}.a7{background:#5B6B7B}.a8{background:#A67C3D}.a9{background:#107C10}
+.who{display:flex;align-items:center;gap:9px;min-width:0}
+.who .nm{font-weight:600;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .who .rl{font-size:11.5px;color:var(--fg-3)}
+
+/* grid */
+.dl-wrap{overflow-x:auto}
+.dl{width:100%;border-collapse:collapse;min-width:900px}
+.dl thead th{font-size:12px;font-weight:600;color:var(--fg-2);text-align:left;padding:9px 12px;border-bottom:1px solid var(--stroke);white-space:nowrap;background:#FAFAFB;position:sticky;top:0}
+.dl thead th .srt{color:var(--brand-2);margin-left:3px}
+.dl th.r,.dl td.r{text-align:right}
+.dl tbody td{padding:0 12px;height:50px;border-bottom:1px solid var(--stroke-3);vertical-align:middle;font-size:13.5px}
+.dl tbody tr.cl{cursor:pointer} .dl tbody tr.cl:hover{background:var(--brand-bg)}
+.dl .muted{color:var(--fg-3);font-size:12.5px}
+.dl td.ck,.dl th.ck{width:36px;padding-right:0}
+.cb{width:16px;height:16px;border:1.5px solid var(--fg-3);border-radius:3px;display:inline-block;vertical-align:middle}
+.idtag{font-size:10.5px;color:var(--fg-3);font-weight:600;letter-spacing:.02em}
+.grow{background:#FAFAFB;cursor:pointer} .grow td{height:38px!important;font-weight:600;font-size:13px}
+.grow .gc{color:var(--fg-3);font-weight:500;margin-left:6px}
+.gridft{display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:12.5px;color:var(--fg-2);border-top:1px solid var(--stroke-2)}
+.toolbar{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--stroke-2);flex-wrap:wrap}
+.fsrch{display:flex;align-items:center;gap:7px;border:1px solid var(--stroke-1);border-radius:var(--r);padding:0 9px;height:30px;width:240px;background:#fff}
+.fsrch input{border:0;width:100%;font-size:13px;background:none} .fsrch svg{color:var(--fg-3);width:14px;height:14px}
+.bulk{display:none;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--brand)}
+
+/* risk ring */
+.ring{--v:50;--c:var(--warn-strong);width:34px;height:34px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--v)*1%),var(--stroke-2) 0);display:grid;place-items:center;flex:none}
+.ring b{width:26px;height:26px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+.ring.lg{width:64px;height:64px} .ring.lg b{width:52px;height:52px;font-size:18px;flex-direction:column;line-height:1} .ring.lg b small{font-size:9px;font-weight:600;color:var(--fg-3);margin-top:2px}
+.minibar{width:80px;height:6px;border-radius:3px;background:var(--stroke-2);overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}
+.minibar i{display:block;height:100%;background:var(--brand-2);border-radius:3px}
+.certs{display:flex;gap:4px}
+.cert{font-size:9.5px;font-weight:700;padding:2px 5px;border-radius:3px;border:1px solid}
+.cert.ok{color:var(--ok-fg);background:var(--ok-bg);border-color:var(--ok-bd)} .cert.warn{color:var(--warn-fg);background:var(--warn-bg);border-color:var(--warn-bd)}
+.cert.bad{color:var(--bad-fg);background:var(--bad-bg);border-color:var(--bad-bd)} .cert.na{color:var(--fg-4);background:#fff;border-color:var(--stroke-1);border-style:dashed}
+.cd{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:12.5px;white-space:nowrap}
+.cd i{width:8px;height:8px;border-radius:2px;transform:rotate(45deg)}
+.cd.bad{color:var(--bad-fg)} .cd.bad i{background:var(--bad-strong)}
+.cd.warn{color:var(--warn-fg)} .cd.warn i{background:var(--warn-strong)}
+.cd.ok{color:var(--fg-2)} .cd.ok i{background:var(--brand-bd)}
+
+/* renewal timeline */
+.tl{position:relative;padding:4px 16px 12px}
+.tl-head,.tl-row{display:grid;grid-template-columns:250px minmax(0,1fr) 110px;align-items:center;gap:12px}
+.tl-head{height:34px;border-bottom:1px solid var(--stroke-2);font-size:11px;color:var(--fg-3);font-weight:600}
+.tl-months{position:relative;height:100%}
+.tl-months span{position:absolute;top:10px;transform:translateX(-0%);padding-left:5px;border-left:1px solid var(--stroke-2);height:24px;text-transform:uppercase;letter-spacing:.04em}
+.tl-months span.q{color:var(--fg-2)}
+.tl-row{height:46px;border-bottom:1px solid var(--stroke-3);cursor:pointer}
+.tl-row:hover{background:linear-gradient(90deg,var(--brand-bg),transparent)}
+.tl-lab{min-width:0} .tl-lab b{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-lab span{font-size:11.5px;color:var(--fg-3)}
+.tl-track{position:relative;height:100%}
+.tl-grid{position:absolute;top:0;bottom:0;border-left:1px dashed var(--stroke-2)}
+.tl-bar{position:absolute;top:50%;height:12px;margin-top:-6px;border-radius:3px;background:linear-gradient(90deg,var(--brand-bd),#9fb6d2)}
+.tl-bar.cut{border-top-left-radius:0;border-bottom-left-radius:0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 18px);mask-image:linear-gradient(90deg,transparent,#000 18px)}
+.tl-win{position:absolute;top:50%;height:22px;margin-top:-11px;border-radius:4px;background:repeating-linear-gradient(135deg,rgba(210,146,0,.16) 0 5px,rgba(210,146,0,.28) 5px 10px);border:1px solid rgba(210,146,0,.45)}
+.tl-dl{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;transform:rotate(45deg);border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.18);border-radius:2px;z-index:2}
+.tl-dl.bad{background:var(--bad-strong)} .tl-dl.warn{background:var(--warn-strong)} .tl-dl.ok{background:var(--brand-2)}
+.tl-end{position:absolute;top:50%;height:20px;margin-top:-10px;width:2px;background:var(--brand);z-index:1}
+.tl-auto{position:absolute;top:50%;margin:-8px 0 0 5px;width:16px;height:16px;color:var(--brand-2)}
+.tl-today{position:absolute;top:0;bottom:0;width:0;border-left:2px solid var(--accent);z-index:3;pointer-events:none}
+.tl-today span{position:absolute;top:-1px;left:-1px;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:3px;white-space:nowrap}
+.tl-legend{display:flex;gap:16px;font-size:11.5px;color:var(--fg-2);flex-wrap:wrap}
+.tl-legend span{display:inline-flex;align-items:center;gap:6px}
+.lg-bar{width:18px;height:8px;border-radius:2px;background:var(--brand-bd)}
+.lg-win{width:18px;height:12px;border-radius:2px;background:repeating-linear-gradient(135deg,rgba(210,146,0,.16) 0 4px,rgba(210,146,0,.3) 4px 8px);border:1px solid rgba(210,146,0,.45)}
+.lg-dl{width:9px;height:9px;background:var(--bad-strong);transform:rotate(45deg);border-radius:1px}
+.zoom{display:inline-flex;border:1px solid var(--stroke-1);border-radius:5px;overflow:hidden}
+.zoom button{padding:4px 10px;font-size:12px;font-weight:600;color:var(--fg-2);border-right:1px solid var(--stroke-1)} .zoom button:last-child{border:0}
+.zoom button[aria-pressed=true]{background:var(--brand);color:#fff}
+
+/* obligations */
+.ob-grp{padding:6px 0}
+.ob-gh{display:flex;align-items:center;gap:8px;padding:8px 16px 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--fg-3)}
+.ob-gh .n{background:var(--stroke-3);border-radius:10px;padding:0 7px;color:var(--fg-2)}
+.ob-gh.bad{color:var(--bad-fg)} .ob-gh.bad .n{background:var(--bad-bg);color:var(--bad-fg)}
+.ob-gh.warn{color:var(--warn-fg)} .ob-gh.warn .n{background:var(--warn-bg);color:var(--warn-fg)}
+.ob{display:flex;align-items:flex-start;gap:11px;padding:8px 16px;transition:background .15s}
+.ob:hover{background:var(--stroke-3)}
+.ob .tick{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--fg-3);margin-top:1px;display:grid;place-items:center;color:transparent;flex:none;transition:.15s}
+.ob .tick svg{width:11px;height:11px}
+.ob .tick:hover{border-color:var(--ok-strong);color:var(--ok-strong)}
+.ob.done .tick{background:var(--ok-strong);border-color:var(--ok-strong);color:#fff}
+.ob.done .ob-t{text-decoration:line-through;color:var(--fg-3)}
+.ob-t{font-size:13px;font-weight:600;line-height:1.3}
+.ob-m{font-size:11.5px;color:var(--fg-3);margin-top:2px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ob-d{margin-left:auto;font-size:12px;font-weight:600;white-space:nowrap;padding-top:1px}
+.ob-d.bad{color:var(--bad-fg)} .ob-d.warn{color:var(--warn-fg)} .ob-d.ok{color:var(--fg-2)}
+
+/* charts */
+.hb{display:grid;grid-template-columns:130px minmax(0,1fr) 64px;gap:10px;align-items:center;margin-bottom:10px;font-size:12.5px}
+.hb .t{height:14px;background:var(--stroke-3);border-radius:3px;overflow:hidden;display:flex}
+.hb .t i{display:block;height:100%}
+.hb .v{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.hb .l{color:var(--fg-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.donutw{display:flex;align-items:center;gap:18px}
+.donut{width:132px;height:132px;border-radius:50%;flex:none;display:grid;place-items:center}
+.donut b{width:88px;height:88px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center;font-size:22px;font-weight:600;line-height:1.05}
+.donut b small{display:block;font-size:10.5px;font-weight:600;color:var(--fg-3)}
+.lgd{display:grid;gap:7px;font-size:12.5px;flex:1}
+.lgd div{display:flex;align-items:center;gap:8px} .lgd i{width:10px;height:10px;border-radius:2px;flex:none} .lgd span{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
+.rm{display:grid;grid-template-columns:22px repeat(5,1fr);gap:4px;font-size:11px}
+.rm .ax{color:var(--fg-3);display:grid;place-items:center;font-weight:600}
+.rm .c{aspect-ratio:2.1;border-radius:4px;display:grid;place-items:center;font-weight:700;font-size:13px;cursor:pointer;transition:transform .1s}
+.rm .c:hover{transform:scale(1.06)}
+.rm .c.e{color:transparent}
+.rm-x{display:grid;grid-template-columns:22px repeat(5,1fr);gap:4px;font-size:11px;color:var(--fg-3);font-weight:600;text-align:center;margin-top:4px}
+.rm-cap{display:flex;justify-content:space-between;font-size:11px;color:var(--fg-3);margin-top:6px}
+
+/* record header */
+.rh{background:var(--card);border:1px solid var(--stroke-2);border-radius:var(--r-lg);box-shadow:var(--sh2);padding:18px 20px;display:flex;gap:18px;align-items:center;margin-bottom:16px;position:relative;overflow:hidden}
+.rh::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,var(--accent-bg),transparent 70%);pointer-events:none}
+.rh__main{flex:1;min-width:0}
+.rh__t{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.rh__t h1{font-size:21px;font-weight:600}
+.rh__facts{display:flex;gap:26px;margin-top:10px;flex-wrap:wrap}
+.rh__facts div{font-size:11.5px;color:var(--fg-3);font-weight:600}
+.rh__facts b{display:block;font-size:13.5px;color:var(--fg);font-weight:600;margin-top:1px}
+.rh__act{display:flex;gap:8px;align-items:center;z-index:1}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;border-radius:var(--r);font-size:13.5px;font-weight:600;border:1px solid var(--stroke-1);background:#fff;white-space:nowrap}
+.btn:hover{background:var(--stroke-3)}
+.btn.prim{background:var(--brand);border-color:var(--brand);color:#fff} .btn.prim:hover{background:var(--brand-hover)}
+.btn.ok{background:var(--ok-strong);border-color:var(--ok-strong);color:#fff}
+.btn.danger{color:var(--bad-fg);border-color:var(--bad-bd)}
+.countdown{text-align:center;padding:8px 16px;border-radius:8px;background:var(--warn-bg);border:1px solid var(--warn-bd);z-index:1}
+.countdown b{display:block;font-size:26px;font-weight:700;color:var(--warn-fg);line-height:1.1;font-variant-numeric:tabular-nums}
+.countdown span{font-size:11px;font-weight:600;color:var(--warn-fg)}
+
+.pivot{display:flex;gap:4px;border-bottom:1px solid var(--stroke);margin-bottom:16px;flex-wrap:wrap}
+.pivot button{padding:9px 12px;font-size:13.5px;color:var(--fg-2);font-weight:600;border-bottom:2px solid transparent;margin-bottom:-1px}
+.pivot button[aria-selected=true]{color:var(--fg);border-bottom-color:var(--brand)}
+.pivot button .c{font-size:11px;color:var(--fg-3);margin-left:4px}
+
+/* stepper */
+.stepper{display:flex;background:var(--card);border:1px solid var(--stroke-2);border-radius:var(--r-lg);box-shadow:var(--sh2);padding:14px 18px;margin-bottom:16px;gap:0;overflow-x:auto}
+.st{flex:1;min-width:112px;position:relative;padding-top:30px;text-align:left}
+.st::before{content:"";position:absolute;top:11px;left:24px;right:0;height:2px;background:var(--stroke-1)}
+.st:last-child::before{display:none}
+.st .dot{position:absolute;top:0;left:0;width:24px;height:24px;border-radius:50%;border:2px solid var(--stroke-1);background:#fff;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:700}
+.st .dot svg{width:12px;height:12px}
+.st.done .dot{background:var(--brand);border-color:var(--brand)} .st.done::before{background:var(--brand)}
+.st.cur .dot{border-color:var(--accent);background:var(--accent);box-shadow:0 0 0 4px var(--accent-bg)}
+.st b{display:block;font-size:12.5px;font-weight:600}
+.st span{font-size:11px;color:var(--fg-3)}
+.st.cur b{color:#7a5520}
+
+/* form */
+.fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 20px}
+.fgrid.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fl label{display:block;font-size:12px;font-weight:600;color:var(--fg-2);margin-bottom:4px}
+.fl .ro{font-size:13.5px;font-weight:500;min-height:20px}
+.fl .req{color:var(--bad-fg)}
+.inp{width:100%;height:32px;border:1px solid var(--stroke-1);border-bottom-color:var(--fg-3);border-radius:var(--r);padding:0 10px;background:#fff;font-size:13.5px;display:flex;align-items:center;gap:6px}
+.inp:focus-within,.inp.focus{border-bottom:2px solid var(--brand-2)}
+.inp input,.inp select{border:0;outline:0;width:100%;height:100%;background:none;font-size:13.5px}
+.inp .pre{color:var(--fg-3);font-weight:600}
+.inp.err{border-color:var(--bad-strong)}
+.hint{font-size:11.5px;color:var(--fg-3);margin-top:3px} .hint.err{color:var(--bad-fg)}
+.tgl{display:inline-flex;align-items:center;gap:9px;font-size:13.5px;cursor:pointer;height:32px}
+.tgl i{width:40px;height:20px;border-radius:10px;background:var(--brand);position:relative;flex:none}
+.tgl i::after{content:"";position:absolute;right:3px;top:3px;width:14px;height:14px;border-radius:50%;background:#fff}
+.tgl.off i{background:#fff;border:1px solid var(--fg-3)} .tgl.off i::after{left:3px;right:auto;top:2px;background:var(--fg-2)}
+.fsec{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--fg-3);margin:20px 0 10px;display:flex;align-items:center;gap:10px}
+.fsec::after{content:"";flex:1;height:1px;background:var(--stroke-2)}
+.fsec:first-child{margin-top:0}
+.wiz{display:flex;gap:0;padding:0 4px;margin-bottom:16px;counter-reset:w}
+.wz{flex:1;display:flex;align-items:center;gap:9px;padding:10px 12px;font-size:13px;font-weight:600;color:var(--fg-3);border-bottom:3px solid var(--stroke-2);cursor:pointer}
+.wz .n{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:11px;background:var(--stroke-2);color:var(--fg-2);flex:none}
+.wz .n svg{width:12px;height:12px}
+.wz.done{color:var(--fg-2);border-bottom-color:var(--brand-bd)} .wz.done .n{background:var(--brand);color:#fff}
+.wz.cur{color:var(--fg);border-bottom-color:var(--accent)} .wz.cur .n{background:var(--accent);color:#fff}
+.wizft{display:flex;gap:8px;align-items:center;padding:14px 16px;border-top:1px solid var(--stroke-2);background:#FAFAFB;border-radius:0 0 8px 8px}
+.wizft .s{font-size:12px;color:var(--fg-3);display:flex;align-items:center;gap:6px}
+
+/* approvals */
+.ap{padding:4px 16px 12px}
+.aps{display:flex;gap:12px;position:relative;padding:10px 0}
+.aps::before{content:"";position:absolute;left:14px;top:40px;bottom:-10px;width:2px;background:var(--stroke-2)}
+.aps:last-child::before{display:none}
+.aps .ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;flex:none;border:2px solid var(--stroke-1);background:#fff;color:var(--fg-3);z-index:1}
+.aps .ic svg{width:14px;height:14px}
+.aps.ok .ic{background:var(--ok-strong);border-color:var(--ok-strong);color:#fff}
+.aps.cur .ic{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
+.aps .b{flex:1;min-width:0}
+.aps .t{font-size:13px;font-weight:600;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.aps .m{font-size:11.5px;color:var(--fg-3);margin-top:1px}
+.aps .q{font-size:12.5px;color:var(--fg-2);background:var(--stroke-3);border-radius:6px;padding:7px 10px;margin-top:6px}
+.decide{margin-top:8px;display:flex;flex-direction:column;gap:8px}
+.decide textarea{width:100%;border:1px solid var(--stroke-1);border-radius:var(--r);padding:7px 9px;font-size:13px;resize:none;height:52px}
+.decide .row{display:flex;gap:8px}
+
+/* activity */
+.feed{padding:4px 16px 12px}
+.fi{display:flex;gap:11px;padding:9px 0;border-bottom:1px solid var(--stroke-3)}
+.fi:last-child{border:0}
+.fi .ic{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--brand-bg);color:var(--brand)}
+.fi .ic svg{width:14px;height:14px}
+.fi .ic.acc{background:var(--accent-bg);color:var(--accent)} .fi .ic.ok{background:var(--ok-bg);color:var(--ok-fg)} .fi .ic.warn{background:var(--warn-bg);color:var(--warn-fg)}
+.fi .t{font-size:13px;line-height:1.35} .fi .t b{font-weight:600}
+.fi .m{font-size:11.5px;color:var(--fg-3);margin-top:2px}
+.diff{font-size:11.5px;margin-top:4px;font-family:Consolas,'Cascadia Mono',monospace;color:var(--fg-2)}
+.diff s{color:var(--bad-fg)} .diff ins{color:var(--ok-fg);text-decoration:none}
+.composer{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid var(--stroke-2)}
+.composer .inp{flex:1}
+.tabs2{display:flex;gap:2px;margin-left:auto;background:var(--stroke-3);padding:2px;border-radius:5px}
+.tabs2 button{padding:3px 10px;font-size:12px;font-weight:600;border-radius:4px;color:var(--fg-2)}
+.tabs2 button[aria-selected=true]{background:#fff;color:var(--fg);box-shadow:var(--sh2)}
+
+/* docs */
+.doc{display:flex;align-items:center;gap:11px;padding:9px 16px;border-bottom:1px solid var(--stroke-3)}
+.doc:last-child{border:0}
+.doc .fic{width:30px;height:36px;border-radius:3px;display:grid;place-items:center;font-size:9px;font-weight:700;color:#fff;flex:none;position:relative}
+.fic.pdf{background:#C4314B} .fic.docx{background:#185ABD} .fic.xlsx{background:#107C41}
+.doc .b{flex:1;min-width:0} .doc .n{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .doc .m{font-size:11.5px;color:var(--fg-3)}
+.drop{margin:12px 16px;border:1.5px dashed var(--brand-bd);border-radius:8px;padding:12px;text-align:center;font-size:12.5px;color:var(--fg-2);background:var(--brand-bg)}
+.drop b{color:var(--brand)}
+
+/* tree */
+.tree{padding:8px 8px 12px}
+.tn{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:5px;cursor:pointer;font-size:13px}
+.tn:hover{background:var(--stroke-3)}
+.tn .ch{width:14px;height:14px;color:var(--fg-3)}
+.tn .ty{font-size:10px;font-weight:700;color:#fff;background:var(--brand);border-radius:3px;padding:1px 5px;min-width:36px;text-align:center}
+.tn .ty.sow{background:var(--brand-2)} .tn .ty.co{background:var(--fg-3)} .tn .ty.dpa{background:var(--accent)}
+.tn .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.tn .v{font-weight:600;font-variant-numeric:tabular-nums;font-size:12.5px;min-width:60px;text-align:right}
+.tn.l1{padding-left:28px} .tn.l2{padding-left:52px}
+.tn .warn-ic{color:var(--warn-strong)}
+
+/* scorecard */
+.sc{display:grid;grid-template-columns:110px minmax(0,1fr) 40px;gap:10px;align-items:center;margin-bottom:12px;font-size:12.5px}
+.sc .t{height:10px;background:var(--stroke-3);border-radius:5px;position:relative}
+.sc .t i{position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:var(--brand-2)}
+.sc .t u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--fg);opacity:.5}
+.sc .v{font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+
+/* side summary */
+.kv{display:flex;justify-content:space-between;padding:7px 0;font-size:13px;border-bottom:1px solid var(--stroke-3)} .kv:last-child{border:0}
+.kv span{color:var(--fg-2)} .kv b{font-weight:600;font-variant-numeric:tabular-nums}
+.valid{display:flex;gap:8px;font-size:12.5px;padding:6px 0;align-items:flex-start}
+.valid svg{width:15px;height:15px;margin-top:1px}
+.valid.ok svg{color:var(--ok-strong)} .valid.warn svg{color:var(--warn-strong)} .valid.bad svg{color:var(--bad-strong)}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#1b1f24;color:#fff;font-size:13px;padding:10px 16px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center;opacity:0;pointer-events:none;transition:.2s;z-index:120}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast code{font-family:Consolas,monospace;font-size:11.5px;color:#c9a46a}
+
+/* PCF overlay */
+.pcf{position:relative}
+.pcf::after{content:attr(data-pcf);position:absolute;top:-5px;left:10px;transform:translateY(-100%);background:var(--accent);color:#fff;font-size:10px;font-weight:700;letter-spacing:.02em;padding:2px 8px;border-radius:3px;white-space:nowrap;z-index:6;opacity:0;pointer-events:none;transition:opacity .15s;box-shadow:0 1px 3px rgba(0,0,0,.28)}
+body.show-pcf .pcf{outline:1.5px dashed var(--accent);outline-offset:4px;border-radius:6px}
+body.show-pcf .pcf::after{opacity:1}
+.pcf.below::after{top:auto;bottom:-5px;transform:translateY(100%)}
+.cvc::after{content:attr(data-cvc);position:absolute;bottom:6px;left:50%;transform:translateX(-50%) rotate(180deg);writing-mode:vertical-rl;background:var(--fg-3);color:#fff;font-size:9.5px;font-weight:700;padding:6px 2px;border-radius:3px;opacity:0;transition:opacity .15s;pointer-events:none}
+body.show-pcf .cvc{outline:1.5px dashed var(--fg-4);outline-offset:-3px}
+body.show-pcf .cvc::after{opacity:1}
+.pcfpanel{position:fixed;right:18px;bottom:18px;width:300px;background:#fff;border:1px solid var(--stroke-1);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.20);z-index:95;overflow:hidden;display:none}
+body.show-pcf .pcfpanel{display:block}
+.pcfpanel__hd{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--brand);color:#fff;font-size:12.5px;font-weight:700}
+.pcfpanel__hd .ct{margin-left:auto;background:rgba(255,255,255,.22);border-radius:20px;padding:1px 9px;font-size:11px}
+.pcfpanel__b{max-height:300px;overflow:auto;padding:7px 0}
+.pcfpanel__i{display:flex;align-items:flex-start;gap:9px;padding:5px 14px;font-size:12px}
+.pcfpanel__i .n{width:18px;height:18px;border-radius:4px;background:var(--accent-bg);color:#7a5520;font-size:9.5px;font-weight:700;display:grid;place-items:center;flex:none}
+.pcfpanel__i small{display:block;color:var(--fg-3);font-size:10.5px;font-family:Consolas,monospace}
+.pcfpanel__ft{padding:9px 14px;border-top:1px solid var(--stroke-2);font-size:11px;color:var(--fg-3)}
+
+/* skeleton entrance */
+body.is-ready .screen.is-active .card, body.is-ready .screen.is-active .tile, body.is-ready .screen.is-active .rh, body.is-ready .screen.is-active .stepper{animation:rise .35s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+@media (max-width:1380px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.tiles.t5{grid-template-columns:repeat(3,minmax(0,1fr))}.g-dash,.g-side{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}}
+@media (max-width:900px){.g3,.g2,.fgrid{grid-template-columns:1fr}.tiles,.tiles.t4,.tiles.t5{grid-template-columns:repeat(2,minmax(0,1fr))}.gsrch{display:none}.rail{display:none}.wrap{padding:14px}.tl-head,.tl-row{grid-template-columns:150px minmax(0,1fr) 80px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 11 12 3l9 8M5 10v10h14V10"/></symbol>
+    <symbol id="i-vendor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 21V7l8-4 8 4v14M9 21v-6h6v6M8 10h.01M12 10h.01M16 10h.01"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 3H6v18h12V7l-4-4Z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></symbol>
+    <symbol id="i-renew" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v4h-4"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 5h18l-7 8v6l-4 2v-8L3 5Z"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 4v12M6 11l6 6 6-6M4 20h16"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-chevd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/></symbol>
+    <symbol id="i-money" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M17 5H10a4 4 0 0 0-4 4v2h9M6 11v6c0 1-1 2-2 2h15M6 14h7"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 5"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3Z"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 16V4M6 9l6-6 6 6M4 20h16"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="m3 11 18-8-8 18-2-8-8-2Z"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/></symbol>
+    <symbol id="i-note" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 4h16v12l-4 4H4V4Z"/><path d="M16 20v-4h4"/></symbol>
+    <symbol id="i-loop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2l3 3-3 3M4 11V9a4 4 0 0 1 4-4h12M7 22l-3-3 3-3M20 13v2a4 4 0 0 1-4 4H4"/></symbol>
+    <symbol id="i-dia" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 21 12 12 21 3 12 12 3Z"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 21V4h11l-2 4 2 4H5"/></symbol>
+  </defs>
+</svg>
+
+<div class="rev">
+  <div class="rev__b"><span class="rev__dot"></span>Keystone VCM · PCF controls</div>
+  <div class="seg" role="tablist" aria-label="Screen">
+    <button role="tab" aria-selected="true" data-screen="dash"><span class="n">01</span>Portfolio</button>
+    <button role="tab" aria-selected="false" data-screen="vendors"><span class="n">02</span>Vendors</button>
+    <button role="tab" aria-selected="false" data-screen="vendor"><span class="n">03</span>Vendor 360</button>
+    <button role="tab" aria-selected="false" data-screen="contracts"><span class="n">04</span>Contracts</button>
+    <button role="tab" aria-selected="false" data-screen="contract"><span class="n">05</span>Contract</button>
+    <button role="tab" aria-selected="false" data-screen="renewals"><span class="n">06</span>Renewals</button>
+    <button role="tab" aria-selected="false" data-screen="intake"><span class="n">07</span>New contract</button>
+  </div>
+  <button class="pcftoggle" id="pcfToggle" aria-pressed="false" title="Highlight the PCF controls and the flow feeding each one">
+    <svg><use href="#i-dia"/></svg>PCF controls</button>
+  <div class="rev__note">Self-contained mock-up · illustrative data · today = 1 Nov 2026</div>
+</div>
+
+<div class="appbar">
+  <div class="appicon"><svg><use href="#i-dia"/></svg></div>
+  <div class="appname">Keystone<small>Vendor &amp; Contract Management</small></div>
+  <div class="appbar__sp"></div>
+  <label class="gsrch pcf below" data-pcf="PCF · Command Search (phase 3)" data-src="Search.Index"><svg><use href="#i-search"/></svg><input placeholder="Search vendors, contracts, references…"><kbd>Ctrl K</kbd></label>
+  <div class="appbar__sp"></div>
+  <button class="iconbtn" title="Notifications"><span class="dotr"></span><svg><use href="#i-bell"/></svg></button>
+  <button class="iconbtn" title="Settings"><svg><use href="#i-gear"/></svg></button>
+  <div class="uav" title="Priya Shah · Procurement Manager">PS</div>
+</div>
+
+<div class="layout">
+<nav class="rail cvc" data-cvc="Canvas component · Nav rail" aria-label="Main">
+  <button data-go="dash" aria-current="true"><svg><use href="#i-home"/></svg>Portfolio</button>
+  <button data-go="vendors"><svg><use href="#i-vendor"/></svg>Vendors</button>
+  <button data-go="contracts"><svg><use href="#i-doc"/></svg>Contracts</button>
+  <button data-go="renewals"><svg><use href="#i-renew"/></svg>Renewals</button>
+  <button data-go="intake"><svg><use href="#i-plus"/></svg>New</button>
+</nav>
+<div class="main">
+
+<!-- ================= 01 · PORTFOLIO ================= -->
+<section class="screen is-active" id="screen-dash">
+  <div class="subbar">
+    <div class="crumb"><svg><use href="#i-home"/></svg><b>Portfolio overview</b></div>
+    <button class="cmd"><svg><use href="#i-renew"/></svg>Refresh</button>
+    <button class="cmd"><svg><use href="#i-users"/></svg>All business units<svg style="width:12px"><use href="#i-chevd"/></svg></button>
+    <span class="sep"></span>
+    <button class="cmd prim" data-go="intake"><svg><use href="#i-plus"/></svg>New contract</button>
+    <div class="sp"></div>
+    <span class="badge b-grey">Snapshot 02:00 · live actions</span>
+  </div>
+  <div class="wrap">
+    <div class="h1">Good morning, Priya</div>
+    <div class="lede">5 notice deadlines fall in the next 30 days, and 2 approvals are waiting for you.</div>
+
+    <div class="tiles pcf" data-pcf="PCF · KPI Strip" data-src="Dashboard.Get">
+      <div class="tile"><div class="tile__l"><svg><use href="#i-doc"/></svg>Active contracts</div><div class="tile__n">214</div><div class="tile__s"><span class="delta up">▲ 6</span> vs last month</div><svg class="spark" viewBox="0 0 64 22"><path d="M0 16 9 15 18 13 27 14 36 10 45 9 54 7 64 5"/></svg></div>
+      <div class="tile acc"><div class="tile__l"><svg><use href="#i-money"/></svg>Annualised contract value</div><div class="tile__n">£18.4<span class="u">m</span></div><div class="tile__s">TCV £48.6m</div><svg class="spark" viewBox="0 0 64 22"><path d="M0 14 9 13 18 14 27 11 36 11 45 8 54 9 64 6"/></svg></div>
+      <div class="tile ok"><div class="tile__l"><svg><use href="#i-shield"/></svg>Spend under contract</div><div class="tile__n">87<span class="u">%</span></div><div class="tile__s"><span class="delta up">▲ 4 pts</span> target 90%</div><svg class="spark" viewBox="0 0 64 22"><path d="M0 18 9 16 18 15 27 13 36 12 45 10 54 9 64 7"/></svg></div>
+      <div class="tile bad" data-go="renewals"><div class="tile__l"><svg><use href="#i-clock"/></svg>Notice deadlines ≤ 30 days</div><div class="tile__n">5</div><div class="tile__s">£5.6m TCV at stake</div></div>
+      <div class="tile warn"><div class="tile__l"><svg><use href="#i-alert"/></svg>High / critical-risk vendors</div><div class="tile__n">9</div><div class="tile__s"><span class="delta dn">▲ 2</span> since Q2</div></div>
+      <div class="tile warn"><div class="tile__l"><svg><use href="#i-flag"/></svg>Overdue obligations</div><div class="tile__n">12</div><div class="tile__s">3 SLA · 4 reporting · 5 other</div></div>
+    </div>
+
+    <div class="g g-dash">
+      <div class="card pcf" data-pcf="PCF · Renewal Timeline" data-src="Dashboard.Get">
+        <div class="card__hd"><h2>Renewal &amp; notice timeline</h2><span class="sub">next 12 months · sorted by notice deadline</span>
+          <div class="r"><div class="tl-legend"><span><i class="lg-bar"></i>Term</span><span><i class="lg-win"></i>Notice window (90d)</span><span><i class="lg-dl"></i>Notice deadline</span><span><svg style="width:13px;height:13px;color:var(--brand-2)"><use href="#i-loop"/></svg>Auto-renews</span></div></div></div>
+        <div class="tl" id="tlDash"></div>
+        <div class="gridft"><span class="lk" data-go="renewals">Open renewals workspace →</span></div>
+      </div>
+      <div class="stack">
+        <div class="card pcf" data-pcf="PCF · Obligation Tracker" data-src="Dashboard.Get → Obligation.Complete">
+          <div class="card__hd"><h2>Action needed</h2><span class="sub">my obligations</span><div class="r"><span class="lk">View all</span></div></div>
+          <div id="obDash"></div>
+        </div>
+        <div class="card pcf" data-pcf="PCF · Approval Panel (inbox mode)" data-src="Dashboard.Get → Approval.Decide">
+          <div class="card__hd"><h2>Awaiting my approval</h2><span class="badge b-acc">2</span></div>
+          <div class="ap">
+            <div class="aps cur"><div class="ic"><svg><use href="#i-clock"/></svg></div><div class="b"><div class="t">Workplace Analytics Platform<span class="badge b-grey">£640k</span></div><div class="m">Kestrel Data Systems · Finance stage · waiting 2 days</div></div></div>
+            <div class="aps cur"><div class="ic"><svg><use href="#i-clock"/></svg></div><div class="b"><div class="t">Cloud Hosting SOW 3 · renewal<span class="badge b-grey">£1.86m</span></div><div class="m">Orrin Cloud Ltd · Finance stage · waiting 1 day</div><div class="lk" data-go="contract" style="margin-top:4px">Review &amp; decide →</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="g g3 mt16">
+      <div class="card pcf" data-pcf="PCF · Insight Chart (bar)" data-src="Dashboard.Get">
+        <div class="card__hd"><h2>Spend by category</h2><span class="sub">rolling 12 months</span></div>
+        <div class="pad" id="spendChart"></div>
+      </div>
+      <div class="card pcf" data-pcf="PCF · Risk Matrix" data-src="Dashboard.Get">
+        <div class="card__hd"><h2>Vendor risk heatmap</h2><span class="sub">open risks · residual</span></div>
+        <div class="pad"><div class="rm" id="riskMatrix"></div><div class="rm-x"><span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div><div class="rm-cap"><span>↑ Impact</span><span>Likelihood →</span></div></div>
+      </div>
+      <div class="card pcf" data-pcf="PCF · Insight Chart (donut)" data-src="Dashboard.Get">
+        <div class="card__hd"><h2>Contracts by status</h2><span class="sub">all 241 records</span></div>
+        <div class="pad"><div class="donutw">
+          <div class="donut" style="background:conic-gradient(#2E5A8C 0 75.5%,#D29200 0 82.6%,#8764B8 0 87.6%,#A67C3D 0 91.7%,#0E7C6E 0 96.7%,#C2BFBC 0)"><b>241<small>contracts</small></b></div>
+          <div class="lgd">
+            <div><i style="background:#2E5A8C"></i>Active<span>182</span></div>
+            <div><i style="background:#D29200"></i>Expiring<span>17</span></div>
+            <div><i style="background:#8764B8"></i>In review / approval<span>12</span></div>
+            <div><i style="background:#A67C3D"></i>Awaiting signature<span>10</span></div>
+            <div><i style="background:#0E7C6E"></i>Renewed (90d)<span>12</span></div>
+            <div><i style="background:#C2BFBC"></i>Draft<span>8</span></div>
+          </div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 · VENDORS ================= -->
+<section class="screen" id="screen-vendors">
+  <div class="subbar">
+    <div class="crumb"><svg><use href="#i-vendor"/></svg><b>Vendors</b></div>
+    <button class="cmd prim"><svg><use href="#i-plus"/></svg>Onboard vendor</button>
+    <button class="cmd"><svg><use href="#i-down"/></svg>Export</button>
+    <div class="sp"></div>
+  </div>
+  <div class="wrap">
+    <div class="tiles t4 pcf" data-pcf="PCF · KPI Strip" data-src="Vendors.Query (facets)">
+      <div class="tile"><div class="tile__l"><svg><use href="#i-vendor"/></svg>Active vendors</div><div class="tile__n">186</div><div class="tile__s">7 onboarding · 4 suspended</div></div>
+      <div class="tile acc"><div class="tile__l"><svg><use href="#i-star"/></svg>Strategic &amp; critical</div><div class="tile__n">24</div><div class="tile__s">71% of spend</div></div>
+      <div class="tile warn"><div class="tile__l"><svg><use href="#i-shield"/></svg>Certificates expiring ≤ 45d</div><div class="tile__n">8</div><div class="tile__s">2 already expired</div></div>
+      <div class="tile"><div class="tile__l"><svg><use href="#i-cal"/></svg>Reviews due this quarter</div><div class="tile__n">11</div><div class="tile__s">3 overdue</div></div>
+    </div>
+    <div class="card pcf" data-pcf="PCF · Smart Data Grid" data-src="Vendors.Query">
+      <div class="toolbar">
+        <div class="chips" id="vendorViews">
+          <button class="chip" aria-pressed="true">All active <span class="c">186</span></button>
+          <button class="chip" aria-pressed="false">Strategic &amp; critical <span class="c">24</span></button>
+          <button class="chip" aria-pressed="false">High risk <span class="c">9</span></button>
+          <button class="chip" aria-pressed="false">Reviews due <span class="c">11</span></button>
+          <button class="chip" aria-pressed="false">Data processors <span class="c">38</span></button>
+          <button class="chip" aria-pressed="false" style="border-style:dashed;color:var(--fg-2)"><svg style="width:12px;height:12px"><use href="#i-plus"/></svg>Save view</button>
+        </div>
+        <div class="sp"></div>
+        <label class="fsrch"><svg><use href="#i-search"/></svg><input placeholder="Filter vendors"></label>
+        <button class="cmd"><svg><use href="#i-filter"/></svg>Filters</button>
+        <button class="cmd"><svg><use href="#i-grid"/></svg>Columns</button>
+      </div>
+      <div class="dl-wrap"><table class="dl" id="vendorGrid"></table></div>
+      <div class="gridft"><span>Showing 1–12 of 186</span><div class="sp"></div><span class="lk">Load more</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 · VENDOR 360 ================= -->
+<section class="screen" id="screen-vendor">
+  <div class="subbar">
+    <div class="crumb"><a data-go="vendors">Vendors</a><svg><use href="#i-chev"/></svg><b>Orrin Cloud Ltd</b></div>
+    <div class="sp"></div>
+    <button class="cmd"><svg><use href="#i-renew"/></svg>Refresh</button>
+  </div>
+  <div class="wrap">
+    <div class="rh pcf" data-pcf="PCF · Record Header (vendor mode)" data-src="Vendor.Get">
+      <div class="av xl a2">OC</div>
+      <div class="rh__main">
+        <div class="rh__t"><h1>Orrin Cloud Ltd</h1><span class="badge b-acc"><svg><use href="#i-star"/></svg>Strategic</span><span class="badge b-ok dotb">Active</span><span class="badge b-info">Data processor</span></div>
+        <div class="rh__facts">
+          <div>Reference<b>VND-00042</b></div><div>Category<b>IT › Cloud hosting</b></div><div>Company no.<b>08841207</b></div>
+          <div>Relationship owner<b>Priya Shah</b></div><div>Vendor since<b>Mar 2021</b></div><div>Next review<b class="num" style="color:var(--warn-fg)">18 Nov 2026</b></div>
+        </div>
+      </div>
+      <div class="ring lg" style="--v:64;--c:var(--warn-strong)" title="Risk score 64 · High"><b>64<small>HIGH</small></b></div>
+      <div class="rh__act"><button class="btn prim" data-go="intake"><svg><use href="#i-plus"/></svg>New contract</button><button class="btn">Log review</button><button class="btn" title="More"><svg><use href="#i-more"/></svg></button></div>
+    </div>
+
+    <div class="tiles t5 pcf" data-pcf="PCF · KPI Strip" data-src="Vendor.Get">
+      <div class="tile acc"><div class="tile__l">Annual spend</div><div class="tile__n">£2.41<span class="u">m</span></div><div class="tile__s"><span class="delta dn">▲ 14%</span> YoY · 31% of category</div></div>
+      <div class="tile"><div class="tile__l">Active contracts</div><div class="tile__n">6</div><div class="tile__s">1 MSA · 4 SOW · 1 DPA</div></div>
+      <div class="tile"><div class="tile__l">Total contract value</div><div class="tile__n">£7.9<span class="u">m</span></div><div class="tile__s">£3.1m remaining</div></div>
+      <div class="tile ok"><div class="tile__l">Scorecard (Q3)</div><div class="tile__n">78<span class="u">/100</span></div><div class="tile__s"><span class="delta up">▲ 5</span> vs Q2</div></div>
+      <div class="tile warn"><div class="tile__l">Open risks</div><div class="tile__n">3</div><div class="tile__s">1 high · concentration</div></div>
+    </div>
+
+    <div class="pivot cvc" data-cvc="Canvas · Pivot">
+      <button aria-selected="true">Overview</button><button aria-selected="false">Contracts<span class="c">6</span></button><button aria-selected="false">Performance</button><button aria-selected="false">Risk &amp; compliance<span class="c">3</span></button><button aria-selected="false">Documents<span class="c">24</span></button><button aria-selected="false">Activity</button>
+    </div>
+
+    <div class="g g-side">
+      <div class="stack">
+        <div class="card pcf" data-pcf="PCF · Contract Hierarchy" data-src="Vendor.Get">
+          <div class="card__hd"><h2>Contract hierarchy</h2><span class="sub">value rolls up to parent</span><div class="r"><span class="lk">Expand all</span></div></div>
+          <div class="tree">
+            <div class="tn"><svg class="ch"><use href="#i-chevd"/></svg><span class="ty">MSA</span><span class="nm">Master Services Agreement 2021</span><span class="badge b-ok">Active</span><span class="v">£7.90m</span></div>
+            <div class="tn l1" data-go="contract"><svg class="ch"><use href="#i-chevd"/></svg><span class="ty sow">SOW</span><span class="nm">SOW 3 · Cloud Hosting &amp; Managed Services</span><span class="badge b-warn">Expiring</span><span class="v">£1.86m</span></div>
+            <div class="tn l2"><span style="width:14px"></span><span class="ty co">CO</span><span class="nm">CO-07 · DR region uplift</span><span class="badge b-ok">Active</span><span class="v">£142k</span></div>
+            <div class="tn l2"><span style="width:14px"></span><span class="ty co">CO</span><span class="nm">CO-09 · Additional vCPU tranche</span><span class="badge b-ok">Active</span><span class="v">£88k</span></div>
+            <div class="tn l1"><span style="width:14px"></span><span class="ty sow">SOW</span><span class="nm">SOW 4 · Platform Engineering</span><span class="badge b-ok">Active</span><span class="v">£2.20m</span></div>
+            <div class="tn l1"><span style="width:14px"></span><span class="ty sow">SOW</span><span class="nm">SOW 5 · Observability Service</span><span class="badge b-ok">Active</span><span class="v">£0.64m</span></div>
+            <div class="tn l1" title="Child end date (Jun 2028) is after the MSA end (Mar 2028)"><span style="width:14px"></span><span class="ty sow">SOW</span><span class="nm">SOW 6 · Data Migration Wave 2</span><svg class="warn-ic"><use href="#i-alert"/></svg><span class="badge b-info">Awaiting signature</span><span class="v">£1.15m</span></div>
+            <div class="tn l1"><span style="width:14px"></span><span class="ty dpa">DPA</span><span class="nm">Data Processing Agreement (UK GDPR)</span><span class="badge b-ok">Signed</span><span class="v">—</span></div>
+          </div>
+        </div>
+        <div class="card pcf" data-pcf="PCF · Insight Chart (bullet / scorecard)" data-src="Vendor.Get">
+          <div class="card__hd"><h2>Performance scorecard</h2><span class="sub">Q3 2026 · tick = Q2</span><div class="r"><span class="lk">Score Q4</span></div></div>
+          <div class="pad">
+            <div class="sc"><span>Service quality</span><div class="t"><i style="width:84%"></i><u style="left:80%"></u></div><span class="v">84</span></div>
+            <div class="sc"><span>Delivery / SLA</span><div class="t"><i style="width:81%"></i><u style="left:72%"></u></div><span class="v">81</span></div>
+            <div class="sc"><span>Commercial</span><div class="t"><i style="width:66%;background:var(--warn-strong)"></i><u style="left:70%"></u></div><span class="v">66</span></div>
+            <div class="sc"><span>Relationship</span><div class="t"><i style="width:88%"></i><u style="left:85%"></u></div><span class="v">88</span></div>
+            <div class="sc" style="margin:0"><span>Innovation</span><div class="t"><i style="width:71%"></i><u style="left:68%"></u></div><span class="v">71</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="stack">
+        <div class="card pcf" data-pcf="PCF · Smart Data Grid (compact)" data-src="Vendor.Get">
+          <div class="card__hd"><h2>Compliance &amp; certificates</h2></div>
+          <div style="padding:4px 0 8px">
+            <div class="doc"><svg style="color:var(--ok-strong)"><use href="#i-shield"/></svg><div class="b"><div class="n">ISO/IEC 27001:2022</div><div class="m">Cert IS 712004 · expires 14 Aug 2027</div></div><span class="badge b-ok">Valid</span></div>
+            <div class="doc"><svg style="color:var(--ok-strong)"><use href="#i-shield"/></svg><div class="b"><div class="n">Cyber Essentials Plus</div><div class="m">expires 2 Mar 2027</div></div><span class="badge b-ok">Valid</span></div>
+            <div class="doc"><svg style="color:var(--warn-strong)"><use href="#i-shield"/></svg><div class="b"><div class="n">Professional indemnity £10m</div><div class="m">expires 22 Nov 2026 · renewal requested</div></div><span class="badge b-warn">21 days</span></div>
+            <div class="doc"><svg style="color:var(--ok-strong)"><use href="#i-shield"/></svg><div class="b"><div class="n">SOC 2 Type II</div><div class="m">period to 30 Jun 2026 · bridge letter on file</div></div><span class="badge b-ok">Valid</span></div>
+          </div>
+        </div>
+        <div class="card pcf" data-pcf="PCF · Risk Matrix (list mode)" data-src="Vendor.Get">
+          <div class="card__hd"><h2>Open risks</h2><div class="r"><span class="lk">Raise risk</span></div></div>
+          <div style="padding:4px 0 8px">
+            <div class="doc"><span class="badge b-bad num">4×4</span><div class="b"><div class="n">Concentration — 31% of cloud spend</div><div class="m">Concentration · mitigation: multi-cloud exit plan by Q2</div></div></div>
+            <div class="doc"><span class="badge b-warn num">3×3</span><div class="b"><div class="n">Price uplift on renewal (CPI+3%)</div><div class="m">Commercial · benchmark commissioned</div></div></div>
+            <div class="doc"><span class="badge b-warn num">2×4</span><div class="b"><div class="n">Sub-processor change (EU → US)</div><div class="m">Data protection · DPO review open</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 · CONTRACTS ================= -->
+<section class="screen" id="screen-contracts">
+  <div class="subbar">
+    <div class="crumb"><svg><use href="#i-doc"/></svg><b>Contracts register</b></div>
+    <button class="cmd prim" data-go="intake"><svg><use href="#i-plus"/></svg>New contract</button>
+    <button class="cmd"><svg><use href="#i-down"/></svg>Export</button>
+    <div class="sp"></div>
+  </div>
+  <div class="wrap">
+    <div class="card pcf" data-pcf="PCF · Smart Data Grid (grouped)" data-src="Contracts.Query">
+      <div class="toolbar">
+        <div class="chips" id="contractViews">
+          <button class="chip" aria-pressed="true">All live <span class="c">241</span></button>
+          <button class="chip" aria-pressed="false">My contracts <span class="c">38</span></button>
+          <button class="chip" aria-pressed="false">Notice ≤ 90d <span class="c">17</span></button>
+          <button class="chip" aria-pressed="false">Auto-renewing <span class="c">64</span></button>
+          <button class="chip" aria-pressed="false">In approval <span class="c">12</span></button>
+        </div>
+        <div class="bulk" id="bulk"><span id="bulkN">0</span> selected · <button class="cmd">Reassign owner</button><button class="cmd">Request renewal decision</button></div>
+        <div class="sp"></div>
+        <label class="fsrch"><svg><use href="#i-search"/></svg><input placeholder="Filter by ref, title, vendor"></label>
+        <button class="cmd"><svg><use href="#i-filter"/></svg>Filters</button>
+        <button class="cmd"><svg><use href="#i-grid"/></svg>Group: Status</button>
+      </div>
+      <div class="dl-wrap"><table class="dl" id="contractGrid"></table></div>
+      <div class="gridft"><span>Showing 14 of 241 · grouped by status</span><div class="sp"></div><span class="lk">Load more</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 · CONTRACT ================= -->
+<section class="screen" id="screen-contract">
+  <div class="subbar">
+    <div class="crumb"><a data-go="contracts">Contracts</a><svg><use href="#i-chev"/></svg><a data-go="vendor">Orrin Cloud Ltd</a><svg><use href="#i-chev"/></svg><b>CON-2024-0087</b></div>
+    <div class="sp"></div>
+    <button class="cmd"><svg><use href="#i-renew"/></svg>Refresh</button>
+  </div>
+  <div class="wrap">
+    <div class="rh pcf" data-pcf="PCF · Record Header (contract mode)" data-src="Contract.Get">
+      <div class="av xl a2"><svg style="width:28px;height:28px"><use href="#i-doc"/></svg></div>
+      <div class="rh__main">
+        <div class="rh__t"><span class="idtag">CON-2024-0087 · SOW under MSA 2021</span></div>
+        <div class="rh__t"><h1>Cloud Hosting &amp; Managed Services — SOW 3</h1><span class="badge b-warn dotb">Expiring</span><span class="badge b-brand"><svg><use href="#i-loop"/></svg>Auto-renews 12 m</span></div>
+        <div class="rh__facts">
+          <div>Vendor<b class="lk" data-go="vendor">Orrin Cloud Ltd</b></div><div>TCV / ACV<b class="num">£1.86m / £620k</b></div><div>Term<b class="num">1 Apr 2024 – 31 Mar 2027</b></div>
+          <div>Notice period<b>90 days</b></div><div>Owner<b>Priya Shah</b></div><div>Business unit<b>Technology</b></div>
+        </div>
+      </div>
+      <div class="countdown"><b>60</b><span>days to notice<br>31 Dec 2026</span></div>
+      <div class="rh__act"><button class="btn prim"><svg><use href="#i-renew"/></svg>Renewal decision</button><button class="btn"><svg><use href="#i-pen"/></svg>Amend</button><button class="btn" title="More"><svg><use href="#i-more"/></svg></button></div>
+    </div>
+
+    <div class="stepper pcf" data-pcf="PCF · Lifecycle Stepper" data-src="Contract.Get → Record.Save (stage)">
+      <div class="st done"><div class="dot"><svg><use href="#i-check"/></svg></div><b>Requested</b><span>12 Jan 2024</span></div>
+      <div class="st done"><div class="dot"><svg><use href="#i-check"/></svg></div><b>Drafting</b><span>9 days</span></div>
+      <div class="st done"><div class="dot"><svg><use href="#i-check"/></svg></div><b>Review</b><span>14 days</span></div>
+      <div class="st done"><div class="dot"><svg><use href="#i-check"/></svg></div><b>Approval</b><span>4 stages · 6 days</span></div>
+      <div class="st done"><div class="dot"><svg><use href="#i-check"/></svg></div><b>Signature</b><span>DocuSign · 3 days</span></div>
+      <div class="st done"><div class="dot"><svg><use href="#i-check"/></svg></div><b>Active</b><span>since 1 Apr 2024</span></div>
+      <div class="st cur"><div class="dot">7</div><b>Renewal decision</b><span>window opened 2 Oct</span></div>
+      <div class="st"><div class="dot">8</div><b>Renewed / Exited</b><span>—</span></div>
+    </div>
+
+    <div class="g g-side">
+      <div class="stack">
+        <div class="card pcf" data-pcf="PCF · Smart Form (read mode · key terms)" data-src="Contract.Get → Record.Save">
+          <div class="card__hd"><h2>Key terms</h2><div class="r"><button class="btn"><svg><use href="#i-pen"/></svg>Edit</button></div></div>
+          <div class="pad">
+            <div class="fsec">Commercial</div>
+            <div class="fgrid">
+              <div class="fl"><label>Pricing model</label><div class="ro">Fixed monthly + consumption</div></div>
+              <div class="fl"><label>Payment terms</label><div class="ro">30 days from invoice</div></div>
+              <div class="fl"><label>Indexation</label><div class="ro">CPI capped at 5% (annual)</div></div>
+              <div class="fl"><label>Service credits</label><div class="ro">Up to 15% of monthly charge</div></div>
+              <div class="fl"><label>Cost centre</label><div class="ro">TEC-4410 Cloud Platform</div></div>
+              <div class="fl"><label>Budget owner</label><div class="ro">Daniel Okafor</div></div>
+            </div>
+            <div class="fsec">Legal</div>
+            <div class="fgrid">
+              <div class="fl"><label>Governing law</label><div class="ro">England &amp; Wales</div></div>
+              <div class="fl"><label>Liability cap</label><div class="ro num">150% of annual charges</div></div>
+              <div class="fl"><label>Termination for convenience</label><div class="ro">Yes · 6 months' notice</div></div>
+              <div class="fl"><label>Data protection</label><div class="ro">DPA 2023 · UK IDTA in place</div></div>
+              <div class="fl"><label>Exit assistance</label><div class="ro">6 months at agreed rates</div></div>
+              <div class="fl"><label>Confidential</label><div class="ro">No</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card pcf" data-pcf="PCF · Obligation Tracker" data-src="Contract.Get → Obligation.Complete">
+          <div class="card__hd"><h2>Obligations &amp; milestones</h2><span class="sub">11 total · 7 met</span><div class="r"><span class="lk">Add obligation</span></div></div>
+          <div id="obContract"></div>
+        </div>
+        <div class="card pcf" data-pcf="PCF · Activity &amp; Documents (documents tab)" data-src="Contract.Get → Document.Upload">
+          <div class="card__hd"><h2>Documents</h2><span class="sub">document set · CON-2024-0087</span><div class="r"><div class="tabs2"><button aria-selected="true">Documents</button><button aria-selected="false">Activity</button></div></div></div>
+          <div class="doc"><div class="fic pdf">PDF</div><div class="b"><div class="n">SOW3 Cloud Hosting – EXECUTED.pdf</div><div class="m">Executed agreement · v3.0 · signed 22 Mar 2024</div></div><span class="badge b-ok"><svg><use href="#i-check"/></svg>Executed</span><button class="iconbtn" style="color:var(--fg-2)"><svg><use href="#i-more"/></svg></button></div>
+          <div class="doc"><div class="fic docx">DOC</div><div class="b"><div class="n">Schedule 2 – Service Levels.docx</div><div class="m">Schedule · v2.1 · Legal · 4 Mar 2024</div></div><button class="iconbtn" style="color:var(--fg-2)"><svg><use href="#i-more"/></svg></button></div>
+          <div class="doc"><div class="fic xlsx">XLS</div><div class="b"><div class="n">Renewal pricing benchmark FY27.xlsx</div><div class="m">Correspondence · v1.0 · Priya Shah · 28 Oct 2026</div></div><span class="badge b-info">New</span><button class="iconbtn" style="color:var(--fg-2)"><svg><use href="#i-more"/></svg></button></div>
+          <div class="drop"><svg style="vertical-align:-3px;color:var(--brand)"><use href="#i-upload"/></svg> Drag files here or <b>browse</b> · max 20 MB · filed to the contract document set</div>
+        </div>
+      </div>
+      <div class="stack">
+        <div class="card pcf" data-pcf="PCF · Approval Panel" data-src="Contract.Get → Approval.Decide">
+          <div class="card__hd"><h2>Renewal approval</h2><span class="sub">£1.86m → 4 stages</span><div class="r"><span class="badge b-acc">Your turn</span></div></div>
+          <div class="ap" id="apPanel">
+            <div class="aps ok"><div class="ic"><svg><use href="#i-check"/></svg></div><div class="b"><div class="t">Submitted · Priya Shah</div><div class="m">28 Oct 2026 · recommendation: <b>Renegotiate</b> (12 m, −6% target)</div></div></div>
+            <div class="aps ok"><div class="ic"><svg><use href="#i-check"/></svg></div><div class="b"><div class="t">BU head · Marcus Lind<span class="badge b-ok">Approved</span></div><div class="m">30 Oct 2026</div><div class="q">“Support renegotiation — tie to SOW 6 volumes.”</div></div></div>
+            <div class="aps cur" id="apCur"><div class="ic"><svg><use href="#i-clock"/></svg></div><div class="b"><div class="t">Finance · you<span class="badge b-acc">Pending</span></div><div class="m">Due 4 Nov 2026 · SLA 3 working days</div>
+              <div class="decide"><textarea placeholder="Comment (required to reject)"></textarea><div class="row"><button class="btn ok" id="apApprove"><svg><use href="#i-check"/></svg>Approve</button><button class="btn danger">Reject</button><button class="btn">Delegate</button></div></div></div></div>
+            <div class="aps"><div class="ic">3</div><div class="b"><div class="t">Legal · Hannah Reeve</div><div class="m">∥ in parallel with DPO (data processor)</div></div></div>
+            <div class="aps"><div class="ic">4</div><div class="b"><div class="t">CFO · Elaine Morris</div><div class="m">required: TCV ≥ £1m</div></div></div>
+          </div>
+        </div>
+        <div class="card pcf" data-pcf="PCF · Activity &amp; Documents (activity tab)" data-src="Contract.Get → Record.Save (note)">
+          <div class="card__hd"><h2>Activity</h2><div class="r"><span class="lk">All</span></div></div>
+          <div class="composer"><div class="inp"><input placeholder="Add a note, call or meeting…"></div><button class="btn prim" title="Post"><svg><use href="#i-send"/></svg></button></div>
+          <div class="feed">
+            <div class="fi"><div class="ic acc"><svg><use href="#i-check"/></svg></div><div><div class="t"><b>Marcus Lind</b> approved the renewal (BU head)</div><div class="m">30 Oct 2026, 16:42</div></div></div>
+            <div class="fi"><div class="ic"><svg><use href="#i-pen"/></svg></div><div><div class="t"><b>Priya Shah</b> set renewal decision</div><div class="diff">RenewalDecision: <s>Pending</s> → <ins>Renegotiate</ins></div><div class="m">28 Oct 2026, 11:05</div></div></div>
+            <div class="fi"><div class="ic"><svg><use href="#i-doc"/></svg></div><div><div class="t"><b>Priya Shah</b> uploaded <b>Renewal pricing benchmark FY27.xlsx</b></div><div class="m">28 Oct 2026, 10:51</div></div></div>
+            <div class="fi"><div class="ic warn"><svg><use href="#i-bell"/></svg></div><div><div class="t"><b>Keystone</b> sent 90-day notice alert to owner</div><div class="m">2 Oct 2026, 07:30 · Renewal.Alerts</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 06 · RENEWALS ================= -->
+<section class="screen" id="screen-renewals">
+  <div class="subbar">
+    <div class="crumb"><svg><use href="#i-renew"/></svg><b>Renewals workspace</b></div>
+    <button class="cmd"><svg><use href="#i-users"/></svg>Group: none<svg style="width:12px"><use href="#i-chevd"/></svg></button>
+    <button class="cmd"><svg><use href="#i-down"/></svg>Export plan</button>
+    <div class="sp"></div>
+  </div>
+  <div class="wrap">
+    <div class="tiles t4 pcf" data-pcf="PCF · KPI Strip" data-src="Renewals.Get">
+      <div class="tile"><div class="tile__l"><svg><use href="#i-cal"/></svg>Notice deadlines · next 12 m</div><div class="tile__n">31</div><div class="tile__s">£11.4m TCV</div></div>
+      <div class="tile warn"><div class="tile__l"><svg><use href="#i-clock"/></svg>Decisions pending</div><div class="tile__n">9</div><div class="tile__s">5 inside 30 days</div></div>
+      <div class="tile bad"><div class="tile__l"><svg><use href="#i-loop"/></svg>Rolled without decision (YTD)</div><div class="tile__n">2</div><div class="tile__s">£96k committed unplanned</div></div>
+      <div class="tile ok"><div class="tile__l"><svg><use href="#i-money"/></svg>Savings secured YTD</div><div class="tile__n">£612<span class="u">k</span></div><div class="tile__s">7.4% of renewed value</div></div>
+    </div>
+    <div class="card pcf" data-pcf="PCF · Renewal Timeline (full)" data-src="Renewals.Get">
+      <div class="card__hd"><h2>Renewal timeline</h2><span class="sub">every live contract with a notice deadline in the window</span>
+        <div class="r"><div class="zoom" id="zoom"><button aria-pressed="false">6 m</button><button aria-pressed="true">12 m</button><button aria-pressed="false">24 m</button></div></div></div>
+      <div class="tl" id="tlFull"></div>
+    </div>
+    <div class="card mt16 pcf" data-pcf="PCF · Smart Data Grid (inline decision)" data-src="Renewals.Get → Record.Save">
+      <div class="card__hd"><h2>Decision queue</h2><span class="sub">inline edit · saves via Record.Save with ETag</span></div>
+      <div class="dl-wrap"><table class="dl" id="decisionGrid"></table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 07 · NEW CONTRACT ================= -->
+<section class="screen" id="screen-intake">
+  <div class="subbar">
+    <div class="crumb"><a data-go="contracts">Contracts</a><svg><use href="#i-chev"/></svg><b>New contract request</b></div>
+    <div class="sp"></div>
+    <span class="badge b-grey">Draft autosaved 09:41</span>
+  </div>
+  <div class="wrap">
+    <div class="g g-side">
+      <div class="card pcf" data-pcf="PCF · Smart Form (wizard mode)" data-src="Lookups.Get → Record.Save">
+        <div class="pad" style="padding-bottom:0">
+          <div class="wiz" id="wiz">
+            <div class="wz done"><span class="n"><svg><use href="#i-check"/></svg></span>Basics</div>
+            <div class="wz done"><span class="n"><svg><use href="#i-check"/></svg></span>Vendor</div>
+            <div class="wz cur"><span class="n">3</span>Commercials</div>
+            <div class="wz"><span class="n">4</span>Risk &amp; data</div>
+            <div class="wz"><span class="n">5</span>Documents</div>
+            <div class="wz"><span class="n">6</span>Review</div>
+          </div>
+        </div>
+        <div class="pad">
+          <div class="fsec">Value</div>
+          <div class="fgrid">
+            <div class="fl"><label>Total contract value <span class="req">*</span></label><div class="inp focus"><span class="pre">£</span><input value="640,000" class="num"></div><div class="hint">ACV £213,333 · computed</div></div>
+            <div class="fl"><label>Currency</label><div class="inp"><select><option>GBP — Pound sterling</option><option>EUR — Euro</option><option>USD — US dollar</option></select></div></div>
+            <div class="fl"><label>Pricing model <span class="req">*</span></label><div class="inp"><select><option>Subscription (annual)</option><option>Fixed price</option><option>Time &amp; materials</option></select></div></div>
+          </div>
+          <div class="fsec">Term &amp; renewal</div>
+          <div class="fgrid">
+            <div class="fl"><label>Start date <span class="req">*</span></label><div class="inp"><input value="1 Jan 2027"><svg style="color:var(--fg-3)"><use href="#i-cal"/></svg></div></div>
+            <div class="fl"><label>End date <span class="req">*</span></label><div class="inp"><input value="31 Dec 2029"><svg style="color:var(--fg-3)"><use href="#i-cal"/></svg></div><div class="hint">36-month initial term</div></div>
+            <div class="fl"><label>Notice period (days) <span class="req">*</span></label><div class="inp"><input value="90"></div><div class="hint">Notice deadline → <b>2 Oct 2029</b></div></div>
+            <div class="fl"><label>Auto-renew</label><span class="tgl" id="tglAuto"><i></i>Yes, for 12 months</span></div>
+            <div class="fl"><label>Termination for convenience</label><span class="tgl off"><i></i>No</span></div>
+            <div class="fl"><label>Payment terms</label><div class="inp"><select><option>30 days from invoice</option><option>45 days</option><option>60 days</option></select></div></div>
+          </div>
+          <div class="fsec">Budget</div>
+          <div class="fgrid">
+            <div class="fl"><label>Business unit <span class="req">*</span></label><div class="inp"><select><option>Technology</option><option>Operations</option><option>People</option></select></div></div>
+            <div class="fl"><label>Cost centre <span class="req">*</span></label><div class="inp err"><input placeholder="e.g. TEC-4410"></div><div class="hint err">Cost centre is required for values over £50k</div></div>
+            <div class="fl"><label>Budget owner</label><div class="inp"><div class="av rd sm a3">DO</div><input value="Daniel Okafor"></div></div>
+          </div>
+        </div>
+        <div class="wizft"><button class="btn">Back</button><span class="s"><svg style="color:var(--ok-strong)"><use href="#i-check"/></svg>Saved as draft</span><div class="sp"></div><button class="btn">Save draft</button><button class="btn prim">Next: Risk &amp; data<svg><use href="#i-chev"/></svg></button></div>
+      </div>
+      <div class="stack">
+        <div class="card pcf" data-pcf="PCF · Smart Form (side panel · route preview)" data-src="AppConfig approval.matrix">
+          <div class="card__hd"><h2>Approval route preview</h2><span class="sub">updates as you type</span></div>
+          <div class="ap">
+            <div class="aps"><div class="ic">1</div><div class="b"><div class="t">BU head · Marcus Lind</div><div class="m">all contracts</div></div></div>
+            <div class="aps"><div class="ic">2</div><div class="b"><div class="t">Finance · Priya Shah</div><div class="m">TCV ≥ £50k</div></div></div>
+            <div class="aps"><div class="ic">3</div><div class="b"><div class="t">Legal · Hannah Reeve <span class="badge b-info">∥ DPO</span></div><div class="m">TCV ≥ £250k · vendor is a data processor</div></div></div>
+            <div class="aps" style="opacity:.45"><div class="ic">4</div><div class="b"><div class="t">CFO</div><div class="m">not required (TCV &lt; £1m)</div></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card__hd"><h2>Request summary</h2></div>
+          <div class="pad" style="padding-top:8px">
+            <div class="kv"><span>Title</span><b>Workplace Analytics Platform</b></div>
+            <div class="kv"><span>Vendor</span><b>Kestrel Data Systems</b></div>
+            <div class="kv"><span>Type</span><b>SOW under MSA 2023</b></div>
+            <div class="kv"><span>Vendor risk</span><b><span class="badge b-ok">38 · Low</span></b></div>
+            <div class="fsec" style="margin:14px 0 6px">Checks</div>
+            <div class="valid ok"><svg><use href="#i-check"/></svg>Vendor active, due diligence passed</div>
+            <div class="valid ok"><svg><use href="#i-check"/></svg>Within parent MSA term and cap</div>
+            <div class="valid warn"><svg><use href="#i-alert"/></svg>DPA required — vendor processes personal data</div>
+            <div class="valid bad"><svg><use href="#i-x"/></svg>Cost centre missing</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<div class="pcfpanel" aria-hidden="true">
+  <div class="pcfpanel__hd"><svg><use href="#i-dia"/></svg>PCFs on this screen<span class="ct" id="pcfCount">0</span></div>
+  <div class="pcfpanel__b" id="pcfList"></div>
+  <div class="pcfpanel__ft">Each label shows the control. The monospace line shows the flow that feeds it (→ the write flow its actions call).</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  /* ---------- illustrative payloads (shape mirrors the flow contracts in DESIGN.md) ---------- */
+  var TODAY=new Date(2026,10,1);
+  var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function D(s){var p=s.split('-');return new Date(+p[0],p[1]-1,+p[2]);}
+  function addDays(dt,n){var x=new Date(dt);x.setDate(x.getDate()+n);return x;}
+  function days(a,b){return Math.round((b-a)/864e5);}
+  function fmt(dt){return dt.getDate()+' '+MON[dt.getMonth()]+' '+dt.getFullYear();}
+  function gbp(n){if(n>=1e6)return '£'+(n/1e6).toFixed(2).replace(/0$/,'')+'m';if(n>=1e3)return '£'+Math.round(n/1e3)+'k';return '£'+n;}
+  function ini(s){return s.split(/\s+/).filter(function(w){return /^[A-Z]/.test(w);}).slice(0,2).map(function(w){return w[0];}).join('');}
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+  function ico(id,st){return '<svg'+(st?' style="'+st+'"':'')+'><use href="#i-'+id+'"/></svg>';}
+
+  var contracts=[
+    {ref:'CON-2024-0087',t:'Cloud Hosting & Managed Services (SOW 3)',v:'Orrin Cloud Ltd',a:2,ty:'SOW',o:'Priya Shah',tcv:1860000,s:'2024-04-01',e:'2027-03-31',n:90,auto:true,dec:'Renegotiate',st:'Expiring'},
+    {ref:'CON-2023-0142',t:'Integrated Facilities Management',v:'Ashcombe Facilities',a:1,ty:'Services',o:'Tom Ellery',tcv:3200000,s:'2023-05-01',e:'2027-04-30',n:150,auto:false,dec:'Pending',st:'Expiring'},
+    {ref:'CON-2023-0198',t:'Fleet Leasing & Maintenance',v:'Calder Fleet Services',a:7,ty:'Lease',o:'Grace Mwangi',tcv:780000,s:'2023-12-16',e:'2026-12-15',n:30,auto:true,dec:'Pending',st:'Expiring'},
+    {ref:'CON-2022-0219',t:'Managed Print & Mail',v:'Quayside Print & Mail',a:6,ty:'Services',o:'Grace Mwangi',tcv:210000,s:'2022-02-01',e:'2027-01-31',n:60,auto:true,dec:'Re-tender',st:'Expiring'},
+    {ref:'CON-2024-0045',t:'Legal Panel Services',v:'Harrowgate Legal LLP',a:3,ty:'Framework',o:'Hannah Reeve',tcv:450000,s:'2024-03-01',e:'2027-02-28',n:60,auto:false,dec:'Renew',st:'Expiring'},
+    {ref:'CON-2025-0009',t:'Recruitment PSL',v:'Marlow Talent Partners',a:9,ty:'Framework',o:'Sam Patel',tcv:300000,s:'2025-02-01',e:'2027-01-31',n:30,auto:false,dec:'Pending',st:'Expiring'},
+    {ref:'CON-2023-0230',t:'Telecoms & WAN Connectivity',v:'Sable Telecom',a:0,ty:'Services',o:'Daniel Okafor',tcv:1120000,s:'2023-08-01',e:'2027-07-31',n:180,auto:true,dec:'Pending',st:'Active'},
+    {ref:'CON-2025-0102',t:'Staff Catering Services',v:'Thornbury Catering',a:4,ty:'Services',o:'Tom Ellery',tcv:365000,s:'2025-06-01',e:'2027-05-31',n:90,auto:false,dec:'Pending',st:'Active'},
+    {ref:'CON-2025-0031',t:'ERP Support & Licences',v:'Lumen Ridge Software',a:5,ty:'Licence',o:'Daniel Okafor',tcv:940000,s:'2025-07-01',e:'2027-06-30',n:90,auto:true,dec:'Pending',st:'Active'},
+    {ref:'CON-2024-0112',t:'Security Operations Centre',v:'Pellucid Security',a:6,ty:'Services',o:'Daniel Okafor',tcv:1240000,s:'2024-09-01',e:'2027-08-31',n:120,auto:false,dec:'Pending',st:'Active'},
+    {ref:'CON-2025-0077',t:'Data Platform Services',v:'Kestrel Data Systems',a:8,ty:'SOW',o:'Priya Shah',tcv:2050000,s:'2025-10-01',e:'2027-09-30',n:90,auto:false,dec:'Pending',st:'Active'},
+    {ref:'CON-2024-0150',t:'Energy Supply (Electricity)',v:'Wexcombe Energy',a:9,ty:'Supply',o:'Tom Ellery',tcv:2900000,s:'2024-11-01',e:'2027-10-31',n:90,auto:false,dec:'Pending',st:'Active'}
+  ];
+  var pipeline=[
+    {ref:'CON-2026-0151',t:'Workplace Analytics Platform',v:'Kestrel Data Systems',a:8,ty:'SOW',o:'Priya Shah',tcv:640000,e:'2029-12-31',st:'Awaiting approval',stage:4},
+    {ref:'CON-2026-0149',t:'Cyber Incident Response Retainer',v:'Pellucid Security',a:6,ty:'Services',o:'Daniel Okafor',tcv:180000,e:'2028-01-31',st:'In review',stage:3}
+  ];
+  contracts.forEach(function(c){c.ed=D(c.e);c.dl=addDays(c.ed,-c.n);c.left=days(TODAY,c.dl);});
+  contracts.sort(function(a,b){return a.dl-b.dl;});
+  function cls(dleft){return dleft<=30?'bad':dleft<=90?'warn':'ok';}
+
+  /* ---------- Renewal Timeline ---------- */
+  function timeline(host,list,months){
+    var ws=new Date(2026,9,1), we=new Date(ws.getFullYear(),ws.getMonth()+months,1), span=we-ws;
+    function pct(dt){return Math.max(0,Math.min(100,(dt-ws)/span*100));}
+    var h='<div class="tl-head"><span>Contract</span><div class="tl-months">';
+    for(var m=0;m<months;m++){var md=new Date(ws.getFullYear(),ws.getMonth()+m,1);var q=md.getMonth()%3===0;
+      if(months>12&&m%2)continue;
+      h+='<span class="'+(q?'q':'')+'" style="left:'+pct(md)+'%">'+MON[md.getMonth()]+(md.getMonth()===0?' ’'+String(md.getFullYear()).slice(2):'')+'</span>';}
+    h+='</div><span style="text-align:right">Notice in</span></div>';
+    list.filter(function(c){return c.dl<we;}).forEach(function(c){
+      var sd=D(c.s), cut=sd<ws, ws0=addDays(c.dl,-90), k=cls(c.left);
+      var grid='';for(var m=1;m<months;m+=3){grid+='<i class="tl-grid" style="left:'+pct(new Date(ws.getFullYear(),ws.getMonth()+m+2,1))+'%"></i>';}
+      h+='<div class="tl-row" data-go="contract" title="'+esc(c.t)+' · notice deadline '+fmt(c.dl)+' · ends '+fmt(c.ed)+'">'+
+        '<div class="tl-lab"><b>'+esc(c.t)+'</b><span>'+esc(c.v)+' · '+gbp(c.tcv)+'</span></div>'+
+        '<div class="tl-track">'+grid+
+          '<div class="tl-bar'+(cut?' cut':'')+'" style="left:'+pct(sd)+'%;width:'+(pct(c.ed)-pct(sd))+'%"></div>'+
+          '<div class="tl-win" style="left:'+pct(ws0)+'%;width:'+(pct(c.dl)-pct(ws0))+'%"></div>'+
+          (c.ed<we?'<i class="tl-end" style="left:'+pct(c.ed)+'%"></i>':'')+
+          (c.auto&&c.ed<we?'<svg class="tl-auto" style="left:'+pct(c.ed)+'%"><use href="#i-loop"/></svg>':'')+
+          '<i class="tl-dl '+k+'" style="left:'+pct(c.dl)+'%"></i>'+
+        '</div><div style="text-align:right"><span class="cd '+k+'"><i></i>'+c.left+' days</span></div></div>';
+    });
+    host.innerHTML=h;
+    // today marker over the track column
+    var head=host.querySelector('.tl-months'); var r=host.getBoundingClientRect(), hr=head.getBoundingClientRect();
+    var line=document.createElement('div');line.className='tl-today';
+    line.style.left=(hr.left-r.left+hr.width*pct(TODAY)/100)+'px';line.innerHTML='<span>Today</span>';host.appendChild(line);
+  }
+
+  /* ---------- Obligation Tracker ---------- */
+  var obDash=[
+    {g:'Overdue',k:'bad',items:[
+      {t:'Quarterly service review (Q3)',m:'Orrin Cloud · SOW 3 · Reporting',d:'8 days late',r:'Quarterly'},
+      {t:'Obtain renewed PI insurance certificate',m:'Pellucid Security · Insurance',d:'4 days late'}]},
+    {g:'Due in 7 days',k:'warn',items:[
+      {t:'Approve October SLA report',m:'Ashcombe Facilities · SLA',d:'Tue 3 Nov',r:'Monthly'},
+      {t:'Serve notice or confirm renewal',m:'Calder Fleet · Notice',d:'Fri 6 Nov'},
+      {t:'Annual price review submission',m:'Lumen Ridge · Payment',d:'Sat 7 Nov',r:'Annually'}]},
+    {g:'Next 30 days',k:'',items:[
+      {t:'Audit right — security assessment',m:'Orrin Cloud · Audit right',d:'18 Nov'},
+      {t:'Exit plan refresh',m:'Kestrel Data · Deliverable',d:'27 Nov',r:'Annually'}]}
+  ];
+  var obCon=[
+    {g:'Overdue',k:'bad',items:[{t:'Quarterly service review (Q3)',m:'Owner: Priya Shah · evidence: minutes',d:'8 days late',r:'Quarterly'}]},
+    {g:'Next 30 days',k:'warn',items:[
+      {t:'Audit right — annual security assessment',m:'Owner: InfoSec · Schedule 5 §4',d:'18 Nov'},
+      {t:'Monthly availability report ≥ 99.95%',m:'Owner: Priya Shah · SLA · last: 99.97% ✓',d:'5 Dec',r:'Monthly'}]},
+    {g:'Later',k:'',items:[{t:'Exit plan update (pre-renewal)',m:'Owner: Daniel Okafor · Deliverable',d:'15 Jan 2027'}]}
+  ];
+  function obligations(host,groups){
+    var h='';
+    groups.forEach(function(g){
+      h+='<div class="ob-grp"><div class="ob-gh '+g.k+'">'+g.g+'<span class="n">'+g.items.length+'</span></div>';
+      g.items.forEach(function(o){
+        h+='<div class="ob"><button class="tick" title="Mark as met">'+ico('check')+'</button><div style="min-width:0"><div class="ob-t">'+esc(o.t)+'</div><div class="ob-m">'+esc(o.m)+(o.r?' <span class="badge b-grey" style="padding:0 6px;font-size:10.5px">'+ico('loop','width:10px;height:10px')+o.r+'</span>':'')+'</div></div><div class="ob-d '+(g.k||'ok')+'">'+o.d+'</div></div>';
+      });
+      h+='</div>';
+    });
+    host.innerHTML=h;
+  }
+
+  /* ---------- Spend chart & risk matrix ---------- */
+  function spend(host){
+    var rows=[['IT › Cloud & hosting',7.8,'#1F3A5F'],['Facilities & FM',5.9,'#2E5A8C'],['Energy',2.9,'#4F7CAC'],['IT › Software',2.2,'#7A9CC6'],['Professional services',1.6,'#A67C3D'],['Telecoms',1.1,'#C9A46A'],['Other',1.3,'#C2BFBC']];
+    var max=7.8,h='';
+    rows.forEach(function(r){h+='<div class="hb"><span class="l">'+r[0]+'</span><div class="t"><i style="width:'+(r[1]/max*100)+'%;background:'+r[2]+'"></i></div><span class="v">£'+r[1].toFixed(1)+'m</span></div>';});
+    host.innerHTML=h+'<div style="font-size:11.5px;color:var(--fg-3);margin-top:4px">£22.8m total · 13% off-contract spend flagged by Spend.Import</div>';
+  }
+  function matrix(host){
+    var counts=[[0,0,1,2,1],[0,1,3,2,1],[1,2,4,3,0],[2,5,3,1,0],[3,4,2,0,0]]; // rows = impact 5..1, cols = likelihood 1..5
+    var h='';
+    for(var r=0;r<5;r++){h+='<span class="ax">'+(5-r)+'</span>';
+      for(var c=0;c<5;c++){var s=(5-r)*(c+1),n=counts[r][c];
+        var bg=s>=15?'#E8A3A8':s>=10?'#F4C98A':s>=5?'#F6E3A8':'#CFE6C9', fg=s>=15?'#7A1B21':s>=10?'#6E4100':'#3B4A2A';
+        h+='<div class="c'+(n?'':' e')+'" style="background:'+bg+';color:'+fg+(n?'':';opacity:.55')+'" title="Likelihood '+(c+1)+' × Impact '+(5-r)+' = '+s+' · '+n+' risks">'+(n||'·')+'</div>';}}
+    host.innerHTML=h;
+  }
+
+  /* ---------- Grids ---------- */
+  var vendors=[
+    ['Orrin Cloud Ltd','VND-00042',2,'Strategic','IT › Cloud hosting','Priya Shah',6,2410000,64,78,['ok','ok','warn','ok'],'2026-11-18'],
+    ['Ashcombe Facilities','VND-00017',1,'Critical','Facilities › FM','Tom Ellery',3,3050000,47,71,['ok','ok','ok','ok'],'2027-01-12'],
+    ['Wexcombe Energy','VND-00088',9,'Strategic','Facilities › Energy','Tom Ellery',1,2710000,41,74,['ok','na','ok','na'],'2027-03-02'],
+    ['Kestrel Data Systems','VND-00103',8,'Strategic','IT › Data & analytics','Priya Shah',4,1380000,38,86,['ok','ok','ok','ok'],'2027-02-20'],
+    ['Pellucid Security','VND-00061',6,'Critical','IT › Security','Daniel Okafor',2,620000,72,69,['ok','ok','bad','ok'],'2026-11-09'],
+    ['Sable Telecom','VND-00029',0,'Preferred','IT › Telecoms','Daniel Okafor',2,560000,52,64,['warn','ok','ok','na'],'2026-12-04'],
+    ['Lumen Ridge Software','VND-00074',5,'Preferred','IT › Software','Daniel Okafor',3,480000,29,82,['ok','ok','ok','ok'],'2027-04-15'],
+    ['Calder Fleet Services','VND-00052',7,'Approved','Operations › Fleet','Grace Mwangi',1,260000,58,61,['na','ok','ok','na'],'2026-10-28'],
+    ['Harrowgate Legal LLP','VND-00011',3,'Preferred','Prof. services › Legal','Hannah Reeve',1,190000,22,88,['na','ok','ok','ok'],'2027-05-30'],
+    ['Thornbury Catering','VND-00095',4,'Approved','Facilities › Catering','Tom Ellery',1,120000,33,79,['na','na','ok','na'],'2027-02-01'],
+    ['Marlow Talent Partners','VND-00118',9,'Approved','HR › Recruitment','Sam Patel',1,90000,26,76,['na','ok','ok','ok'],'2027-06-10'],
+    ['Quayside Print & Mail','VND-00034',6,'Tactical','Operations › Print','Grace Mwangi',1,70000,81,52,['bad','na','warn','bad'],'2026-09-30']
+  ];
+  var tierB={Strategic:'b-acc',Critical:'b-bad',Preferred:'b-brand',Approved:'b-grey',Tactical:'b-grey'};
+  function rcol(v){return v>=80?'var(--bad-strong)':v>=60?'var(--warn-strong)':v>=40?'#C9A46A':'var(--ok-strong)';}
+  function vendorGrid(host){
+    var h='<thead><tr><th class="ck"><span class="cb"></span></th><th>Vendor<span class="srt">↓</span></th><th>Tier</th><th>Category</th><th>Owner</th><th class="r">Contracts</th><th class="r">Annual spend</th><th>Risk</th><th>Scorecard</th><th>Compliance</th><th>Next review</th></tr></thead><tbody>';
+    var lab=['ISO','CE+','INS','DPA'];
+    vendors.forEach(function(v){
+      var rv=D(v[11]),dl=days(TODAY,rv);
+      h+='<tr class="cl" data-go="vendor"><td class="ck"><span class="cb"></span></td><td><div class="who"><div class="av a'+v[2]+'">'+ini(v[0])+'</div><div><div class="nm">'+esc(v[0])+'</div><div class="idtag">'+v[1]+'</div></div></div></td>'+
+      '<td><span class="badge '+tierB[v[3]]+'">'+v[3]+'</span></td><td class="muted">'+esc(v[4])+'</td>'+
+      '<td><div class="who"><div class="av rd sm a7">'+ini(v[5])+'</div><span style="font-size:13px">'+v[5]+'</span></div></td>'+
+      '<td class="r num">'+v[6]+'</td><td class="r num" style="font-weight:600">'+gbp(v[7])+'</td>'+
+      '<td><div class="ring" style="--v:'+v[8]+';--c:'+rcol(v[8])+'" title="Risk score '+v[8]+'"><b>'+v[8]+'</b></div></td>'+
+      '<td><span class="minibar"><i style="width:'+v[9]+'%"></i></span><span class="num" style="font-size:12.5px;font-weight:600">'+v[9]+'</span></td>'+
+      '<td><div class="certs">'+v[10].map(function(s,i){return '<span class="cert '+s+'" title="'+lab[i]+': '+({ok:'valid',warn:'expiring',bad:'expired / missing',na:'not required'})[s]+'">'+lab[i]+'</span>';}).join('')+'</div></td>'+
+      '<td class="num" style="font-size:13px;'+(dl<0?'color:var(--bad-fg);font-weight:600':dl<30?'color:var(--warn-fg);font-weight:600':'')+'">'+fmt(rv)+(dl<0?' · overdue':'')+'</td></tr>';
+    });
+    host.innerHTML=h+'</tbody>';
+  }
+  var stB={Expiring:'b-warn',Active:'b-ok','Awaiting approval':'b-info','In review':'b-grey'};
+  function crow(c,live){
+    var cdh=live?'<span class="cd '+cls(c.left)+'"><i></i>'+fmt(c.dl)+' · '+c.left+'d</span>':'<span class="muted">—</span>';
+    return '<tr class="cl" data-go="contract"><td class="ck"><span class="cb" role="checkbox" aria-checked="false"></span></td>'+
+      '<td><div class="nm" style="font-weight:600">'+esc(c.t)+'</div><div class="idtag">'+c.ref+' · '+c.ty+'</div></td>'+
+      '<td><div class="who"><div class="av sm a'+c.a+'">'+ini(c.v)+'</div><span style="font-size:13px">'+esc(c.v)+'</span></div></td>'+
+      '<td class="muted">'+c.o+'</td><td class="r num" style="font-weight:600">'+gbp(c.tcv)+'</td>'+
+      '<td class="num" style="font-size:13px">'+fmt(c.ed||D(c.e))+'</td><td>'+cdh+'</td>'+
+      '<td>'+(c.auto?'<span title="Auto-renews" style="color:var(--brand-2)">'+ico('loop')+'</span>':'')+'</td>'+
+      '<td><span class="badge '+stB[c.st]+'">'+c.st+'</span></td></tr>';
+  }
+  function contractGrid(host){
+    var h='<thead><tr><th class="ck"><span class="cb"></span></th><th>Contract</th><th>Vendor</th><th>Owner</th><th class="r">TCV</th><th>End date</th><th>Notice deadline<span class="srt">↑</span></th><th></th><th>Status</th></tr></thead><tbody>';
+    var groups=[['Expiring — notice window open',contracts.filter(function(c){return c.left<=90;}),true],['Active',contracts.filter(function(c){return c.left>90;}),true],['In review & approval',pipeline,false]];
+    groups.forEach(function(g){
+      var tot=g[1].reduce(function(s,c){return s+c.tcv;},0);
+      h+='<tr class="grow" data-grp><td colspan="9">'+ico('chevd','width:13px;height:13px;vertical-align:-2px;margin-right:6px')+g[0]+'<span class="gc">'+g[1].length+' · '+gbp(tot)+'</span></td></tr>';
+      g[1].forEach(function(c){h+=crow(c,g[2]);});
+    });
+    host.innerHTML=h+'</tbody>';
+  }
+  var recB={Renew:'b-ok',Renegotiate:'b-brand','Re-tender':'b-acc',Terminate:'b-bad',Pending:'b-grey'};
+  function decisionGrid(host){
+    var h='<thead><tr><th>Contract</th><th>Vendor</th><th class="r">TCV</th><th>Notice deadline</th><th>Vendor score</th><th>Decision</th><th>Owner</th><th></th></tr></thead><tbody>';
+    var sc={'Orrin Cloud Ltd':78,'Ashcombe Facilities':71,'Calder Fleet Services':61,'Quayside Print & Mail':52,'Harrowgate Legal LLP':88,'Marlow Talent Partners':76,'Sable Telecom':64};
+    contracts.slice(0,7).forEach(function(c){
+      var s=sc[c.v]||70;
+      h+='<tr><td><div style="font-weight:600">'+esc(c.t)+'</div><div class="idtag">'+c.ref+'</div></td><td style="font-size:13px">'+esc(c.v)+'</td>'+
+      '<td class="r num" style="font-weight:600">'+gbp(c.tcv)+'</td><td><span class="cd '+cls(c.left)+'"><i></i>'+fmt(c.dl)+' · '+c.left+'d</span></td>'+
+      '<td><span class="minibar"><i style="width:'+s+'%;'+(s<60?'background:var(--warn-strong)':'')+'"></i></span><b class="num" style="font-size:12.5px">'+s+'</b></td>'+
+      '<td><div class="inp" style="height:28px;width:150px"><select aria-label="Decision">'+['Pending','Renew','Renegotiate','Re-tender','Terminate'].map(function(o){return '<option'+(o===c.dec?' selected':'')+'>'+o+'</option>';}).join('')+'</select></div></td>'+
+      '<td class="muted">'+c.o+'</td><td>'+(c.dec==='Pending'&&c.left<=30?'<span class="badge b-bad">'+ico('alert')+'Escalated</span>':'<span class="badge '+recB[c.dec]+'">'+(c.dec==='Pending'?'Awaiting owner':'Decided')+'</span>')+'</td></tr>';
+    });
+    host.innerHTML=h+'</tbody>';
+  }
+
+  /* ---------- render ---------- */
+  obligations(document.getElementById('obDash'),obDash);
+  obligations(document.getElementById('obContract'),obCon);
+  spend(document.getElementById('spendChart'));
+  matrix(document.getElementById('riskMatrix'));
+  vendorGrid(document.getElementById('vendorGrid'));
+  contractGrid(document.getElementById('contractGrid'));
+  decisionGrid(document.getElementById('decisionGrid'));
+  var tlMonths=12;
+  function drawTimelines(){
+    var a=document.getElementById('tlDash'),b=document.getElementById('tlFull');
+    if(a.offsetParent)timeline(a,contracts.slice(0,8),12);
+    if(b.offsetParent)timeline(b,contracts,tlMonths);
+  }
+
+  /* ---------- toast (simulates ActionJson → flow → ResultJson) ---------- */
+  var tt;function toast(msg){var t=document.getElementById('toast');t.innerHTML=msg;t.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('on');},2600);}
+
+  /* ---------- navigation ---------- */
+  var tabs=[].slice.call(document.querySelectorAll('.seg [data-screen]'));
+  function show(id){
+    document.querySelectorAll('.screen').forEach(function(s){s.classList.toggle('is-active',s.id==='screen-'+id);});
+    tabs.forEach(function(t){t.setAttribute('aria-selected',t.dataset.screen===id);});
+    var railMap={vendor:'vendors',contract:'contracts'};
+    document.querySelectorAll('.rail [data-go]').forEach(function(b){b.setAttribute('aria-current',b.dataset.go===(railMap[id]||id));});
+    window.scrollTo(0,0);replay();drawTimelines();
+  }
+  tabs.forEach(function(t){t.addEventListener('click',function(){show(t.dataset.screen);});});
+  document.addEventListener('click',function(e){
+    var tick=e.target.closest('.tick');
+    if(tick){e.stopPropagation();var ob=tick.closest('.ob');var on=ob.classList.toggle('done');
+      toast(on?'Obligation marked as met <code>ActionJson {type:"complete"} → Obligation.Complete → ResultJson ok</code>':'Reverted');return;}
+    var cb=e.target.closest('#contractGrid .cb');
+    if(cb){e.stopPropagation();var c=cb.getAttribute('aria-checked')==='true';cb.setAttribute('aria-checked',!c);
+      cb.style.background=c?'':'var(--brand)';cb.style.borderColor=c?'':'var(--brand)';
+      var n=document.querySelectorAll('#contractGrid tbody .cb[aria-checked=true]').length;
+      document.getElementById('bulk').style.display=n?'flex':'none';document.getElementById('bulkN').textContent=n;return;}
+    var grp=e.target.closest('[data-grp]');
+    if(grp){var r=grp.nextElementSibling,hide=!(r&&r.style.display==='none');while(r&&!r.hasAttribute('data-grp')){r.style.display=hide?'none':'';r=r.nextElementSibling;}return;}
+    if(e.target.closest('select'))return;
+    var go=e.target.closest('[data-go]');
+    if(go){e.preventDefault();show(go.dataset.go);}
+  });
+  document.querySelectorAll('.chips').forEach(function(g){g.addEventListener('click',function(e){var b=e.target.closest('.chip');if(!b||/Save view/.test(b.textContent))return;
+    g.querySelectorAll('.chip').forEach(function(x){x.setAttribute('aria-pressed',x===b);});toast('Saved view applied <code>ActionJson {type:"query"}</code>');});});
+  document.querySelectorAll('.pivot,.tabs2').forEach(function(p){p.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+    p.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-selected',x===b);});});});
+  document.getElementById('zoom').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+    this.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b);});tlMonths=parseInt(b.textContent,10);drawTimelines();});
+  document.getElementById('apApprove').addEventListener('click',function(){
+    var s=document.getElementById('apCur');s.classList.remove('cur');s.classList.add('ok');
+    s.querySelector('.ic').innerHTML=ico('check');s.querySelector('.t').innerHTML='Finance · you<span class="badge b-ok">Approved</span>';
+    s.querySelector('.decide').remove();toast('Approved <code>Approval.Decide</code> · Legal and DPO notified in Teams');});
+  document.getElementById('decisionGrid').addEventListener('change',function(e){
+    if(e.target.tagName==='SELECT')toast('Decision saved: '+e.target.value+' <code>Record.Save · IF-MATCH etag ✓</code>');});
+  document.getElementById('tglAuto').addEventListener('click',function(){this.classList.toggle('off');this.lastChild.textContent=this.classList.contains('off')?'No':'Yes, for 12 months';});
+
+  /* ---------- PCF overlay ---------- */
+  var pcf=document.getElementById('pcfToggle');
+  function buildList(){
+    var items=[],seen={};
+    document.querySelectorAll('.pcf[data-pcf]').forEach(function(el){
+      var s=el.closest('.screen');if(s&&!s.classList.contains('is-active'))return;
+      var label=el.dataset.pcf.replace(/^PCF ·\s*/,''),src=el.dataset.src||'';
+      if(seen[label+src])return;seen[label+src]=1;items.push([label,src]);
+    });
+    var host=document.getElementById('pcfList');host.innerHTML='';
+    items.forEach(function(t,i){var row=document.createElement('div');row.className='pcfpanel__i';
+      row.innerHTML='<span class="n">'+(i+1)+'</span><div>'+t[0]+(t[1]?'<small>← '+esc(t[1])+'</small>':'')+'</div>';host.appendChild(row);});
+    document.getElementById('pcfCount').textContent=items.length;
+  }
+  pcf.addEventListener('click',function(){var on=document.body.classList.toggle('show-pcf');pcf.setAttribute('aria-pressed',on);if(on)buildList();});
+
+  function replay(){document.body.classList.remove('is-ready');void document.body.offsetWidth;
+    requestAnimationFrame(function(){document.body.classList.add('is-ready');});
+    if(document.body.classList.contains('show-pcf'))buildList();}
+  window.addEventListener('resize',drawTimelines);
+  window.addEventListener('load',function(){replay();drawTimelines();});
+  replay();drawTimelines();
+})();
+</script>
+</body>
+</html>
