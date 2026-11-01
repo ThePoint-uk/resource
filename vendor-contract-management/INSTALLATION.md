@@ -349,7 +349,8 @@ Run this smoke test as a non-admin test user with the **Procurement** role. Tick
 | Reminders stopped; admin channel shows *"connection invalid"* | Service-account connection expired (password change or MFA re-auth) | Make.powerautomate.com › Connections › fix each `kst_` connection, signed in as the service account |
 | Teams cards not arriving; emails do | Power Automate app blocked in Teams | Allow it in Teams admin centre (§2.3) |
 | Dashboard shows zeros after data import | Snapshot not refreshed | Run **Nightly.Recalc** manually |
-| Banner: *"Licence expires in N days"* or app is read-only | Licence key expiring or expired | Paste the renewed key in Rules admin › Settings › Licence (or update `kst_LicenceKey`) |
+| Notice in Rules admin: *"Updates & support expired"* | Your 12 months of included updates (or your renewal) has ended. Keystone keeps working | To upgrade to newer versions, renew updates & support and paste the new key in Rules admin › Settings › Licence (or update `kst_LicenceKey`) |
+| Upgrade import refused: *"Version not covered by licence"* | The new version was released after your updates & support ended | Renew updates & support, enter the new key, then re-import |
 | A user sees *"You don't have permission to do that"* | Missing Keystone role | Rules admin › Settings › Roles |
 | Import results show *"Choice value not allowed"* | Spreadsheet value doesn't match the list choice | Use the drop-downs in the template. Don't paste values over them |
 | Slow screens (> 5 s) | Usually throttling during big imports, or a very large list without indexes | Wait for the import to finish. Run `-Upgrade` to re-apply indexes. Contact support with the flow run ID |

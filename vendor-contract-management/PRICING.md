@@ -4,38 +4,38 @@
 
 ## 1. Price list
 
-### Subscription (one plan)
+### Licence (one-off)
 
 | | **Keystone** |
 |---|---|
-| **Price** | **£5,950 / year** per Microsoft 365 tenant (~£496/month), billed annually in advance |
+| **Price** | **£2,999 one-off** per Microsoft 365 tenant |
+| Licence | Perpetual. It keeps working for as long as the customer uses it |
 | Users | **Unlimited** |
 | Environments | Production + Dev/Test |
 | Product | Everything: all 13 components, 8 screens, Rule Builder, Vendor 360, risk scoring, scorecards, obligations, approvals, BU confidentiality walls, multi-currency, spend import, e-signature integration pack* |
-| Updates | All updates and new versions |
-| Support | Standard support included (§3) |
+| Included | **12 months** of updates (new versions) and standard support |
 
 \*E-signature connectors need the customer's own Power Automate Premium licence for the Keystone service account.
 
-### Optional services (all delivered remotely, no on-site)
+### Optional (all delivered remotely, no on-site)
 
-| Service | Price |
+| Item | Price |
 |---|---|
+| **Updates & support renewal** (after the first 12 months: new versions + standard support) | **£599 / year** |
 | **Guided Installation Day** | **£1,150 fixed** |
-| **Premium Support** | **£2,400 / year** |
-| **Consultancy** (custom rules, integrations, training, extensions) | **£1,050 / day** |
+| **Premium Support** (on top of updates & support) | **£2,400 / year** |
+| **Consultancy** | **£1,050 / day** |
 | **Data migration** (more than 500 contracts, messy registers, bulk document filing) | **from £1,950** (quoted) |
 
-### Offers
-- **Install bundle:** subscription + Guided Installation Day in year one = **£6,750** (saves £350).
-- **Founding customer:** 25% off year one for the first 10 customers, in exchange for a case study and a reference call. That makes the subscription £4,460, or £5,260 with the install day.
+### Bundle
+- **Keystone + Guided Installation Day: £3,999** (saves £150).
 
-### Typical first-year totals
-| Package | Year 1 | Year 2+ |
+### Typical totals
+| Package | Year 1 | Each later year |
 |---|---|---|
-| Subscription only | £5,950 | £5,950 |
-| Subscription + Installation Day | £6,750 | £5,950 |
-| Subscription + Installation Day + Premium Support | £9,150 | £8,350 |
+| Licence only | £2,999 | £0 (or £599 to keep updates & support) |
+| Licence + Installation Day | £3,999 | £0 / £599 |
+| Licence + Installation Day + Premium Support | £6,399 | £599 + £2,400 |
 
 ## 2. Guided Installation Day (£1,150, remote)
 
@@ -56,7 +56,7 @@
 
 ## 3. Support
 
-| | Standard (included) | Premium (£2,400 / year) |
+| | Standard (first 12 months included, then £599/yr) | Premium (£2,400 / year) |
 |---|---|---|
 | Channel | Email / portal | Email / portal + Teams call |
 | Critical issue (app down, reminders not sending) | Next business day | 4 business hours |
@@ -98,22 +98,33 @@ These are strong on drafting, negotiation and e-signature. However, data sits ou
 ### Where Keystone fits
 **The gap:** most M365-native tools are per-user and contract-centric. DIY and partner builds are projects. Standalone CLM lives outside the tenant and charges per seat. Keystone's position is a **packaged, premium, vendor-and-contract product that lives entirely in the customer's tenant, at one fixed price for unlimited users, with policy that admins control.**
 
-**Price check against the closest rival:** at CLM 365's top reported tier (~$70/user/year), Keystone's £5,950 breaks even at roughly 100 users. Below that, Keystone looks dearer on paper. Sell against that with:
-- no contract caps or seat counting
-- vendor management and risk included
-- the Rule Builder
-- the installation day
+**Price check against the closest rival:** CLM 365's top reported tier is ~$70 (~£55) per user per year.
+- **Year one:** Keystone's £2,999 equals about 55 CLM 365 users.
+- **Over three years with updates renewed** (£4,197 total): Keystone is cheaper from roughly **25 users** upwards.
+- **Without renewal:** it's cheaper still.
 
-Above ~100 users, Keystone is cheaper and the gap widens.
+Keystone now undercuts per-user Microsoft 365 tools for almost any real procurement team, and costs a fraction of standalone contract management software.
 
-## 5. Rationale for one plan
-- **Simpler buying:** one number, no feature comparison, quicker approval (often within a department head's sign-off limit).
-- **Simpler engineering:** no feature gating. The licence key only checks tenant and expiry.
-- **Revenue grows through services:** support and consultancy carry the upsell, not plans.
-- **Raising the price later:** keep the founding discount time-limited, then review the list price after the first 10 customers.
+## 5. Rationale and risks of a one-off price
+
+**Why it works**
+- **Impulse-level purchase:** £2,999 is usually within a department head's or IT manager's card or PO limit, with no procurement exercise and no annual budget line. That shortens sales cycles a lot.
+- **Clear story:** one price, unlimited users, yours to keep. It's easy to say and hard for per-user rivals to match.
+- **No hosting cost:** the software runs in the customer's tenant, so each extra customer costs you almost nothing.
+- **Services become the profit engine:** the installation day (£1,150, roughly 38% of the licence) will be attached to most deals. The £599 renewal and Premium Support give recurring income.
+
+**Risks to manage**
+- **Less recurring revenue.** Income depends on new sales plus renewals. Aim for over 70% of customers renewing updates & support. Make renewal visible in the app (a gentle notice) and the default on invoices.
+- **The platform keeps moving.** Microsoft changes Power Platform and PCF regularly, so you will keep shipping fixes. That's why updates are time-boxed to 12 months, not "free forever". Never promise lifetime updates.
+- **Support load:** standard support stays asynchronous (email or portal only), so it doesn't eat consultancy time. Anything hands-on is consultancy at £1,050 a day.
+- **Perceived value:** at this price, some buyers may doubt it's "premium". Lean on the demo, the installation day and the case studies.
+
+**Unit economics (illustrative):** 20 sales in year one, with 60% taking the installation day and 70% renewing in year two:
+- **Year one:** £59,980 licences + £13,800 installation days ≈ **£73,800**
+- **Year two:** about **£8,400** recurring from those customers, plus new sales
 
 ## 6. Before publishing prices
-- [ ] Run 5 pricing conversations. If more than 3 call it cheap, raise it to £6,950–£7,500.
+- [ ] Run 5 pricing conversations. If buyers don't hesitate at all, test £3,950.
 - [ ] Verify competitor prices directly. Directory figures drift and conflict.
 - [ ] Get the code-components licensing position reviewed by a Microsoft licensing partner.
-- [ ] Draft the EULA, SLA, DPA and cancellation terms shown in the FAQ.
+- [ ] Draft the perpetual EULA: licence per tenant, what the 12 months of updates and support cover, renewal terms, no refunds after the licence key is issued (or a 14-day window).
