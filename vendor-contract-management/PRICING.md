@@ -23,7 +23,7 @@
 |---|---|
 | **Updates & support renewal** (after the first 12 months: new versions + standard support) | **£599 / year** |
 | **Guided Installation Day** | **£1,150 fixed** |
-| **Premium Support** (on top of updates & support) | **£2,400 / year** |
+| **Premium Support** (on top of updates & support) | **£1,200 / year** |
 | **Consultancy** | **£1,050 / day** |
 | **Data migration** (more than 500 contracts, messy registers, bulk document filing) | **from £1,950** (quoted) |
 
@@ -35,7 +35,7 @@
 |---|---|---|
 | Licence only | £2,999 | £0 (or £599 to keep updates & support) |
 | Licence + Installation Day | £3,999 | £0 / £599 |
-| Licence + Installation Day + Premium Support | £6,399 | £599 + £2,400 |
+| Licence + Installation Day + Premium Support | £5,199 | £599 + £1,200 |
 
 ## 2. Guided Installation Day (£1,150, remote)
 
@@ -56,7 +56,7 @@
 
 ## 3. Support
 
-| | Standard (first 12 months included, then £599/yr) | Premium (£2,400 / year) |
+| | Standard (first 12 months included, then £599/yr) | Premium (£1,200 / year) |
 |---|---|---|
 | Channel | Email / portal | Email / portal + Teams call |
 | Critical issue (app down, reminders not sending) | Next business day | 4 business hours |
@@ -122,6 +122,13 @@ Keystone now undercuts per-user Microsoft 365 tools for almost any real procurem
 **Unit economics (illustrative):** 20 sales in year one, with 60% taking the installation day and 70% renewing in year two:
 - **Year one:** £59,980 licences + £13,800 installation days ≈ **£73,800**
 - **Year two:** about **£8,400** recurring from those customers, plus new sales
+
+## 5a. Pricing principle: volume first
+The goal is the **largest possible customer base**, so every price is set to remove friction rather than maximise each deal:
+- The licence sits below typical card and purchase-order sign-off limits.
+- Services are priced near cost-plus. They're there to drive successful go-lives and renewals, not margin.
+- Premium Support is £1,200 (about 40% of the licence). It shouldn't feel like a second product purchase.
+- Each customer becomes a reference and a source of word-of-mouth. Ask for a case study at go-live.
 
 ## 6. Before publishing prices
 - [ ] Run 5 pricing conversations. If buyers don't hesitate at all, test £3,950.
