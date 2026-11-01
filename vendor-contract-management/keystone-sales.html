@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keystone — Vendor &amp; Contract Management for Microsoft 365</title>
+<meta name="description" content="Never miss a notice deadline again. Keystone is premium vendor and contract management that runs inside your Microsoft 365 — SharePoint, Power Apps and Teams. No per-user fees.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1F3A5F; --navy-d:#142840; --navy-dd:#0d1c2e; --blue:#2E5A8C; --blue-l:#BCCDE2; --blue-bg:#EAF0F7;
+  --brass:#A67C3D; --brass-l:#C9A46A; --brass-bg:#F7F0E4;
+  --ink:#1B1F24; --ink-2:#4A5058; --ink-3:#7A8089; --line:#E4E6EA; --bg:#FBFAF8; --card:#fff;
+  --ok:#107C10; --warn:#D29200; --bad:#C50F1F;
+  --serif:'Fraunces',Georgia,'Times New Roman',serif;
+  --sans:'Inter','Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,Arial,sans-serif;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:var(--sans);color:var(--ink);background:var(--bg);font-size:16px;line-height:1.6}
+a{color:inherit;text-decoration:none}
+img,svg{display:block}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--brass)}
+h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-.015em;line-height:1.12}
+h2{font-size:clamp(30px,4vw,44px);margin:10px 0 14px}
+.lead{font-size:18.5px;color:var(--ink-2);max-width:640px}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:13px 22px;border-radius:10px;font-weight:600;font-size:15.5px;transition:.15s;white-space:nowrap}
+.btn svg{width:17px;height:17px}
+.btn-brass{background:var(--brass);color:#fff;box-shadow:0 6px 18px rgba(166,124,61,.35)} .btn-brass:hover{background:#8f6a32;transform:translateY(-1px)}
+.btn-ghost{border:1px solid rgba(255,255,255,.35);color:#fff} .btn-ghost:hover{background:rgba(255,255,255,.08)}
+.btn-navy{background:var(--navy);color:#fff} .btn-navy:hover{background:var(--navy-d)}
+.btn-line{border:1px solid var(--line);background:#fff} .btn-line:hover{border-color:var(--ink-3)}
+section{padding:96px 0}
+:focus-visible{outline:2px solid var(--brass);outline-offset:3px;border-radius:4px}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:50;background:rgba(13,28,46,.86);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid rgba(255,255,255,.08)}
+.nav .wrap{display:flex;align-items:center;gap:28px;height:68px}
+.logo{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;font-size:18px;letter-spacing:.01em}
+.logo i{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--brass-l),var(--brass));display:grid;place-items:center}
+.logo i svg{width:15px;height:15px;color:#fff}
+.nav nav{display:flex;gap:26px;margin-left:12px}
+.nav nav a{color:#c3cede;font-size:14.5px;font-weight:500} .nav nav a:hover{color:#fff}
+.nav .sp{flex:1}
+.nav .btn{padding:9px 16px;font-size:14px}
+
+/* hero */
+.hero{background:radial-gradient(1200px 600px at 85% -10%,rgba(166,124,61,.22),transparent 60%),radial-gradient(900px 600px at -10% 110%,rgba(46,90,140,.45),transparent 60%),linear-gradient(180deg,var(--navy-dd),var(--navy));color:#fff;padding:84px 0 110px;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.02fr 1fr;gap:56px;align-items:center}
+.hero h1{font-size:clamp(40px,5.4vw,64px);margin:16px 0 20px}
+.hero h1 em{font-style:italic;color:var(--brass-l)}
+.hero .lead{color:#c9d4e3}
+.hero .ctas{display:flex;gap:12px;margin:32px 0 26px;flex-wrap:wrap}
+.pills{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13.5px;color:#aebcd0}
+.pills span{display:inline-flex;align-items:center;gap:7px}
+.pills svg{width:15px;height:15px;color:var(--brass-l)}
+.eyebrow.l{color:var(--brass-l)}
+
+/* hero visual */
+.stage{position:relative;height:470px}
+.mock{position:absolute;inset:20px 0 auto 30px;background:#fff;color:var(--ink);border-radius:16px;box-shadow:0 30px 80px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.06);overflow:hidden}
+.mock .bar{height:40px;background:var(--navy);display:flex;align-items:center;gap:8px;padding:0 14px;color:#fff;font-size:12.5px;font-weight:600}
+.mock .bar i{width:18px;height:18px;border-radius:5px;background:linear-gradient(135deg,var(--brass-l),var(--brass))}
+.mock .bar span{opacity:.6;font-weight:400}
+.mock .kp{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px}
+.mock .kp div{border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:11px;color:var(--ink-3);font-weight:600;position:relative;overflow:hidden}
+.mock .kp div::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue-l)}
+.mock .kp div.w::before{background:var(--warn)} .mock .kp div.b::before{background:var(--bad)}
+.mock .kp b{display:block;font-size:21px;color:var(--ink);font-weight:700;letter-spacing:-.01em}
+.tlm{padding:4px 14px 16px}
+.tlm .h{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:6px}
+.tlm .h span{color:var(--ink-3);font-weight:500}
+.tlr{display:grid;grid-template-columns:118px 1fr 50px;gap:10px;align-items:center;height:34px;border-bottom:1px solid #f1f2f4;font-size:11.5px}
+.tlr b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tlr .t{position:relative;height:100%}
+.tlr .t .bar2{position:absolute;top:50%;height:8px;margin-top:-4px;border-radius:3px;background:#a9bdd6}
+.tlr .t .w{position:absolute;top:50%;height:16px;margin-top:-8px;border-radius:3px;background:repeating-linear-gradient(135deg,rgba(210,146,0,.18) 0 4px,rgba(210,146,0,.32) 4px 8px);border:1px solid rgba(210,146,0,.5)}
+.tlr .t .d{position:absolute;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;transform:rotate(45deg);border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2);border-radius:2px}
+.tlr .c{font-weight:700;text-align:right;font-size:11px}
+.today{position:absolute;top:0;bottom:0;border-left:2px solid var(--brass)}
+.teams{position:absolute;right:-6px;bottom:6px;width:300px;background:#fff;color:var(--ink);border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,.45);overflow:hidden;font-size:12.5px;animation:float 6s ease-in-out infinite}
+.teams .th{background:#5B5FC7;color:#fff;padding:8px 12px;font-weight:600;font-size:11.5px;display:flex;gap:7px;align-items:center}
+.teams .th svg{width:13px;height:13px}
+.teams .tb{padding:11px 13px}
+.teams .tb b{display:block;font-size:13.5px;margin-bottom:3px}
+.teams .tb p{color:var(--ink-2);line-height:1.45}
+.teams .bt{display:flex;gap:6px;margin-top:9px} .teams .bt span{border:1px solid var(--line);border-radius:5px;padding:4px 9px;font-size:11px;font-weight:600}
+.teams .bt span:first-child{background:#5B5FC7;color:#fff;border-color:#5B5FC7}
+.chipf{position:absolute;left:-8px;bottom:-34px;max-width:235px;background:#fff;color:var(--ink);border-radius:12px;padding:11px 14px;box-shadow:0 20px 50px rgba(0,0,0,.4);display:flex;gap:11px;align-items:center;font-size:12.5px;animation:float 7s ease-in-out infinite reverse}
+.chipf .ic{width:34px;height:34px;border-radius:9px;background:#E7F3E3;color:var(--ok);display:grid;place-items:center} .chipf .ic svg{width:17px;height:17px}
+.chipf b{display:block;font-size:14px}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* logos / proof */
+.proof{padding:34px 0;border-bottom:1px solid var(--line);background:#fff}
+.proof .wrap{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.proof p{font-size:13.5px;color:var(--ink-3);font-weight:600}
+.ms{display:flex;gap:30px;flex-wrap:wrap;align-items:center}
+.ms span{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:var(--ink-2);font-size:14.5px}
+.ms i{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;color:#fff;font-size:10px;font-style:normal;font-weight:800}
+
+/* problem */
+.problem .wrap{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.stats{display:grid;gap:16px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;display:flex;gap:18px;align-items:flex-start}
+.stat .n{font-family:var(--serif);font-size:36px;font-weight:600;color:var(--navy);line-height:1;min-width:90px}
+.stat p{color:var(--ink-2);font-size:15px}
+.stat p b{color:var(--ink)}
+
+/* features */
+.features{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.fhead{text-align:center;max-width:760px;margin:0 auto 54px}
+.fhead .lead{margin:0 auto}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.f{border:1px solid var(--line);border-radius:var(--r);padding:28px 26px;background:var(--bg);transition:.2s}
+.f:hover{border-color:var(--blue-l);box-shadow:0 14px 34px rgba(31,58,95,.08);transform:translateY(-2px)}
+.f .ic{width:44px;height:44px;border-radius:11px;background:var(--blue-bg);color:var(--navy);display:grid;place-items:center;margin-bottom:18px}
+.f .ic svg{width:21px;height:21px}
+.f.hl .ic{background:var(--brass-bg);color:var(--brass)}
+.f h3{font-size:21px;margin-bottom:8px}
+.f p{color:var(--ink-2);font-size:15px}
+
+/* rules */
+.rules{background:linear-gradient(180deg,var(--bg),#fff)}
+.rules .wrap{display:grid;grid-template-columns:1fr 1.05fr;gap:64px;align-items:center}
+.ticks{list-style:none;margin-top:22px;display:grid;gap:12px}
+.ticks li{display:flex;gap:12px;color:var(--ink-2)}
+.ticks svg{width:20px;height:20px;color:var(--brass);flex:none;margin-top:3px}
+.ticks b{color:var(--ink)}
+.rb{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 30px 70px rgba(31,58,95,.12);padding:22px;font-size:14px}
+.rb .row{display:flex;flex-wrap:wrap;align-items:center;gap:7px;line-height:2.1;margin-bottom:6px}
+.k{font-size:10.5px;font-weight:800;letter-spacing:.09em;color:#fff;border-radius:5px;padding:3px 8px;margin-right:4px}
+.k.w{background:var(--navy)} .k.i{background:var(--blue)} .k.t{background:var(--brass)}
+.tok{border:1px solid var(--blue-l);background:var(--blue-bg);color:var(--navy);font-weight:600;border-radius:6px;padding:1px 9px;font-size:13px;white-space:nowrap}
+.tok.b{border-color:#e3cfa9;background:var(--brass-bg);color:#7a5520}
+.track{position:relative;height:84px;margin:14px 0 18px;background:var(--bg);border:1px solid var(--line);border-radius:10px}
+.track .ax{position:absolute;left:16px;right:16px;top:52px;height:2px;background:#d6d9de}
+.track .mk{position:absolute;top:12px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center}
+.track .mk b{font-size:11px;background:var(--navy);color:#fff;border-radius:10px;padding:1px 8px}
+.track .mk i{width:2px;height:22px;background:var(--navy)}
+.track .mk.e b{background:var(--brass)} .track .mk.e i{background:var(--brass)}
+.track .an{position:absolute;top:45px;width:15px;height:15px;margin-left:-7px;transform:rotate(45deg);background:var(--bad);border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2);border-radius:2px}
+.track .al{position:absolute;top:64px;transform:translateX(-50%);font-size:10.5px;font-weight:700;color:var(--bad);white-space:nowrap}
+.rb .sim{display:flex;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.rb .sim div{flex:1;font-size:12px;color:var(--ink-3);font-weight:600}
+.rb .sim b{display:block;font-size:22px;color:var(--ink);font-family:var(--serif)}
+
+/* how */
+.how .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:46px;counter-reset:s}
+.step{position:relative;padding:30px 26px 26px;border-radius:var(--r);background:#fff;border:1px solid var(--line)}
+.step::before{counter-increment:s;content:"0" counter(s);font-family:var(--serif);font-size:44px;color:var(--brass-l);font-weight:600;line-height:1;display:block;margin-bottom:12px}
+.step h3{font-size:21px;margin-bottom:8px}
+.step p{color:var(--ink-2);font-size:15px}
+
+/* security */
+.sec{background:var(--navy-dd);color:#fff}
+.sec .wrap{display:grid;grid-template-columns:1fr 1.1fr;gap:64px;align-items:center}
+.sec .lead{color:#b9c6d8}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.sg{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:var(--r);padding:20px}
+.sg svg{width:22px;height:22px;color:var(--brass-l);margin-bottom:10px}
+.sg b{display:block;font-size:15.5px;margin-bottom:4px}
+.sg p{font-size:14px;color:#aab8cb}
+
+/* pricing */
+.pricing{background:#fff}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:48px;align-items:stretch}
+.plan{border:1px solid var(--line);border-radius:18px;padding:32px 28px;display:flex;flex-direction:column;background:var(--bg);position:relative}
+.plan.pop{background:#fff;border:2px solid var(--brass);box-shadow:0 30px 70px rgba(166,124,61,.16)}
+.plan .tag{position:absolute;top:-13px;left:28px;background:var(--brass);color:#fff;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:20px;padding:4px 12px}
+.plan h3{font-size:24px}
+.plan .for{color:var(--ink-3);font-size:14px;margin:4px 0 20px;min-height:44px}
+.price{font-family:var(--serif);font-size:46px;font-weight:600;letter-spacing:-.02em;line-height:1}
+.price small{font-family:var(--sans);font-size:15px;color:var(--ink-3);font-weight:500;letter-spacing:0}
+.per{font-size:13px;color:var(--ink-3);margin:8px 0 22px}
+.plan ul{list-style:none;display:grid;gap:10px;margin-bottom:28px;flex:1}
+.plan li{display:flex;gap:10px;font-size:14.5px;color:var(--ink-2)}
+.plan li svg{width:17px;height:17px;color:var(--ok);flex:none;margin-top:3px}
+.plan li.x{color:var(--ink-3)} .plan li.x svg{color:#c4c8ce}
+.plan .btn{justify-content:center}
+.offer{margin-top:22px;border:1px dashed var(--brass-l);background:var(--brass-bg);border-radius:var(--r);padding:16px 22px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;color:#6b4a19;font-size:15px}
+.offer b{color:#4f360f}
+.note{font-size:13px;color:var(--ink-3);margin-top:16px}
+
+/* install day */
+.install{background:linear-gradient(180deg,#fff,var(--bg))}
+.ibox{display:grid;grid-template-columns:1fr 1.15fr;border-radius:22px;overflow:hidden;border:1px solid var(--line);background:#fff;box-shadow:0 30px 70px rgba(31,58,95,.10)}
+.ibox .l{background:linear-gradient(160deg,var(--navy),var(--navy-dd));color:#fff;padding:44px 40px;position:relative}
+.ibox .l .lead{color:#c3cede;font-size:16.5px}
+.ibox .l .price{color:#fff;margin-top:26px}
+.ibox .l .price small{color:#aebcd0}
+.ibox .l .per{color:#9fb0c6}
+.ibox .r{padding:40px}
+.tl3{display:grid;gap:18px}
+.tl3 h4{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--brass);margin-bottom:8px}
+.tl3 ul{list-style:none;display:grid;gap:7px}
+.tl3 li{display:flex;gap:10px;font-size:14.5px;color:var(--ink-2)}
+.tl3 li svg{width:16px;height:16px;color:var(--navy);flex:none;margin-top:4px}
+.support{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:22px}
+.sup{border:1px solid var(--line);border-radius:var(--r);padding:24px 26px;background:#fff}
+.sup h3{font-size:20px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.sup h3 span{font-family:var(--sans);font-size:14px;color:var(--ink-3);font-weight:600}
+.sup ul{list-style:none;margin-top:12px;display:grid;gap:7px}
+.sup li{font-size:14.5px;color:var(--ink-2);display:flex;gap:9px}
+.sup li svg{width:16px;height:16px;color:var(--ok);flex:none;margin-top:4px}
+
+/* faq */
+.faq .wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:64px}
+details{border-bottom:1px solid var(--line);padding:18px 0}
+summary{cursor:pointer;font-weight:600;font-size:16.5px;list-style:none;display:flex;justify-content:space-between;gap:18px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:22px;color:var(--brass);line-height:1;transition:.2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--ink-2);margin-top:10px;font-size:15px}
+
+/* cta */
+.cta{background:radial-gradient(800px 400px at 80% 0%,rgba(166,124,61,.25),transparent 60%),linear-gradient(160deg,var(--navy),var(--navy-dd));color:#fff}
+.cta .wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.cta .lead{color:#c3cede}
+form{background:#fff;color:var(--ink);border-radius:18px;padding:28px;display:grid;gap:14px;box-shadow:0 30px 70px rgba(0,0,0,.35)}
+form .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{font-size:13px;font-weight:600;color:var(--ink-2);display:grid;gap:5px}
+input,select,textarea{font:inherit;font-size:15px;border:1px solid #d5d8dd;border-radius:9px;padding:10px 12px;background:#fff;color:var(--ink);width:100%}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-bg)}
+textarea{resize:vertical;min-height:80px}
+.check{display:flex;gap:9px;align-items:flex-start;font-weight:500;font-size:13.5px}
+.check input{width:auto;margin-top:4px}
+.ok{display:none;background:#E7F3E3;color:#0E700E;border-radius:9px;padding:12px 14px;font-size:14.5px;font-weight:600}
+
+footer{background:var(--navy-dd);color:#8fa0b6;font-size:14px;padding:36px 0;border-top:1px solid rgba(255,255,255,.07)}
+footer .wrap{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+footer .sp{flex:1}
+footer a:hover{color:#fff}
+
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+
+@media (max-width:980px){
+  .hero .wrap,.problem .wrap,.rules .wrap,.sec .wrap,.faq .wrap,.cta .wrap,.ibox{grid-template-columns:1fr}
+  .fgrid,.plans,.how .steps{grid-template-columns:1fr 1fr}
+  .stage{height:440px;max-width:560px}
+  .nav nav{display:none}
+  section{padding:72px 0}
+}
+@media (max-width:640px){
+  .wrap{padding:0 16px}
+  .fgrid,.plans,.how .steps,.sgrid,.support,form .two{grid-template-columns:1fr}
+  .stage{height:400px}
+  .mock{inset:10px 0 auto 0}
+  .teams{width:250px;right:0}
+  .chipf{display:none}
+  .tlr{grid-template-columns:84px 1fr 44px}
+  .ibox .l,.ibox .r{padding:28px 22px}
+  .nav .btn-ghost{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <symbol id="dia" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 21 12 12 21 3 12 12 3Z"/></symbol>
+  <symbol id="chk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m5 12.5 4.5 4.5L19 7"/></symbol>
+  <symbol id="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 9h18"/></symbol>
+  <symbol id="bld" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 21V7l8-4 8 4v14M9 21v-6h6v6M8 10h.01M12 10h.01M16 10h.01"/></symbol>
+  <symbol id="flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 21V4h11l-2 4 2 4H5"/></symbol>
+  <symbol id="apr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></symbol>
+  <symbol id="shd" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/></symbol>
+  <symbol id="gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></symbol>
+  <symbol id="doc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 3H6v18h12V7l-4-4Z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></symbol>
+  <symbol id="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 5"/></symbol>
+  <symbol id="hist" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2"/></symbol>
+  <symbol id="cloud" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 18a5 5 0 0 1-.6-9.96A6 6 0 0 1 18 9a4.5 4.5 0 0 1 0 9H7Z"/></symbol>
+  <symbol id="bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 19a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="pound" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M17 5H10a4 4 0 0 0-4 4v2h9M6 11v6c0 1-1 2-2 2h15M6 14h7"/></symbol>
+</defs></svg>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#top"><i><svg><use href="#dia"/></svg></i>Keystone</a>
+    <nav aria-label="Main"><a href="#features">Product</a><a href="#rules">Your rules</a><a href="#security">Security</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a></nav>
+    <div class="sp"></div>
+    <a class="btn btn-ghost" href="keystone-vcm-pcf.html">Interactive demo</a>
+    <a class="btn btn-brass" href="#contact">Book a demo</a>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow l">Vendor &amp; contract management for Microsoft 365</div>
+      <h1>Never miss a <em>notice deadline</em> again.</h1>
+      <p class="lead">Keystone gives procurement, legal and finance one premium workspace for every supplier and contract, with reminders that follow your rules. It runs inside the Microsoft 365 you already own: SharePoint, Power Apps and Teams.</p>
+      <div class="ctas">
+        <a class="btn btn-brass" href="#contact">Book a 30-minute demo<svg><use href="#arr"/></svg></a>
+        <a class="btn btn-ghost" href="#pricing">See pricing</a>
+      </div>
+      <div class="pills">
+        <span><svg><use href="#chk"/></svg>Runs in your tenant</span>
+        <span><svg><use href="#chk"/></svg>No per-user fees</span>
+        <span><svg><use href="#chk"/></svg>Live in a day</span>
+        <span><svg><use href="#chk"/></svg>Teams-native alerts</span>
+      </div>
+    </div>
+    <div class="stage" aria-hidden="true">
+      <div class="mock">
+        <div class="bar"><i></i>Keystone <span>· Portfolio overview</span></div>
+        <div class="kp"><div>Active contracts<b>214</b></div><div class="b">Notice ≤ 30 days<b>5</b></div><div class="w">High-risk vendors<b>9</b></div></div>
+        <div class="tlm">
+          <div class="h">Renewal &amp; notice timeline<span>next 12 months</span></div>
+          <div style="position:relative">
+            <div class="tlr"><b>Fleet Leasing</b><div class="t"><i class="bar2" style="left:0;width:22%"></i><i class="w" style="left:0;width:12%"></i><i class="d" style="left:12%;background:var(--bad)"></i></div><span class="c" style="color:var(--bad)">14d</span></div>
+            <div class="tlr"><b>Facilities Mgmt</b><div class="t"><i class="bar2" style="left:0;width:55%"></i><i class="w" style="left:0;width:17%"></i><i class="d" style="left:17%;background:var(--bad)"></i></div><span class="c" style="color:var(--bad)">30d</span></div>
+            <div class="tlr"><b>Cloud Hosting SOW 3</b><div class="t"><i class="bar2" style="left:0;width:46%"></i><i class="w" style="left:2%;width:23%"></i><i class="d" style="left:25%;background:var(--warn)"></i></div><span class="c" style="color:#8a5300">60d</span></div>
+            <div class="tlr"><b>Telecoms &amp; WAN</b><div class="t"><i class="bar2" style="left:0;width:86%"></i><i class="w" style="left:10%;width:23%"></i><i class="d" style="left:33%;background:var(--blue)"></i></div><span class="c" style="color:var(--ink-3)">92d</span></div>
+            <div class="tlr" style="border:0"><b>Data Platform</b><div class="t"><i class="bar2" style="left:0;width:98%"></i><i class="w" style="left:52%;width:23%"></i><i class="d" style="left:75%;background:var(--blue)"></i></div><span class="c" style="color:var(--ink-3)">243d</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="chipf"><div class="ic"><svg><use href="#pound"/></svg></div><div><b>£612k saved</b>renegotiated on renewal this year</div></div>
+      <div class="teams">
+        <div class="th"><svg><use href="#bell"/></svg>Keystone · Renewal reminder</div>
+        <div class="tb"><b>Cloud Hosting &amp; Managed Services</b><p>Serve notice or confirm renewal in <b style="display:inline;font-size:12.5px">60 days</b>. Auto-renews for 12 months if no action is taken.</p>
+          <div class="bt"><span>Record decision</span><span>Open</span><span>Snooze 7d</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="proof">
+  <div class="wrap">
+    <p>Built entirely on the Microsoft 365 you already trust</p>
+    <div class="ms">
+      <span><i style="background:#038387">S</i>SharePoint</span>
+      <span><i style="background:#742774">P</i>Power Apps</span>
+      <span><i style="background:#0066FF">A</i>Power Automate</span>
+      <span><i style="background:#5B5FC7">T</i>Microsoft Teams</span>
+      <span><i style="background:#0F6CBD">O</i>Outlook</span>
+    </div>
+  </div>
+</div>
+
+<section class="problem">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow">The problem</div>
+      <h2>Your contracts live in spreadsheets, inboxes and memory.</h2>
+      <p class="lead">Notice periods slip by. Contracts quietly auto-renew on old terms. Insurance certificates expire unnoticed. And when the auditor asks who approved a £1m deal, the answer is an email thread.</p>
+    </div>
+    <div class="stats reveal">
+      <div class="stat"><div class="n">90<small style="font-size:18px">d</small></div><p><b>The deadline that matters is the notice date, not the end date.</b> Keystone tracks it, counts down to it, and escalates when no one has decided.</p></div>
+      <div class="stat"><div class="n">1</div><p><b>One missed auto-renewal</b> on a six-figure contract usually costs more than a year of Keystone.</p></div>
+      <div class="stat"><div class="n">0</div><p><b>Zero new systems for IT to host.</b> Keystone installs into your own Microsoft 365, under your security policies.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="wrap">
+    <div class="fhead reveal">
+      <div class="eyebrow">The product</div>
+      <h2>Everything about every supplier and contract, in one place.</h2>
+      <p class="lead">Thirteen purpose-built components, designed to feel like premium software, not a SharePoint list.</p>
+    </div>
+    <div class="fgrid">
+      <div class="f hl reveal"><div class="ic"><svg><use href="#cal"/></svg></div><h3>Renewal timeline</h3><p>Every contract on one timeline, with notice windows shaded, deadlines marked and auto-renewals flagged. Spot the next twelve months' decisions at a glance.</p></div>
+      <div class="f reveal"><div class="ic"><svg><use href="#bld"/></svg></div><h3>Vendor 360</h3><p>Contracts, spend, scorecards, risks, certificates, documents and full history for each supplier, on one screen.</p></div>
+      <div class="f reveal"><div class="ic"><svg><use href="#doc"/></svg></div><h3>Contract lifecycle</h3><p>From request to renewal: guided intake, key terms, MSA → SOW → change order hierarchy, and an executed document set for every contract.</p></div>
+      <div class="f reveal"><div class="ic"><svg><use href="#flag"/></svg></div><h3>Obligations tracker</h3><p>SLAs, reports, audits and payments, with recurring due dates. Owners tick them off with evidence, and overdue items escalate.</p></div>
+      <div class="f reveal"><div class="ic"><svg><use href="#apr"/></svg></div><h3>Governed approvals</h3><p>Routes built from value, risk and data protection, with approve or reject straight from Teams. Every decision is recorded with who, when and why.</p></div>
+      <div class="f reveal"><div class="ic"><svg><use href="#shd"/></svg></div><h3>Risk &amp; compliance</h3><p>Automatic vendor risk scoring, a likelihood-by-impact heatmap, certificate expiry tracking and DPA checks for data processors.</p></div>
+    </div>
+    <p style="text-align:center;margin-top:36px"><a class="btn btn-line" href="keystone-vcm-pcf.html">Explore the interactive demo<svg><use href="#arr"/></svg></a></p>
+  </div>
+</section>
+
+<section class="rules" id="rules">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow">Your rules, not ours</div>
+      <h2>You decide who gets reminded, when, and what happens next.</h2>
+      <p class="lead">Keystone's Rule Builder lets your administrators set policy in plain English. No developers, no change requests.</p>
+      <ul class="ticks">
+        <li><svg><use href="#chk"/></svg><span><b>Reminders on any date:</b> notice deadlines, expiry dates, review dates, in calendar or working days.</span></li>
+        <li><svg><use href="#chk"/></svg><span><b>Escalations that persist:</b> repeat every few days until a decision is recorded.</span></li>
+        <li><svg><use href="#chk"/></svg><span><b>Validation and approval routing:</b> your thresholds, your approvers, your checks.</span></li>
+        <li><svg><use href="#chk"/></svg><span><b>Simulate before you publish:</b> see exactly who would be notified over the next 90 days.</span></li>
+        <li><svg><use href="#chk"/></svg><span><b>Versioned and audited:</b> test mode, second-person sign-off, and one-click rollback.</span></li>
+      </ul>
+    </div>
+    <div class="rb reveal" aria-label="Rule Builder example">
+      <div class="row"><span class="k w">WHEN</span>remind relative to <span class="tok b">Notice deadline</span> in <span class="tok">working days</span> at <span class="tok">08:00</span></div>
+      <div class="track">
+        <div class="ax"></div>
+        <div class="mk" style="left:16%"><b>−120</b><i></i></div>
+        <div class="mk" style="left:33%"><b>−90</b><i></i></div>
+        <div class="mk" style="left:50%"><b>−60</b><i></i></div>
+        <div class="mk e" style="left:68%"><b>−30 ⚑</b><i></i></div>
+        <div class="mk e" style="left:82%"><b>−7 ⚑</b><i></i></div>
+        <div class="an" style="left:90%"></div><span class="al" style="left:90%">Notice deadline</span>
+      </div>
+      <div class="row"><span class="k i">IF</span><span class="tok">Status</span> is <span class="tok">Active</span> and <span class="tok">Value</span> ≥ <span class="tok">£10,000</span></div>
+      <div class="row"><span class="k t">THEN</span>notify <span class="tok">Contract owner</span> via <span class="tok">Teams</span> <span class="tok">Email</span>; if still <span class="tok">Pending</span> at <span class="tok b">−30</span> escalate to <span class="tok">BU head</span>, repeating every <span class="tok">3 days</span></div>
+      <div class="sim"><div>Matches today<b>17</b></div><div>Reminders · 90 days<b>52</b></div><div>People reached<b>11</b></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="how">
+  <div class="wrap">
+    <div class="reveal" style="max-width:720px">
+      <div class="eyebrow">Getting started</div>
+      <h2>From spreadsheet to live in a day.</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><h3>Install</h3><p>Keystone installs into your Microsoft 365 tenant from a signed package. A step-by-step guide is included, or our consultant can do it with you.</p></div>
+      <div class="step reveal"><h3>Import &amp; configure</h3><p>Load your contract register from our Excel template. Set your reminder schedule, approval thresholds and roles.</p></div>
+      <div class="step reveal"><h3>Go live in Teams</h3><p>Pin Keystone in Teams. Owners get their first reminders, and leadership gets a live portfolio view from day one.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="security">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow l">Security &amp; IT</div>
+      <h2>Your data never leaves your tenant.</h2>
+      <p class="lead">There's no external hosting, no third-party database and no data export to us. Keystone uses your Microsoft 365 security, compliance and retention, and adds stronger controls of its own.</p>
+    </div>
+    <div class="sgrid reveal">
+      <div class="sg"><svg><use href="#cloud"/></svg><b>Stays in Microsoft 365</b><p>Data in your SharePoint, in your Microsoft data region. No external calls.</p></div>
+      <div class="sg"><svg><use href="#lock"/></svg><b>Locked-down lists</b><p>Users can't edit data behind the app's back. Every change goes through validated, role-checked flows.</p></div>
+      <div class="sg"><svg><use href="#users"/></svg><b>Role-based access</b><p>Procurement, legal, finance and owner roles, plus confidential contracts and business-unit walls.</p></div>
+      <div class="sg"><svg><use href="#hist"/></svg><b>Full audit trail</b><p>Field-level change history, approval decisions and every reminder sent, all retained under your policies.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <div class="fhead reveal">
+      <div class="eyebrow">Pricing</div>
+      <h2>Simple, predictable, and no per-user fees.</h2>
+      <p class="lead">One annual subscription per Microsoft 365 tenant. Give every contract owner access without counting seats.</p>
+    </div>
+    <div class="plans">
+      <div class="plan reveal">
+        <h3>Standard</h3><p class="for">Everything a procurement team needs to take control of contracts and suppliers.</p>
+        <div class="price">£5,950<small> / year</small></div><div class="per">Unlimited users · one production environment</div>
+        <ul>
+          <li><svg><use href="#chk"/></svg>All 13 Keystone components</li>
+          <li><svg><use href="#chk"/></svg>Renewal timeline, Vendor 360, obligations, approvals</li>
+          <li><svg><use href="#chk"/></svg>Rule Builder: reminders, escalations, validation</li>
+          <li><svg><use href="#chk"/></svg>Risk scoring, scorecards, spend import</li>
+          <li><svg><use href="#chk"/></svg>All updates and new versions</li>
+          <li><svg><use href="#chk"/></svg>Standard support (next business day)</li>
+        </ul>
+        <a class="btn btn-navy" href="#contact" data-plan="Standard">Get started</a>
+      </div>
+      <div class="plan pop reveal">
+        <span class="tag">Most popular</span>
+        <h3>Standard + Install</h3><p class="for">Standard for year one, with our consultant installing and configuring it alongside you.</p>
+        <div class="price">£6,750<small> first year</small></div><div class="per">Then £5,950 / year · save £350</div>
+        <ul>
+          <li><svg><use href="#chk"/></svg>Everything in Standard</li>
+          <li><svg><use href="#chk"/></svg>Guided Installation Day</li>
+          <li><svg><use href="#chk"/></svg>Your register imported (up to 500 contracts)</li>
+          <li><svg><use href="#chk"/></svg>Rules configured to your policy</li>
+          <li><svg><use href="#chk"/></svg>2-hour admin training, recorded</li>
+          <li><svg><use href="#chk"/></svg>30 days priority support</li>
+        </ul>
+        <a class="btn btn-brass" href="#contact" data-plan="Standard + Install">Book installation</a>
+      </div>
+      <div class="plan reveal">
+        <h3>Enterprise</h3><p class="for">For larger organisations with multiple business units and stricter governance.</p>
+        <div class="price">£11,950<small> / year</small></div><div class="per">Unlimited users · production + Dev/Test</div>
+        <ul>
+          <li><svg><use href="#chk"/></svg>Everything in Standard</li>
+          <li><svg><use href="#chk"/></svg>Business-unit confidentiality walls</li>
+          <li><svg><use href="#chk"/></svg>E-signature integration pack*</li>
+          <li><svg><use href="#chk"/></svg>Multi-currency reporting</li>
+          <li><svg><use href="#chk"/></svg>Premium support and quarterly health checks</li>
+          <li><svg><use href="#chk"/></svg>Upgrades done for you</li>
+        </ul>
+        <a class="btn btn-navy" href="#contact" data-plan="Enterprise">Talk to us</a>
+      </div>
+    </div>
+    <div class="offer reveal"><b>Founding customer offer:</b> 25% off your first year for our first 10 customers, in return for a short case study. <a href="#contact" style="text-decoration:underline;font-weight:600">Ask about availability</a></div>
+    <p class="note">All prices in GBP, excluding VAT, billed annually in advance. Keystone runs on your existing Microsoft 365 licences and uses standard connectors. We confirm your licensing fit on a free readiness call before you buy. *E-signature connectors need a Power Automate Premium licence for the Keystone service account.</p>
+  </div>
+</section>
+
+<section class="install" id="install">
+  <div class="wrap">
+    <div class="ibox reveal">
+      <div class="l">
+        <div class="eyebrow l">Optional</div>
+        <h2 style="font-size:36px">Guided Installation Day</h2>
+        <p class="lead">Your IT team doesn't have time? One of our Power Platform consultants installs, configures and hands over Keystone with you, in a single day.</p>
+        <div class="price">£1,150<small> fixed price</small></div>
+        <div class="per">Remote · on-site £1,450 + travel · extra days £1,050</div>
+        <a class="btn btn-brass" href="#contact" data-plan="Guided Installation Day" style="margin-top:6px">Book an installation day<svg><use href="#arr"/></svg></a>
+      </div>
+      <div class="r">
+        <div class="tl3">
+          <div><h4>A week before</h4><ul>
+            <li><svg><use href="#chk"/></svg>45-minute readiness call: licensing, environment and access checks</li>
+            <li><svg><use href="#chk"/></svg>Review of your contract register for import</li></ul></div>
+          <div><h4>On the day</h4><ul>
+            <li><svg><use href="#chk"/></svg>Full installation into your tenant, tested end to end</li>
+            <li><svg><use href="#chk"/></svg>Settings, branding, roles and business units configured</li>
+            <li><svg><use href="#chk"/></svg>Reminder, escalation and approval rules set to your policy, plus up to 3 custom rules</li>
+            <li><svg><use href="#chk"/></svg>Your register imported (up to 500 contracts)</li>
+            <li><svg><use href="#chk"/></svg>2-hour admin training, recorded for your team</li></ul></div>
+          <div><h4>Afterwards</h4><ul>
+            <li><svg><use href="#chk"/></svg>30 days of priority support and a follow-up call</li></ul></div>
+        </div>
+      </div>
+    </div>
+    <div class="support">
+      <div class="sup reveal"><h3>Standard support <span>Included</span></h3><ul>
+        <li><svg><use href="#chk"/></svg>Email and portal support, next-business-day response</li>
+        <li><svg><use href="#chk"/></svg>All updates, release notes and upgrade guides</li>
+        <li><svg><use href="#chk"/></svg>Step-by-step installation guide</li></ul></div>
+      <div class="sup reveal"><h3>Premium support <span>£2,400 / year · included in Enterprise</span></h3><ul>
+        <li><svg><use href="#chk"/></svg>4-business-hour response for critical issues, plus Teams calls</li>
+        <li><svg><use href="#chk"/></svg>Quarterly health check, with upgrades done for you</li>
+        <li><svg><use href="#chk"/></svg>1 hour a month of rule-building help, from a named consultant</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="faq" id="faq">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow">FAQ</div>
+      <h2>Questions IT and finance ask us.</h2>
+      <p class="lead" style="font-size:16.5px">Something else? <a href="#contact" style="color:var(--blue);font-weight:600">Ask us directly</a>.</p>
+    </div>
+    <div class="reveal">
+      <details><summary>Do our users need extra Microsoft licences?</summary><p>Keystone is designed to run on the Power Apps and Power Automate rights included with most Microsoft 365 business and enterprise plans, using standard connectors only. You'll need one licensed service account. We confirm your licensing fit on a free readiness call before you buy.</p></details>
+      <details><summary>Where is our data stored?</summary><p>In a SharePoint site in your own tenant, in your Microsoft data region. Keystone has no external servers and sends nothing to us. A Power Platform environment holds the app itself (not your data).</p></details>
+      <details><summary>What do we need technically?</summary><p>A Power Platform environment with Dataverse to hold the Keystone solution, an admin who can create a SharePoint site, and your data-loss-prevention policy allowing SharePoint, Approvals, Teams and Outlook connectors together. The installation guide includes a full checklist.</p></details>
+      <details><summary>Can we change the reminder schedule and approval thresholds ourselves?</summary><p>Yes. That's what the Rule Builder is for. Administrators edit, simulate and publish rules without a developer, and every version is kept and audited.</p></details>
+      <details><summary>Can we import our existing contract register?</summary><p>Yes, from our Excel template. Re-imports update matching records rather than creating duplicates. The Guided Installation Day includes importing up to 500 contracts.</p></details>
+      <details><summary>What happens if we stop subscribing?</summary><p>Your data stays in your SharePoint, and you can export everything to Excel at any time. After expiry Keystone switches to read-only, and reminders keep running for 30 days so nothing is missed while you decide.</p></details>
+      <details><summary>Can Keystone be customised?</summary><p>Most organisations need only rules, settings, templates and branding, all of which are self-service. For anything further, our consultants can build supported extensions at our day rate.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow l">Book a demo</div>
+      <h2>See your renewals on one timeline in 30 minutes.</h2>
+      <p class="lead">We'll walk through Keystone with your scenarios, check your Microsoft 365 fit, and give you a fixed quote.</p>
+      <div class="pills" style="margin-top:24px"><span><svg><use href="#chk"/></svg>No obligation</span><span><svg><use href="#chk"/></svg>Licensing check included</span><span><svg><use href="#chk"/></svg>Reply within one business day</span></div>
+    </div>
+    <form id="demoForm" class="reveal" novalidate>
+      <div class="two"><label>Name<input name="name" required autocomplete="name"></label><label>Work email<input name="email" type="email" required autocomplete="email"></label></div>
+      <div class="two"><label>Organisation<input name="org" required autocomplete="organization"></label>
+        <label>Number of active contracts<select name="size"><option>Under 100</option><option selected>100–500</option><option>500–2,000</option><option>2,000+</option></select></label></div>
+      <label>I'm interested in<select name="plan" id="planSel"><option>Standard</option><option>Standard + Install</option><option>Enterprise</option><option>Guided Installation Day</option><option>Just a demo</option></select></label>
+      <label>Anything we should know?<textarea name="msg" placeholder="e.g. current register in Excel, ~300 contracts, we use Teams heavily"></textarea></label>
+      <label class="check"><input type="checkbox" required> I agree to be contacted about Keystone. We never share your details.</label>
+      <button class="btn btn-brass" type="submit" style="justify-content:center">Request my demo<svg><use href="#arr"/></svg></button>
+      <div class="ok" id="ok" role="status">Thank you. We'll be in touch within one business day.</div>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="logo" href="#top" style="font-size:16px"><i><svg><use href="#dia"/></svg></i>Keystone</a>
+    <span>© 2026 Keystone. Microsoft 365, SharePoint, Power Apps, Power Automate and Teams are trademarks of the Microsoft group of companies. Keystone is an independent product and is not endorsed by Microsoft.</span>
+    <div class="sp"></div>
+    <a href="#">Privacy</a><a href="#">Terms</a><a href="INSTALLATION.md">Installation guide</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // preselect plan from pricing buttons
+  document.querySelectorAll('[data-plan]').forEach(function(a){a.addEventListener('click',function(){var s=document.getElementById('planSel');[].forEach.call(s.options,function(o){if(o.text===a.dataset.plan)s.value=o.value;});});});
+  // form (wire to your CRM / Power Automate HTTP endpoint / form service before going live)
+  var f=document.getElementById('demoForm');
+  f.addEventListener('submit',function(e){e.preventDefault();if(!f.checkValidity()){f.reportValidity();return;}
+    f.querySelectorAll('input,select,textarea,button[type=submit]').forEach(function(x){x.disabled=true;});document.getElementById('ok').style.display='block';});
+  // reveal on scroll
+  var els=document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});},{threshold:.12});els.forEach(function(el){io.observe(el);});}
+  else els.forEach(function(el){el.classList.add('in');});
+})();
+</script>
+</body>
+</html>

@@ -156,7 +156,9 @@ Site: `/sites/Keystone` (dedicated site, unique permissions, no member Contribut
 - **SavedViews**: Owner, Grid, Name, StateJson (filters, sort, columns), IsShared.
 
 ### 3.3 Environment variables (solution)
-`kst_SiteUrl`, `kst_ListIds` (JSON of list GUIDs, so flows survive list renames), `kst_ServiceMailbox`, `kst_TeamsChannelId`, `kst_FeatureFlags`.
+`kst_SiteUrl`, `kst_ListIds` (JSON of list GUIDs, so flows survive list renames), `kst_ServiceMailbox`, `kst_TeamsChannelId`, `kst_FeatureFlags`, `kst_LicenceKey`.
+
+**Licence key.** A signed JSON token (tenant ID, plan, expiry, signature). The app checks it on start (public key in `@keystone/core`) and the API flows check it too. Enterprise-only features are gated by plan. An expired key never blocks access to data: the app drops to read-only with a renewal banner, and reminders keep running for 30 days.
 
 ---
 
@@ -220,6 +222,8 @@ Error codes: `VALIDATION`, `FORBIDDEN`, `NOT_FOUND`, `CONFLICT` (ETag 412), `THR
 | `Keystone · Rules.Publish` | API | Rule Builder | Validates and test-runs compiled filters, versions, diffs to Activity, refreshes cache. Second-publisher approval for routing/validation rules |
 | `Keystone · Digest.Send` | Scheduled 08:00 | — | Sends one combined message per person for alerts over the per-day cap or set to digest |
 | `Keystone · Spend.Import` | Automated | File dropped in `/Imports/Spend` | Parses ERP CSV, aggregates to SpendMonthly, flags off-contract spend |
+| `Keystone · Data.Import` | Automated | Excel template dropped in `/Imports/Data` | Validates and upserts Vendors, Contracts, Obligations, Certificates from the import workbook (matches on Ref). Writes a results file next to the upload. Used at install and for bulk updates |
+| `Keystone · Data.Export` | API | Rules admin › Settings | Exports all lists to Excel + a documents zip in `/Exports`, for exit, audit or backup |
 | `Keystone · Contract.Provision` | Child flow | Record.Save (create contract) | Allocates ContractRef, creates document set, seeds standard obligations by contract type |
 
 ### 4.3 Concurrency, idempotency and throttling
