@@ -374,6 +374,80 @@ svg{width:16px;height:16px;flex:none}
 .valid svg{width:15px;height:15px;margin-top:1px}
 .valid.ok svg{color:var(--ok-strong)} .valid.warn svg{color:var(--warn-strong)} .valid.bad svg{color:var(--bad-strong)}
 
+
+/* rules admin */
+.g-rules{grid-template-columns:330px minmax(0,1fr)}
+.rlib .rg{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--fg-3);padding:12px 16px 4px}
+.ri{display:flex;gap:10px;padding:9px 16px;cursor:pointer;border-left:3px solid transparent;align-items:flex-start}
+.ri:hover{background:var(--stroke-3)}
+.ri[aria-selected=true]{background:var(--brand-bg);border-left-color:var(--brand)}
+.ri .b{flex:1;min-width:0}
+.ri .n{font-size:13px;font-weight:600;line-height:1.3}
+.ri .m{font-size:11.5px;color:var(--fg-3);margin-top:2px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.ri .id{font-size:10.5px;font-weight:700;color:var(--fg-3);font-family:Consolas,monospace}
+.sw{width:32px;height:18px;border-radius:9px;background:var(--brand);position:relative;flex:none;margin-top:2px;cursor:pointer}
+.sw::after{content:"";position:absolute;right:3px;top:3px;width:12px;height:12px;border-radius:50%;background:#fff;transition:.15s}
+.sw.off{background:var(--stroke-1)} .sw.off::after{right:17px}
+.health{display:inline-flex;align-items:center;gap:4px} .health i{width:6px;height:6px;border-radius:50%;background:var(--ok-strong)} .health.warn i{background:var(--warn-strong)}
+.rb-sec{padding:16px 18px;border-bottom:1px solid var(--stroke-2)}
+.rb-sec:last-child{border:0}
+.rb-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.rb-k{font-size:11px;font-weight:800;letter-spacing:.08em;color:#fff;background:var(--brand);border-radius:4px;padding:3px 8px}
+.rb-k.if{background:var(--brand-2)} .rb-k.then{background:var(--accent)} .rb-k.opt{background:var(--fg-3)}
+.rb-h .t{font-size:13px;color:var(--fg-2)}
+.sent{display:flex;flex-wrap:wrap;align-items:center;gap:7px;font-size:13.5px;line-height:2}
+.tok{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--brand-bd);background:var(--brand-bg);color:var(--brand);font-weight:600;border-radius:5px;padding:1px 9px;font-size:13px;cursor:pointer;white-space:nowrap}
+.tok svg{width:11px;height:11px}
+.tok.acc{border-color:#e3cfa9;background:var(--accent-bg);color:#7a5520}
+.sched{position:relative;height:96px;margin:6px 8px 4px;border-radius:8px;background:#FAFAFB;border:1px solid var(--stroke-2)}
+.sched .axis{position:absolute;left:14px;right:14px;top:58px;height:2px;background:var(--stroke-1)}
+.sched .tick{position:absolute;top:64px;font-size:10.5px;color:var(--fg-3);transform:translateX(-50%);white-space:nowrap}
+.sched .anchor{position:absolute;top:50px;width:16px;height:16px;margin-left:-8px;transform:rotate(45deg);background:var(--bad-strong);border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2);border-radius:2px}
+.sched .alab{position:absolute;top:78px;transform:translateX(-50%);font-size:10.5px;font-weight:700;color:var(--bad-fg);white-space:nowrap}
+.sched .mk{position:absolute;top:14px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px}
+.sched .mk b{font-size:10.5px;font-weight:700;background:var(--brand);color:#fff;border-radius:10px;padding:1px 7px;white-space:nowrap}
+.sched .mk i{width:2px;height:24px;background:var(--brand)}
+.sched .mk.esc b{background:var(--accent)} .sched .mk.esc i{background:var(--accent)}
+.sched .mk.esc{top:2px} .sched .mk.esc i{height:36px}
+.sched .rep{position:absolute;top:53px;height:12px;border-radius:3px;background:repeating-linear-gradient(90deg,rgba(166,124,61,.55) 0 4px,transparent 4px 9px)}
+.ochips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}
+.och{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;border:1px solid var(--stroke-1);border-radius:20px;padding:3px 6px 3px 11px;background:#fff}
+.och button{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;color:var(--fg-3)} .och button:hover{background:var(--bad-bg);color:var(--bad-fg)}
+.och button svg{width:10px;height:10px}
+.och.lock{padding-right:11px;background:var(--stroke-3)}
+.addoff{display:inline-flex;align-items:center;gap:6px;font-size:12.5px}
+.addoff input{width:54px;height:28px;border:1px solid var(--stroke-1);border-radius:4px;padding:0 8px;text-align:right}
+.cond{display:grid;grid-template-columns:36px 190px 150px minmax(0,1fr) 28px;gap:8px;align-items:center;margin-bottom:8px}
+.cond .j{font-size:11px;font-weight:700;color:var(--fg-3);text-align:center}
+.cond .inp{height:30px}
+.vals{display:flex;gap:5px;flex-wrap:wrap;align-items:center;height:30px;border:1px solid var(--stroke-1);border-bottom-color:var(--fg-3);border-radius:4px;padding:0 6px;background:#fff}
+.vals span{font-size:12px;font-weight:600;background:var(--brand-bg);color:var(--brand);border-radius:3px;padding:1px 7px}
+.act{border:1px solid var(--stroke-2);border-radius:8px;padding:12px 14px;margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;background:#fff}
+.act .ic{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;background:var(--brand-bg);color:var(--brand);flex:none}
+.act .ic.acc{background:var(--accent-bg);color:var(--accent)} .act .ic.ok{background:var(--ok-bg);color:var(--ok-fg)}
+.act .b{flex:1;min-width:0}
+.act .t{font-size:13px;font-weight:600;margin-bottom:6px}
+.act .sent{font-size:13px;line-height:1.9}
+.optrow{display:flex;gap:22px;flex-wrap:wrap;font-size:13px}
+.optrow label{display:flex;gap:8px;align-items:center;cursor:pointer}
+.ck2{width:16px;height:16px;border-radius:3px;border:1.5px solid var(--fg-3);display:grid;place-items:center;color:#fff}
+.ck2.on{background:var(--brand);border-color:var(--brand)} .ck2 svg{width:10px;height:10px}
+.simbar{display:flex;align-items:flex-end;gap:4px;height:70px;padding:0 2px;border-bottom:1px solid var(--stroke-2)}
+.simbar i{flex:1;background:var(--brand-bd);border-radius:2px 2px 0 0;position:relative}
+.simbar i.e{background:#e7cf9f}
+.simbar span i{flex:none}
+.simx{display:flex;justify-content:space-between;font-size:10.5px;color:var(--fg-3);margin-top:4px}
+.teams{border:1px solid var(--stroke-1);border-radius:8px;overflow:hidden;font-size:13px}
+.teams .h{background:#5B5FC7;color:#fff;padding:8px 12px;font-size:12px;font-weight:600;display:flex;gap:8px;align-items:center}
+.teams .bd{padding:12px}
+.teams .bd b{display:block;font-size:14px;margin-bottom:4px}
+.teams .fx{display:grid;grid-template-columns:110px 1fr;gap:3px 10px;font-size:12.5px;margin:8px 0}
+.teams .fx span{color:var(--fg-3)}
+.teams .bt{display:flex;gap:6px;flex-wrap:wrap} .teams .bt span{border:1px solid var(--stroke-1);border-radius:4px;padding:4px 10px;font-size:12px;font-weight:600}
+.tokh{background:#fff3c4;border-radius:2px;padding:0 2px}
+.verbar{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--fg-3)}
+@media (max-width:1380px){.g-rules{grid-template-columns:1fr}.cond{grid-template-columns:30px 1fr 1fr}.cond .vals,.cond>button{grid-column:2/-1}}
+
 /* toast */
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#1b1f24;color:#fff;font-size:13px;padding:10px 16px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center;opacity:0;pointer-events:none;transition:.2s;z-index:120}
 .toast.on{opacity:1;transform:translate(-50%,0)}
@@ -455,6 +529,7 @@ body.is-ready .screen.is-active .card, body.is-ready .screen.is-active .tile, bo
     <button role="tab" aria-selected="false" data-screen="contract"><span class="n">05</span>Contract</button>
     <button role="tab" aria-selected="false" data-screen="renewals"><span class="n">06</span>Renewals</button>
     <button role="tab" aria-selected="false" data-screen="intake"><span class="n">07</span>New contract</button>
+    <button role="tab" aria-selected="false" data-screen="rules"><span class="n">08</span>Rules admin</button>
   </div>
   <button class="pcftoggle" id="pcfToggle" aria-pressed="false" title="Highlight the PCF controls and the flow feeding each one">
     <svg><use href="#i-dia"/></svg>PCF controls</button>
@@ -479,6 +554,7 @@ body.is-ready .screen.is-active .card, body.is-ready .screen.is-active .tile, bo
   <button data-go="contracts"><svg><use href="#i-doc"/></svg>Contracts</button>
   <button data-go="renewals"><svg><use href="#i-renew"/></svg>Renewals</button>
   <button data-go="intake"><svg><use href="#i-plus"/></svg>New</button>
+  <button data-go="rules" style="margin-top:auto"><svg><use href="#i-gear"/></svg>Rules</button>
 </nav>
 <div class="main">
 
@@ -791,7 +867,7 @@ body.is-ready .screen.is-active .card, body.is-ready .screen.is-active .tile, bo
             <div class="fi"><div class="ic acc"><svg><use href="#i-check"/></svg></div><div><div class="t"><b>Marcus Lind</b> approved the renewal (BU head)</div><div class="m">30 Oct 2026, 16:42</div></div></div>
             <div class="fi"><div class="ic"><svg><use href="#i-pen"/></svg></div><div><div class="t"><b>Priya Shah</b> set renewal decision</div><div class="diff">RenewalDecision: <s>Pending</s> → <ins>Renegotiate</ins></div><div class="m">28 Oct 2026, 11:05</div></div></div>
             <div class="fi"><div class="ic"><svg><use href="#i-doc"/></svg></div><div><div class="t"><b>Priya Shah</b> uploaded <b>Renewal pricing benchmark FY27.xlsx</b></div><div class="m">28 Oct 2026, 10:51</div></div></div>
-            <div class="fi"><div class="ic warn"><svg><use href="#i-bell"/></svg></div><div><div class="t"><b>Keystone</b> sent 90-day notice alert to owner</div><div class="m">2 Oct 2026, 07:30 · Renewal.Alerts</div></div></div>
+            <div class="fi"><div class="ic warn"><svg><use href="#i-bell"/></svg></div><div><div class="t"><b>Keystone</b> sent 90-day notice alert to owner</div><div class="m">2 Oct 2026, 07:30 · Rules.Scheduler · R-001 v4</div></div></div>
           </div>
         </div>
       </div>
@@ -865,7 +941,7 @@ body.is-ready .screen.is-active .card, body.is-ready .screen.is-active .tile, bo
           <div class="fsec">Budget</div>
           <div class="fgrid">
             <div class="fl"><label>Business unit <span class="req">*</span></label><div class="inp"><select><option>Technology</option><option>Operations</option><option>People</option></select></div></div>
-            <div class="fl"><label>Cost centre <span class="req">*</span></label><div class="inp err"><input placeholder="e.g. TEC-4410"></div><div class="hint err">Cost centre is required for values over £50k</div></div>
+            <div class="fl"><label>Cost centre <span class="req">*</span></label><div class="inp err"><input placeholder="e.g. TEC-4410"></div><div class="hint err">Cost centre is required for values over £50k · rule R-010</div></div>
             <div class="fl"><label>Budget owner</label><div class="inp"><div class="av rd sm a3">DO</div><input value="Daniel Okafor"></div></div>
           </div>
         </div>
@@ -873,7 +949,7 @@ body.is-ready .screen.is-active .card, body.is-ready .screen.is-active .tile, bo
       </div>
       <div class="stack">
         <div class="card pcf" data-pcf="PCF · Smart Form (side panel · route preview)" data-src="AppConfig approval.matrix">
-          <div class="card__hd"><h2>Approval route preview</h2><span class="sub">updates as you type</span></div>
+          <div class="card__hd"><h2>Approval route preview</h2><span class="sub">from routing rules R-020–025</span></div>
           <div class="ap">
             <div class="aps"><div class="ic">1</div><div class="b"><div class="t">BU head · Marcus Lind</div><div class="m">all contracts</div></div></div>
             <div class="aps"><div class="ic">2</div><div class="b"><div class="t">Finance · Priya Shah</div><div class="m">TCV ≥ £50k</div></div></div>
@@ -891,8 +967,124 @@ body.is-ready .screen.is-active .card, body.is-ready .screen.is-active .tile, bo
             <div class="fsec" style="margin:14px 0 6px">Checks</div>
             <div class="valid ok"><svg><use href="#i-check"/></svg>Vendor active, due diligence passed</div>
             <div class="valid ok"><svg><use href="#i-check"/></svg>Within parent MSA term and cap</div>
-            <div class="valid warn"><svg><use href="#i-alert"/></svg>DPA required — vendor processes personal data</div>
-            <div class="valid bad"><svg><use href="#i-x"/></svg>Cost centre missing</div>
+            <div class="valid warn"><svg><use href="#i-alert"/></svg><span>DPA required — vendor processes personal data <span class="idtag">R-012</span></span></div>
+            <div class="valid bad"><svg><use href="#i-x"/></svg><span>Cost centre missing <span class="idtag">R-010</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================= 08 · RULES ADMIN ================= -->
+<section class="screen" id="screen-rules">
+  <div class="subbar">
+    <div class="crumb"><svg><use href="#i-gear"/></svg><a>Admin</a><svg><use href="#i-chev"/></svg><b>Rules</b></div>
+    <button class="cmd prim"><svg><use href="#i-plus"/></svg>New rule</button>
+    <button class="cmd"><svg><use href="#i-doc"/></svg>From template</button>
+    <span class="sep"></span>
+    <button class="cmd"><svg><use href="#i-cal"/></svg>Working days &amp; holidays</button>
+    <button class="cmd"><svg><use href="#i-note"/></svg>Message templates</button>
+    <button class="cmd"><svg><use href="#i-gear"/></svg>Settings</button>
+    <div class="sp"></div>
+    <span class="badge b-ok dotb">Scheduler ran 07:00 · 63 sent · 0 failed</span>
+  </div>
+  <div class="wrap">
+    <div class="g g-rules">
+      <div class="card rlib pcf" data-pcf="PCF · Smart Data Grid (list mode · rule library)" data-src="Rules.Get" id="rlib">
+        <div class="toolbar"><label class="fsrch" style="width:100%"><svg><use href="#i-search"/></svg><input placeholder="Search 24 rules"></label></div>
+        <div class="rg">Reminders</div>
+        <div class="ri" aria-selected="true"><div class="b"><div class="n">Notice deadline reminders</div><div class="m"><span class="id">R-001</span><span class="badge b-ok" style="padding:0 7px">Published v4</span><span class="badge b-grey" style="padding:0 7px">System</span></div><div class="m"><span class="health"><i></i>17 matched · 9 sent today</span></div></div><span class="sw"></span></div>
+        <div class="ri"><div class="b"><div class="n">Facilities: early notice (180/120/60)</div><div class="m"><span class="id">R-001·FM</span><span class="badge b-brand" style="padding:0 7px">Overrides R-001</span></div><div class="m"><span class="health"><i></i>3 matched</span></div></div><span class="sw"></span></div>
+        <div class="ri"><div class="b"><div class="n">Certificate expiry</div><div class="m"><span class="id">R-003</span><span class="badge b-ok" style="padding:0 7px">Published v2</span></div><div class="m"><span class="health warn"><i></i>1 failed send · invalid mailbox</span></div></div><span class="sw"></span></div>
+        <div class="ri"><div class="b"><div class="n">Vendor review cadence by tier</div><div class="m"><span class="id">R-004</span><span class="badge b-ok" style="padding:0 7px">Published v3</span></div></div><span class="sw"></span></div>
+        <div class="ri"><div class="b"><div class="n">Insurance renewals — 60 day chase</div><div class="m"><span class="id">R-041</span><span class="badge b-warn" style="padding:0 7px">Testing · sends to you</span></div></div><span class="sw"></span></div>
+        <div class="rg">Validation</div>
+        <div class="ri"><div class="b"><div class="n">Cost centre required over £50k</div><div class="m"><span class="id">R-010</span><span class="badge b-ok" style="padding:0 7px">Published v1</span></div></div><span class="sw"></span></div>
+        <div class="ri"><div class="b"><div class="n">DPA before activating data processors</div><div class="m"><span class="id">R-012</span><span class="badge b-ok" style="padding:0 7px">Published v2</span><span class="badge b-grey" style="padding:0 7px">Locked</span></div></div><span class="sw"></span></div>
+        <div class="rg">Approval routing · Events · Templates</div>
+        <div class="ri"><div class="b"><div class="n">Approval matrix by contract value</div><div class="m"><span class="id">R-020…025</span><span class="badge b-ok" style="padding:0 7px">Published v5</span></div></div><span class="sw"></span></div>
+        <div class="ri"><div class="b"><div class="n">Tier → Strategic sets review &amp; obligations</div><div class="m"><span class="id">R-030</span><span class="badge b-grey" style="padding:0 7px">Draft</span></div></div><span class="sw off"></span></div>
+        <div class="ri"><div class="b"><div class="n">SaaS standard obligations</div><div class="m"><span class="id">T-SaaS</span><span class="badge b-ok" style="padding:0 7px">Published v2</span></div></div><span class="sw"></span></div>
+      </div>
+
+      <div class="stack">
+        <div class="card pcf" data-pcf="PCF · Rule Builder" data-src="Rules.Get → Rules.Save / Simulate / Publish">
+          <div class="card__hd"><span class="idtag" style="font-size:12px">R-001</span><h2>Notice deadline reminders</h2><span class="badge b-ok">Published v4</span><span class="badge b-warn">Draft v5 · unsaved changes</span>
+            <div class="r"><button class="btn" id="btnSim"><svg><use href="#i-renew"/></svg>Simulate</button><button class="btn">Save draft</button><button class="btn prim" id="btnPub">Publish v5</button></div></div>
+
+          <div class="rb-sec">
+            <div class="rb-h"><span class="rb-k">WHEN</span><span class="t">reminder schedule, relative to a date on the record</span></div>
+            <div class="sent">For each <span class="tok">Contract<svg><use href="#i-chevd"/></svg></span> remind relative to <span class="tok acc">Notice deadline<svg><use href="#i-chevd"/></svg></span> in <span class="tok">working days<svg><use href="#i-chevd"/></svg></span> at <span class="tok">08:00<svg><use href="#i-chevd"/></svg></span> skipping quiet hours and UK bank holidays</div>
+            <div class="sched" id="sched"></div>
+            <div class="ochips" id="ochips"></div>
+          </div>
+
+          <div class="rb-sec">
+            <div class="rb-h"><span class="rb-k if">IF</span><span class="t">all of these are true</span><span class="tok" style="margin-left:auto">ALL<svg><use href="#i-chevd"/></svg></span></div>
+            <div class="cond"><span class="j">WHERE</span><div class="inp"><select><option>Status</option></select></div><div class="inp"><select><option>is any of</option></select></div><div class="vals"><span>Active</span><span>Expiring</span></div><button class="iconbtn" style="color:var(--fg-3);width:28px;height:28px"><svg><use href="#i-x"/></svg></button></div>
+            <div class="cond"><span class="j">AND</span><div class="inp"><select><option>Total contract value</option></select></div><div class="inp"><select><option>is at least</option></select></div><div class="inp"><span class="pre">£</span><input value="10,000"></div><button class="iconbtn" style="color:var(--fg-3);width:28px;height:28px"><svg><use href="#i-x"/></svg></button></div>
+            <div class="cond"><span class="j">AND</span><div class="inp"><select><option>Vendor › Tier</option></select></div><div class="inp"><select><option>is not</option></select></div><div class="vals"><span>Tactical</span></div><button class="iconbtn" style="color:var(--fg-3);width:28px;height:28px"><svg><use href="#i-x"/></svg></button></div>
+            <div style="display:flex;gap:16px;margin-left:44px"><span class="lk">+ Add condition</span><span class="lk">+ Add ANY group</span></div>
+          </div>
+
+          <div class="rb-sec">
+            <div class="rb-h"><span class="rb-k then">THEN</span><span class="t">actions, each at selected reminder points</span></div>
+            <div class="act"><div class="ic"><svg><use href="#i-bell"/></svg></div><div class="b"><div class="t">Notify</div>
+              <div class="sent">Send <span class="tok">Renewal reminder<svg><use href="#i-chevd"/></svg></span> to <span class="tok">Contract owner</span> via <span class="tok">Teams</span><span class="tok">Email</span> at <span class="tok">all reminders</span></div></div></div>
+            <div class="act"><div class="ic acc"><svg><use href="#i-alert"/></svg></div><div class="b"><div class="t">Escalate</div>
+              <div class="sent">If <span class="tok">Renewal decision</span> is <span class="tok">Pending</span>, send <span class="tok">Renewal escalation</span> to <span class="tok">BU head</span><span class="tok">Procurement</span><span class="tok">Owner's manager</span> at <span class="tok acc">−30</span><span class="tok acc">−7</span>, then repeat every <span class="tok">3 working days</span> until a decision is recorded <span class="muted" style="font-size:12px;color:var(--fg-3)">(max 5)</span></div></div></div>
+            <div class="act"><div class="ic ok"><svg><use href="#i-check"/></svg></div><div class="b"><div class="t">Create obligation</div>
+              <div class="sent">At <span class="tok">−60</span> create <span class="tok">Record renewal decision</span> for <span class="tok">Contract owner</span>, due <span class="tok">30 days before notice deadline</span></div></div></div>
+            <span class="lk">+ Add action</span> <span style="color:var(--fg-4);font-size:12px">— notify · escalate · set field · create obligation · start approval · add to digest</span>
+          </div>
+
+          <div class="rb-sec">
+            <div class="rb-h"><span class="rb-k opt">OPTIONS</span></div>
+            <div class="optrow" id="opts">
+              <label><span class="ck2 on"><svg><use href="#i-check"/></svg></span>Owners may snooze (max 14 days)</label>
+              <label><span class="ck2 on"><svg><use href="#i-check"/></svg></span>Owners may add extra reminders</label>
+              <label><span class="ck2"><svg><use href="#i-check"/></svg></span>Owners may remove reminders</label>
+              <label><span class="ck2 on"><svg><use href="#i-check"/></svg></span>Lock final 7-day reminder</label>
+              <label><span class="ck2 on"><svg><use href="#i-check"/></svg></span>Move to digest above 10 alerts/person/day</label>
+            </div>
+            <div class="verbar" style="margin-top:14px"><svg><use href="#i-clock"/></svg>v4 published by Elaine Morris on 14 Sep 2026 · second publisher not required for reminder rules · <span class="lk">Compare with v4</span> · <span class="lk">History (4)</span></div>
+          </div>
+        </div>
+
+        <div class="g g2">
+          <div class="card pcf" data-pcf="PCF · Rule Builder (simulation panel)" data-src="Rules.Simulate">
+            <div class="card__hd"><h2>Simulation</h2><span class="sub">draft v5 · nothing is sent</span></div>
+            <div class="pad">
+              <div class="tiles t3" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
+                <div><div class="tile__l">Matching today</div><div class="tile__n" style="font-size:22px">17</div></div>
+                <div><div class="tile__l">Sends · 90 days</div><div class="tile__n" style="font-size:22px">52</div></div>
+                <div><div class="tile__l">People reached</div><div class="tile__n" style="font-size:22px">11</div></div>
+              </div>
+              <div class="simbar" id="simbar"></div>
+              <div class="simx"><span>w/c 2 Nov</span><span>Dec</span><span>Jan</span><span>w/c 25 Jan</span></div>
+              <div style="font-size:11.5px;color:var(--fg-3);margin:8px 0 10px;display:flex;gap:14px"><span><i style="display:inline-block;width:9px;height:9px;background:var(--brand-bd);border-radius:2px;margin-right:5px"></i>Reminders</span><span><i style="display:inline-block;width:9px;height:9px;background:#e7cf9f;border-radius:2px;margin-right:5px"></i>Escalations</span></div>
+              <div class="kv"><span>Mon 2 Nov · Calder Fleet Leasing (−7, escalation)</span><b>3 people</b></div>
+              <div class="kv"><span>Mon 2 Nov · Integrated FM (−30)</span><b>Tom Ellery +2</b></div>
+              <div class="kv"><span>Wed 4 Nov · Managed Print &amp; Mail (−30)</span><b>Grace Mwangi</b></div>
+              <div class="kv"><span style="color:var(--warn-fg)">Change vs v4: +14 sends (new −14 reminder)</span><b></b></div>
+            </div>
+          </div>
+          <div class="card pcf" data-pcf="PCF · Rule Builder (template preview)" data-src="MessageTemplates">
+            <div class="card__hd"><h2>Message preview</h2><span class="sub">Renewal reminder · Teams</span><div class="r"><span class="lk">Edit template</span></div></div>
+            <div class="pad">
+              <div class="teams">
+                <div class="h"><svg style="width:14px;height:14px"><use href="#i-dia"/></svg>Keystone · Renewal reminder</div>
+                <div class="bd">
+                  <b><span class="tokh">Cloud Hosting &amp; Managed Services (SOW 3)</span></b>
+                  Notice must be served or the renewal confirmed in <span class="tokh">60 days</span>. This contract <span class="tokh">auto-renews for 12 months</span> if no action is taken.
+                  <div class="fx"><span>Vendor</span><b style="font-size:12.5px;margin:0">Orrin Cloud Ltd</b><span>Notice deadline</span><b style="font-size:12.5px;margin:0">31 Dec 2026</b><span>Value</span><b style="font-size:12.5px;margin:0">£1.86m TCV</b><span>Decision</span><b style="font-size:12.5px;margin:0">Pending</b></div>
+                  <div class="bt"><span>Record decision</span><span>Open in Keystone</span><span>Snooze 7 days</span></div>
+                </div>
+              </div>
+              <div style="font-size:11.5px;color:var(--fg-3);margin-top:10px">Previewing against CON-2024-0087 · tokens: <code style="font-size:11px">{{Contract.Title}} {{DaysToNoticeDeadline}} {{AutoRenewText}}</code></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1118,7 +1310,7 @@ body.is-ready .screen.is-active .card, body.is-ready .screen.is-active .tile, bo
     tabs.forEach(function(t){t.setAttribute('aria-selected',t.dataset.screen===id);});
     var railMap={vendor:'vendors',contract:'contracts'};
     document.querySelectorAll('.rail [data-go]').forEach(function(b){b.setAttribute('aria-current',b.dataset.go===(railMap[id]||id));});
-    window.scrollTo(0,0);replay();drawTimelines();
+    window.scrollTo(0,0);replay();drawTimelines();if(id==='rules')drawSched();
   }
   tabs.forEach(function(t){t.addEventListener('click',function(){show(t.dataset.screen);});});
   document.addEventListener('click',function(e){
@@ -1150,6 +1342,38 @@ body.is-ready .screen.is-active .card, body.is-ready .screen.is-active .tile, bo
     if(e.target.tagName==='SELECT')toast('Decision saved: '+e.target.value+' <code>Record.Save · IF-MATCH etag ✓</code>');});
   document.getElementById('tglAuto').addEventListener('click',function(){this.classList.toggle('off');this.lastChild.textContent=this.classList.contains('off')?'No':'Yes, for 12 months';});
 
+
+  /* ---------- Rule Builder: reminder schedule ---------- */
+  var offsets=[-120,-90,-60,-30,-14,-7], escOff={'-30':1,'-7':1}, locked={'-7':1};
+  function drawSched(){
+    var el=document.getElementById('sched'),w=el.clientWidth-28,min=-150,max=15;
+    function x(d){return 14+(d-min)/(max-min)*w;}
+    var h='<div class="axis"></div>';
+    [-150,-120,-90,-60,-30,0].forEach(function(d){h+='<span class="tick" style="left:'+x(d)+'px">'+(d?d+' d':'')+'</span>';});
+    h+='<div class="rep" style="left:'+x(-30)+'px;width:'+(x(0)-x(-30))+'px" title="Repeat every 3 working days until decision recorded"></div>';
+    offsets.forEach(function(d){h+='<div class="mk'+(escOff[d]?' esc':'')+'" style="left:'+x(d)+'px"><b>'+d+(escOff[d]?' ⚑':'')+'</b><i></i></div>';});
+    h+='<div class="anchor" style="left:'+x(0)+'px"></div><span class="alab" style="left:'+x(0)+'px">Notice deadline</span>';
+    el.innerHTML=h;
+    var c='';offsets.forEach(function(d){c+='<span class="och'+(locked[d]?' lock':'')+'">'+Math.abs(d)+' days before'+(escOff[d]?' · escalate':'')+(locked[d]?' '+ico('shield','width:11px;height:11px'):'<button data-off="'+d+'" title="Remove">'+ico('x')+'</button>')+'</span>';});
+    c+='<span class="addoff">+ <input id="newOff" value="45" aria-label="Days"> days <span class="tok">before<svg><use href="#i-chevd"/></svg></span><button class="btn" id="addOff" style="padding:3px 10px">Add reminder</button></span>';
+    document.getElementById('ochips').innerHTML=c;
+  }
+  document.getElementById('ochips').addEventListener('click',function(e){
+    var b=e.target.closest('[data-off]');
+    if(b){var d=+b.dataset.off;offsets=offsets.filter(function(o){return o!==d;});drawSched();toast('Reminder removed · simulation updated');return;}
+    if(e.target.closest('#addOff')){var v=-Math.abs(parseInt(document.getElementById('newOff').value,10)||0);
+      if(v&&v>=-150&&offsets.indexOf(v)<0){offsets.push(v);offsets.sort(function(a,b){return a-b;});drawSched();toast('Reminder added at '+Math.abs(v)+' days before · simulation updated');}}
+  });
+  (function(){var sb=document.getElementById('simbar'),r=[3,6,2,4,5,1,3,7,2,4,3,6,2],e=[2,1,0,0,2,0,1,3,0,1,0,2,0],h='';
+    r.forEach(function(v,i){h+='<i style="height:'+(v*8)+'px" title="'+v+' reminders"></i>';if(e[i])h+='';});
+    sb.innerHTML=r.map(function(v,i){return '<span style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:1px;height:100%"><i class="e" style="height:'+(e[i]*8)+'px"></i><i style="height:'+(v*8)+'px"></i></span>';}).join('');})();
+  document.getElementById('rlib').addEventListener('click',function(e){
+    var sw=e.target.closest('.sw');if(sw){sw.classList.toggle('off');toast(sw.classList.contains('off')?'Rule disabled <code>Rules.Save</code>':'Rule enabled <code>Rules.Save</code>');return;}
+    var ri=e.target.closest('.ri');if(ri)this.querySelectorAll('.ri').forEach(function(x){x.setAttribute('aria-selected',x===ri);});});
+  document.getElementById('opts').addEventListener('click',function(e){var l=e.target.closest('label');if(l)l.querySelector('.ck2').classList.toggle('on');});
+  document.getElementById('btnSim').addEventListener('click',function(){toast('Simulated draft v5 <code>Rules.Simulate</code> · 17 matches · 52 sends in 90 days');});
+  document.getElementById('btnPub').addEventListener('click',function(){toast('Published R-001 v5 <code>Rules.Publish</code> · filters compiled &amp; test-run ✓ · diff logged');});
+
   /* ---------- PCF overlay ---------- */
   var pcf=document.getElementById('pcfToggle');
   function buildList(){
@@ -1169,7 +1393,7 @@ body.is-ready .screen.is-active .card, body.is-ready .screen.is-active .tile, bo
   function replay(){document.body.classList.remove('is-ready');void document.body.offsetWidth;
     requestAnimationFrame(function(){document.body.classList.add('is-ready');});
     if(document.body.classList.contains('show-pcf'))buildList();}
-  window.addEventListener('resize',drawTimelines);
+  window.addEventListener('resize',function(){drawTimelines();if(document.getElementById('sched').offsetParent)drawSched();});
   window.addEventListener('load',function(){replay();drawTimelines();});
   replay();drawTimelines();
 })();
